@@ -9,7 +9,7 @@ export class ProductosService {
   }
 
   findAll() {
-    return `This action returns all productos`;
+    return `Módulo Producto - Epica Productos mas Vendidos`;
   }
 
   findOne(id: number) {
