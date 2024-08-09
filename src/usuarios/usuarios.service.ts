@@ -5,22 +5,22 @@ import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 @Injectable()
 export class UsuariosService {
   create(createUsuarioDto: CreateUsuarioDto) {
-    return 'This action adds a new usuario';
+    return 'Modulo Usuarios - Corresponde a la epica de Usuarios /Ingresar Usuarios';
   }
 
   findAll() {
-    return `This action returns all usuarios`;
+    return `Modulo Usuarios - Corresponde a la epica de Usuarios / retorna todos los usuarios`;
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} usuario`;
+    return `Modulo Usuarios - Corresponde a la epica de Usuarios  #${id} usuario`;
   }
 
   update(id: number, updateUsuarioDto: UpdateUsuarioDto) {
-    return `This action updates a #${id} usuario`;
+    return `Modulo Usuarios - Corresponde a la epica de Usuarios / Actualiza Usuario a #${id} usuario`;
   }
 
   remove(id: number) {
-    return `This action removes a #${id} usuario`;
+    return `Modulo Usuarios - Corresponde a la epica de Usuarios /Elimina Usuario #${id} usuario`;
   }
 }
