@@ -9,7 +9,7 @@ export class DespachosService {
   }
 
   findAll() {
-    return `This action returns all despachos`;
+    return `Modulo Despacho - Epica Compra(Seguimiento)`;
   }
 
   findOne(id: number) {
