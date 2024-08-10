@@ -6,9 +6,10 @@ import { DespachosModule } from './despachos/despachos.module';
 import { ProductosModule } from './productos/productos.module';
 //import { UsuariosModule } from './usuarios/usuarios.module';
 import { ComprasModule } from './compras/compras.module';
+import { VentasModule } from './ventas/ventas.module';
 
 @Module({
-  imports: [UsuariosModule, ProductosModule, DespachosModule, ComprasModule],
+  imports: [UsuariosModule, ProductosModule, DespachosModule, ComprasModule, VentasModule],
   controllers: [AppController],
   providers: [AppService],
 })
