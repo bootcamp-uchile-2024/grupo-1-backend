@@ -9,8 +9,15 @@ import { VentasModule } from './ventas/ventas.module';
 import { EquipoModule } from './equipo/equipo.module';
 
 @Module({
-  imports: [UsuariosModule, ProductosModule, DespachosModule, ComprasModule, VentasModule,EquipoModule],
+  imports: [
+    UsuariosModule,
+    ProductosModule,
+    DespachosModule,
+    ComprasModule,
+    VentasModule,
+    EquipoModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
- })
+})
 export class AppModule {}

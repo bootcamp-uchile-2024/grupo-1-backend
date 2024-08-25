@@ -7,7 +7,7 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { UsuariosService } from './usuarios.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
@@ -41,6 +41,7 @@ export class UsuariosController {
   @ApiOperation({ summary: 'Crear un nuevo usuario' })
   @ApiResponse({ status: 201, description: 'Usuario creado con éxito.' })
   @ApiResponse({ status: 400, description: 'Datos inválidos.' })
+  @ApiBody({ type: CreateUsuarioDto })
   create(@Body() createUserDto: any) {
     // lógica para crear un nuevo usuario
     this.usuariosService.create(createUserDto);
@@ -50,6 +51,7 @@ export class UsuariosController {
   @ApiOperation({ summary: 'Actualizar un usuario existente' })
   @ApiResponse({ status: 200, description: 'Usuario actualizado con éxito.' })
   @ApiResponse({ status: 404, description: 'Usuario no encontrado.' })
+  @ApiBody({ type: UpdateUsuarioDto })
   update(@Param('id') id: string, @Body() updateUserDto: any) {
     // lógica para actualizar un usuario existente
     this.usuariosService.update(+id, updateUserDto);

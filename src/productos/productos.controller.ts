@@ -7,7 +7,13 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiProperty,
+  ApiBody,
+} from '@nestjs/swagger';
 import { ProductosService } from './productos.service';
 import { CreateProductoDto } from './dto/create-producto.dto';
 import { UpdateProductoDto } from './dto/update-producto.dto';
@@ -28,29 +34,32 @@ export class ProductosController {
     this.productosService.findAll();
   }
 
-  @Get(':id')
+  @Get(':idproducto')
   @ApiOperation({ summary: 'Obtener un producto por ID' })
+  @ApiProperty({ name: 'idproducto', type: 'number', example: 1 })
   @ApiResponse({ status: 200, description: 'Producto obtenido con éxito.' })
   @ApiResponse({ status: 404, description: 'Producto no encontrado.' })
-  findOne(@Param('id') id: string) {
+  findOne(@Param('idproducto') idproducto: string) {
     // lógica para obtener un producto por ID
-    this.productosService.findOne(+id);
+    this.productosService.findOne(+idproducto);
   }
 
   @Post()
   @ApiOperation({ summary: 'Crear un nuevo producto' })
   @ApiResponse({ status: 201, description: 'Producto creado con éxito.' })
   @ApiResponse({ status: 400, description: 'Datos inválidos.' })
+  @ApiBody({ type: CreateProductoDto })
   create(@Body() createProductoDto: any) {
     // lógica para crear un nuevo producto
     this.productosService.create(createProductoDto);
   }
 
-  @Patch(':id')
+  @Patch(':idproducto')
+  @ApiProperty({ name: 'idproducto', type: 'number', example: 1 })
   @ApiOperation({ summary: 'Actualizar un producto existente' })
   @ApiResponse({ status: 200, description: 'Producto actualizado con éxito.' })
   @ApiResponse({ status: 404, description: 'Producto no encontrado.' })
-  update(@Param('id') id: string, @Body() updateProductoDto: any) {
+  update(@Param('idproducto') id: string, @Body() updateProductoDto: any) {
     // lógica para actualizar un producto existente
     this.productosService.update(+id, updateProductoDto);
   }
