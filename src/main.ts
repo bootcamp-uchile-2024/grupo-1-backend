@@ -19,123 +19,46 @@ async function bootstrap() {
     .addTag('app-plantopia')
     .build();
   const document = SwaggerModule.createDocument(app, config, {
-    include: [
-      UsuariosModule,
-      VentasModule,
-      ProductosModule,
-      DespachosModule,
-      ComprasModule,
-      EquipoModule,
-    ],
+    include: [AppModule],
+  });
+  //documentacion usuario
+  const usuarioSwagger = SwaggerModule.createDocument(app, config, {
+    include: [UsuariosModule],
+  });
+  //documentacion ventas
+  const ventasSwagger = SwaggerModule.createDocument(app, config, {
+    include: [VentasModule],
+  });
+  //documentacion productos
+  const productosSwagger = SwaggerModule.createDocument(app, config, {
+    include: [ProductosModule],
+  });
+  //documentacion despachos
+  const despachosSwagger = SwaggerModule.createDocument(app, config, {
+    include: [DespachosModule],
+  });
+  //documentacion compras
+  const comprasSwagger = SwaggerModule.createDocument(app, config, {
+    include: [ComprasModule],
   });
   SwaggerModule.setup('api', app, document, {
     yamlDocumentUrl: 'swagger/yaml',
   });
-
-  // Configuración de Swagger para el módulo de usuarios
-  const usuariosApp = await NestFactory.create(UsuariosModule);
-  const configUsers = new DocumentBuilder()
-    .setTitle('API Plantopia APP - Módulo Usuarios')
-    .setDescription(
-      'Documentación de la API de la APP Plantopia para el módulo de Usuarios',
-    )
-    .setVersion('1.0')
-    .addTag('app-plantopia-usuarios')
-    .build();
-  const documentUsers = SwaggerModule.createDocument(app, configUsers, {
-    include: [UsuariosModule],
-  });
-  SwaggerModule.setup('api/usuarios', usuariosApp, documentUsers, {
+  SwaggerModule.setup('api/usuarios', app, usuarioSwagger, {
     yamlDocumentUrl: 'swagger/yaml',
   });
-
-  // Configuración de Swagger para el módulo de ventas
-  const ventasApp = await NestFactory.create(VentasModule);
-  const configVentas = new DocumentBuilder()
-    .setTitle('API Plantopia APP - Módulo Ventas')
-    .setDescription(
-      'Documentación de la API de la APP Plantopia para el módulo de Ventas',
-    )
-    .setVersion('1.0')
-    .addTag('app-plantopia-ventas')
-    .build();
-  const documentVentas = SwaggerModule.createDocument(ventasApp, configVentas);
-  SwaggerModule.setup('api/ventas', ventasApp, documentVentas, {
+  SwaggerModule.setup('api/ventas', app, ventasSwagger, {
     yamlDocumentUrl: 'swagger/yaml',
   });
-
-  // Configuración de Swagger para el módulo de productos
-  const productosApp = await NestFactory.create(ProductosModule);
-  const configProductos = new DocumentBuilder()
-    .setTitle('API Plantopia APP - Módulo Productos')
-    .setDescription(
-      'Documentación de la API de la APP Plantopia para el módulo de Productos',
-    )
-    .setVersion('1.0')
-    .addTag('app-plantopia-productos')
-    .build();
-  const documentProductos = SwaggerModule.createDocument(
-    productosApp,
-    configProductos,
-  );
-  SwaggerModule.setup('api/productos', productosApp, documentProductos, {
+  SwaggerModule.setup('api/productos', app, productosSwagger, {
     yamlDocumentUrl: 'swagger/yaml',
   });
-
-  // Configuración de Swagger para el módulo de despachos
-  const despachosApp = await NestFactory.create(DespachosModule);
-  const configDespachos = new DocumentBuilder()
-    .setTitle('API Plantopia APP - Módulo Despachos')
-    .setDescription(
-      'Documentación de la API de la APP Plantopia para el módulo de Despachos',
-    )
-    .setVersion('1.0')
-    .addTag('app-plantopia-despachos')
-    .build();
-  const documentDespachos = SwaggerModule.createDocument(
-    despachosApp,
-    configDespachos,
-  );
-  SwaggerModule.setup('api/despachos', despachosApp, documentDespachos, {
+  SwaggerModule.setup('api/despachos', app, despachosSwagger, {
     yamlDocumentUrl: 'swagger/yaml',
   });
-
-  // Configuración de Swagger para el módulo de compras
-  const comprasApp = await NestFactory.create(ComprasModule);
-  const configCompras = new DocumentBuilder()
-    .setTitle('API Plantopia APP - Módulo Compras')
-    .setDescription(
-      'Documentación de la API de la APP Plantopia para el módulo de Compras',
-    )
-    .setVersion('1.0')
-    .addTag('app-plantopia-compras')
-    .build();
-  const documentCompras = SwaggerModule.createDocument(
-    comprasApp,
-    configCompras,
-  );
-  SwaggerModule.setup('api/compras', comprasApp, documentCompras, {
+  SwaggerModule.setup('api/compras', app, comprasSwagger, {
     yamlDocumentUrl: 'swagger/yaml',
   });
-
-  // Configuración de Swagger para el módulo de equipos
-  const equiposApp = await NestFactory.create(EquipoModule);
-  const configEquipos = new DocumentBuilder()
-    .setTitle('API Plantopia APP - Módulo Equipos')
-    .setDescription(
-      'Documentación de la API de la APP Plantopia para el módulo de Equipos',
-    )
-    .setVersion('1.0')
-    .addTag('app-plantopia-equipos')
-    .build();
-  const documentEquipos = SwaggerModule.createDocument(
-    equiposApp,
-    configEquipos,
-  );
-  SwaggerModule.setup('api/equipos', equiposApp, documentEquipos, {
-    yamlDocumentUrl: 'swagger/yaml',
-  });
-
   await app.listen(3000);
 }
 bootstrap();
