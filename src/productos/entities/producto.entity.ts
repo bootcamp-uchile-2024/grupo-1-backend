@@ -103,15 +103,11 @@ export class CreateProductoDto {
   public unidadesvendidas: number;
   @ApiProperty({
     name: 'valoracion',
-    example: 4.5,
+    default: 4.5,
   })
   public valoracion: number;
   @ApiProperty({
     name: 'tipo',
-    example: 'No',
-  })
-  @ApiProperty({
-    enum: TipoProducto,
     default: TipoProducto.PLANTA,
   })
   public tipo: TipoProducto;

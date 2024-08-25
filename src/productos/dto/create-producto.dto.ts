@@ -1,105 +1,109 @@
 import { ApiProperty } from '@nestjs/swagger';
+import {
+  Categoria,
+  DificultadDeCuidado,
+  Estacion,
+  FrecuenciaDeRiego,
+  NivelDeHumedad,
+  TamanoDePlanta,
+  TipoDeSuelo,
+  TipoProducto,
+} from '../entities/enum-productos';
 
 export class CreateProductoDto {
   @ApiProperty({
     description: 'Nombre común de la planta',
-    default: 'Rosa',
+    example: 'Rosa',
   })
   public nombrecomun: string;
 
   @ApiProperty({
     description: 'Nombre científico de la planta',
-    default: 'Rosa rubiginosa',
+    example: 'Rosa rubiginosa',
   })
   public nombrecientifico: string;
 
   @ApiProperty({
     description: 'Tamaño de la planta',
-    default: 'Mediano',
+    example: TamanoDePlanta.MEDIANO,
+    enum: TamanoDePlanta,
   })
-  public tamano: string;
+  public tamano: TamanoDePlanta;
 
   @ApiProperty({
     description: 'Cantidad de luz requerida',
-    default: 'Alta',
+    example: 'Alta',
   })
   public luzrequerida: string;
 
   @ApiProperty({
     description: 'Frecuencia de riego',
-    default: 'Semanal',
+    example: FrecuenciaDeRiego.SEMANAL,
+    enum: FrecuenciaDeRiego,
   })
-  public frecuenciaderiego: string;
+  public frecuenciaderiego: FrecuenciaDeRiego;
 
   @ApiProperty({
     description: 'Nivel de humedad ideal',
-    default: 'Alta',
+    example: NivelDeHumedad.ALTA,
+    enum: NivelDeHumedad,
   })
-  public humedadideal: string;
-
-  @ApiProperty({
-    description: 'Temperatura ideal minima',
-    default: '20°',
-  })
-  public tempidealmin: string;
-
-  @ApiProperty({
-    description: 'Temperatura ideal maxima',
-    default: '25°',
-  })
-  public tempidealmax: string;
-
-  @ApiProperty({
-    description: 'Toxicidad para mascotas',
-    default: 'No',
-  })
-  public toxicidadparamascotas: string;
+  public humedadideal: NivelDeHumedad;
 
   @ApiProperty({
     description: 'Tipo de suelo',
-    default: 'Arenoso',
+    example: TipoDeSuelo.ARENOSO,
+    enum: TipoDeSuelo,
   })
-  public tiposuelo: string;
-
-  @ApiProperty({
-    description: 'Sustrato sugerido',
-    default: 'Sustrato universal',
-  })
-  public sustratosugerido: string;
-
-  @ApiProperty({
-    description: 'Fertilizante sugerido',
-    default: 'Fertilizante orgánico',
-  })
-  public fertilizantesugerido: string;
+  public tiposuelo: TipoDeSuelo;
 
   @ApiProperty({
     description: 'Dificultad de cuidado',
-    default: 'Baja',
+    example: DificultadDeCuidado.BAJA,
+    enum: DificultadDeCuidado,
   })
-  public dificultaddecuidado: string;
+  public dificultaddecuidado: DificultadDeCuidado;
 
   @ApiProperty({
     description: 'Cantidad de stock disponible',
-    default: 100,
+    example: 100,
   })
   public stock: number;
 
   @ApiProperty({
     description: 'Precio del producto',
-    default: 50000,
+    example: 50000,
   })
   public precio: number;
 
   @ApiProperty({
     description: 'URL de la imagen del producto',
-    default: 'http://default.com/imagen.jpg',
+    example: 'http://example.com/imagen.jpg',
   })
   public imagen: string;
-
   @ApiProperty({
-    description: 'unidades vendidas',
-    default: 0,
+    name: 'estacion',
+    example: 'Primavera',
+  })
+  public estacion: Estacion;
+  @ApiProperty({
+    name: 'categoria',
+    example: 'Interior',
+  })
+  public categoria: Categoria;
+  @ApiProperty({
+    name: 'unidadesvendidas',
+    example: 100,
   })
   public unidadesvendidas: number;
+  @ApiProperty({
+    name: 'valoracion',
+    default: 4.5,
+  })
+  public valoracion: number;
+  @ApiProperty({
+    name: 'tipo',
+    default: TipoProducto.PLANTA,
+  })
+  public tipo: TipoProducto;
 }
