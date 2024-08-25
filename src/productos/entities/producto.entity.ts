@@ -10,7 +10,7 @@ import {
   TipoProducto,
 } from './enum-productos';
 
-export class CreateProductoDto {
+export class Producto {
   @ApiProperty({
     name: 'id',
     example: 1,

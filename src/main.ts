@@ -18,7 +18,16 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('app-plantopia')
     .build();
-  const document = SwaggerModule.createDocument(app, config);
+  const document = SwaggerModule.createDocument(app, config, {
+    include: [
+      UsuariosModule,
+      VentasModule,
+      ProductosModule,
+      DespachosModule,
+      ComprasModule,
+      EquipoModule,
+    ],
+  });
   SwaggerModule.setup('api', app, document, {
     yamlDocumentUrl: 'swagger/yaml',
   });
@@ -33,7 +42,9 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('app-plantopia-usuarios')
     .build();
-  const documentUsers = SwaggerModule.createDocument(usuariosApp, configUsers);
+  const documentUsers = SwaggerModule.createDocument(app, configUsers, {
+    include: [UsuariosModule],
+  });
   SwaggerModule.setup('api/usuarios', usuariosApp, documentUsers, {
     yamlDocumentUrl: 'swagger/yaml',
   });

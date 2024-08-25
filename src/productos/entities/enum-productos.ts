@@ -41,6 +41,7 @@ export enum TamanoDePlanta {
   MEDIANO = 'Mediano',
   GRANDE = 'Grande',
 }
+
 export enum TipoProducto {
   SUSTRATO = 'Sustrato',
   FERTILIZANTE = 'Fertilizante',
