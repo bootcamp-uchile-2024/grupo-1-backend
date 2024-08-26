@@ -1,13 +1,20 @@
+export enum LuzRequerida{
+  'ALTA' = 'Alta',
+  'MEDIA' = 'Media',
+  'BAJA' = 'Baja',
+}
 export enum Estacion {
   PRIMAVERA = 'Primavera',
   VERANO = 'Verano',
   OTONO = 'Otoño',
   INVIERNO = 'Invierno',
+  CUALQUIERA = 'Cualquiera',
 }
 
-export enum Categoria {
+export enum Habitad {
   INTERIOR = 'Interior',
   EXTERIOR = 'Exterior',
+  CUALQUIERA = 'Cualquiera',
 }
 
 export enum DificultadDeCuidado {
@@ -36,17 +43,6 @@ export enum FrecuenciaDeRiego {
   MENSUAL = 'Mensual',
 }
 
-export enum TamanoDePlanta {
-  PEQUENO = 'Pequeño',
-  MEDIANO = 'Mediano',
-  GRANDE = 'Grande',
-}
 
-export enum TipoProducto {
-  SUSTRATO = 'Sustrato',
-  FERTILIZANTE = 'Fertilizante',
-  HERRAMIENTA = 'Herramienta',
-  MACETERO = 'Macetero',
-  PLANTA = 'Planta',
-  VITAMINA = 'Vitamina',
-}
+
+ 

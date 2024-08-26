@@ -6,17 +6,19 @@ import {
   Patch,
   Param,
   Delete,
+  Res,
 } from '@nestjs/common';
 import { DespachosService } from './despachos.service';
 import { CreateDespachoDto } from './dto/create-despacho.dto';
 import { UpdateDespachoDto } from './dto/update-despacho.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Response } from 'express';
 
 @ApiTags('despachos')
 @Controller('despachos')
 export class DespachosController {
   constructor(private readonly despachosService: DespachosService) {}
-
+/*
   @Get()
   @ApiOperation({ summary: 'Obtener todos los despachos' })
   @ApiResponse({
@@ -27,16 +29,26 @@ export class DespachosController {
     // lógica para obtener todos los despachos
     this.despachosService.findAll();
   }
-
-  @Get(':id')
-  @ApiOperation({ summary: 'Obtener un despacho por ID' })
-  @ApiResponse({ status: 200, description: 'Despacho obtenido con éxito.' })
-  @ApiResponse({ status: 404, description: 'Despacho no encontrado.' })
-  findOne(@Param('id') id: string) {
+*/
+  @Get(':id/seguimiento')
+  @ApiOperation({
+    summary: 'Historia Usuario : H0006',
+    description: 'Como cliente quiero hacer seguimiento a mi compra',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Retorna Despacho',
+ 
+  })
+ 
+  findOne(@Param('id') id: string, @Res() res:Response) {
     // lógica para obtener un despacho por ID
-    this.despachosService.findOne(+id);
+    //this.despachosService.findOne(+id);
+    const idBusqueda:number=1;
+    const resultado=this.despachosService.findOne(idBusqueda);
+    res.status(200).send(resultado );
   }
-
+/*
   @Post()
   @ApiOperation({ summary: 'Crear un nuevo despacho' })
   @ApiResponse({ status: 201, description: 'Despacho creado con éxito.' })
@@ -62,5 +74,5 @@ export class DespachosController {
   remove(@Param('id') id: string) {
     // lógica para eliminar un despacho
     this.despachosService.remove(+id);
-  }
+  }*/
 }

@@ -4,10 +4,8 @@ import { ComunaSantiago } from '../entities/comunas.stgo-enum';
 export class CreateUsuarioDto {
   @ApiProperty({ name: 'rut', example: '12345678-9' })
   public rut: string;
-  @ApiProperty({ name: 'nombre', example: 'Juan' })
+  @ApiProperty({ name: 'nombre', example: 'Juan Perez' })
   public nombre: string;
-  @ApiProperty({ name: 'apellido', example: 'Perez' })
-  public apellido: string;
   @ApiProperty({ name: 'email', example: 'mail@emaildeprueba.cl' })
   public email: string;
   @ApiProperty({ name: 'password', example: 'password' })
@@ -21,9 +19,8 @@ export class CreateUsuarioDto {
   @ApiProperty({ name: 'region', example: 'Metropolitana' })
   public region: string;
   @ApiProperty({ name: 'comuna', example: 'Santiago' })
-  public comuna: ComunaSantiago;
+  public comuna: string;
   @ApiProperty({ name: 'codigoPostal', example: '1234567' })
   public codigoPostal: string;
-  @ApiProperty({ name: 'fechaNacimiento', example: '1990-01-01' })
-  public fechaNacimiento: Date;
+ 
 }

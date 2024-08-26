@@ -4,18 +4,28 @@ import { AppService } from './app.service';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { DespachosModule } from './despachos/despachos.module';
 import { ProductosModule } from './productos/productos.module';
-import { ComprasModule } from './compras/compras.module';
 import { VentasModule } from './ventas/ventas.module';
 import { EquipoModule } from './equipo/equipo.module';
+import { PlantasModule } from './plantas/plantas.module';
+import { FertilizantesModule } from './fertilizantes/fertilizantes.module';
+import { SustratosModule } from './sustratos/sustratos.module';
+import { ControlPlagasModule } from './control-plagas/control-plagas.module';
+import { OrdenComprasModule } from './orden-compras/orden-compras.module';
+import { DetalleOrdenComprasModule } from './detalle-orden-compras/detalle-orden-compras.module';
 
 @Module({
   imports: [
     UsuariosModule,
     ProductosModule,
     DespachosModule,
-    ComprasModule,
     VentasModule,
     EquipoModule,
+    PlantasModule,
+    FertilizantesModule,
+    SustratosModule,
+    ControlPlagasModule,
+    OrdenComprasModule,
+    DetalleOrdenComprasModule,
   ],
   controllers: [AppController],
   providers: [AppService],

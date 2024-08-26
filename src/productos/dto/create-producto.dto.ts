@@ -1,109 +1,44 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  Categoria,
-  DificultadDeCuidado,
-  Estacion,
-  FrecuenciaDeRiego,
-  NivelDeHumedad,
-  TamanoDePlanta,
-  TipoDeSuelo,
-  TipoProducto,
-} from '../entities/enum-productos';
-
+import { DetalleOrdenCompra } from 'src/detalle-orden-compras/entities/detalle-orden-compra.entity';
 export class CreateProductoDto {
-  @ApiProperty({
-    description: 'Nombre común de la planta',
-    example: 'Rosa',
+  /*@ApiProperty({
+    name: 'id',
+    example: 1
   })
-  public nombrecomun: string;
-
+  public id: number;*/
   @ApiProperty({
-    description: 'Nombre científico de la planta',
-    example: 'Rosa rubiginosa',
+    description: 'Nombre del Producto',
+    example: 'Rosa'
   })
-  public nombrecientifico: string;
-
-  @ApiProperty({
-    description: 'Tamaño de la planta',
-    example: TamanoDePlanta.MEDIANO,
-    enum: TamanoDePlanta,
-  })
-  public tamano: TamanoDePlanta;
-
-  @ApiProperty({
-    description: 'Cantidad de luz requerida',
-    example: 'Alta',
-  })
-  public luzrequerida: string;
-
-  @ApiProperty({
-    description: 'Frecuencia de riego',
-    example: FrecuenciaDeRiego.SEMANAL,
-    enum: FrecuenciaDeRiego,
-  })
-  public frecuenciaderiego: FrecuenciaDeRiego;
-
-  @ApiProperty({
-    description: 'Nivel de humedad ideal',
-    example: NivelDeHumedad.ALTA,
-    enum: NivelDeHumedad,
-  })
-  public humedadideal: NivelDeHumedad;
-
-  @ApiProperty({
-    description: 'Tipo de suelo',
-    example: TipoDeSuelo.ARENOSO,
-    enum: TipoDeSuelo,
-  })
-  public tiposuelo: TipoDeSuelo;
-
-  @ApiProperty({
-    description: 'Dificultad de cuidado',
-    example: DificultadDeCuidado.BAJA,
-    enum: DificultadDeCuidado,
-  })
-  public dificultaddecuidado: DificultadDeCuidado;
-
+  public nombreProducto: string;
   @ApiProperty({
     description: 'Cantidad de stock disponible',
-    example: 100,
+    example: 100
   })
   public stock: number;
-
   @ApiProperty({
     description: 'Precio del producto',
-    example: 50000,
+    example: 50000
   })
   public precio: number;
-
   @ApiProperty({
     description: 'URL de la imagen del producto',
-    example: 'http://example.com/imagen.jpg',
+    example: 'http://example.com/imagen.jpg'
   })
   public imagen: string;
-  @ApiProperty({
-    name: 'estacion',
-    example: 'Primavera',
-  })
-  public estacion: Estacion;
-  @ApiProperty({
-    name: 'categoria',
-    example: 'Interior',
-  })
-  public categoria: Categoria;
-  @ApiProperty({
-    name: 'unidadesvendidas',
-    example: 100,
-  })
-  public unidadesvendidas: number;
+
+  //esto se deberia ocultar y solo al mostrar  se veria 
+  //pq nacen vacios
   @ApiProperty({
     name: 'valoracion',
-    default: 4.5,
+    example: 4.5
   })
   public valoracion: number;
+  
   @ApiProperty({
-    name: 'tipo',
-    default: TipoProducto.PLANTA,
+    name: 'cantidad Ventas',
+    default: 0,
   })
-  public tipo: TipoProducto;
+  public ventaProducto: number;
+  
 }
