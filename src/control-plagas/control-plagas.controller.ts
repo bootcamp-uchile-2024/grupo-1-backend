@@ -11,16 +11,16 @@ export class ControlPlagasController {
 
   @ApiOperation({
     summary: 'Historia Usuario : H0003',
-    description: 'Permite crear sustratos para incorporar en catalogo de productos',
+    description: 'Permite crear control de plagas para incorporar en catalogo de productos',
   })
   @ApiResponse({
     status: 200,
-    description: 'Producto tipo sustrato creado en catalogo de productos',
+    description: 'Producto tipo control plagas creado en catalogo de productos',
  
   })
   @Post()
-  create(@Body() createControlPlagasDto: CreateControlPlagasDto) {
-    return this.controlPlagasService.create(createControlPlagasDto);
+  create(@Body() createControlPlagasDto: CreateControlPlagasDto,@Res() res:Response) {
+    res.status(200).send(createControlPlagasDto);
   }
 
   @Get()

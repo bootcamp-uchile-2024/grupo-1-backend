@@ -18,8 +18,9 @@ export class SustratosController {
  
   })
   @Post()
-  create(@Body() createSustratoDto: CreateSustratoDto) {
-    return this.sustratosService.create(createSustratoDto);
+  create(@Body() createSustratoDto: CreateSustratoDto,@Res() res:Response) {
+    res.status(200).send(createSustratoDto);
+        //return this.sustratosService.create(createSustratoDto);
   }
 
   @Get()
@@ -29,7 +30,7 @@ export class SustratosController {
   })
   @ApiResponse({
     status: 200,
-    description: 'Catalogo Fertilizantes',
+    description: 'Catalogo Sustratos',
  
   })
   findAll(@Res() res:Response) {

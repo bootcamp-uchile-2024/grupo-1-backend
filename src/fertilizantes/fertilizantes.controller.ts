@@ -18,8 +18,9 @@ export class FertilizantesController {
  
   })
   @Post()
-  create(@Body() createFertilizanteDto: CreateFertilizanteDto) {
-    return this.fertilizantesService.create(createFertilizanteDto);
+  create(@Body() createFertilizanteDto: CreateFertilizanteDto,@Res() res:Response) {
+     res.status(200).send(createFertilizanteDto);
+  //  return this.fertilizantesService.create(createFertilizanteDto);
   }
 
   @Get()

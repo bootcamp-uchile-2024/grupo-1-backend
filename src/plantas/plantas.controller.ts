@@ -36,7 +36,7 @@ export class PlantasController {
  
   })
   findAll(@Res() res:Response) {
-    res.status(200).send(this.plantasService.findAll)
+    res.status(200).send(this.plantasService.findAll());
   }
   @Get('/MasVendidos/')
   @ApiOperation({
