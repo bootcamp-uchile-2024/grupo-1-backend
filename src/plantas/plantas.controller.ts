@@ -49,7 +49,7 @@ export class PlantasController {
  
   })
   listaMasVendidas(@Res() res:Response) {
-    res.status(200).send( this.plantasService.listaPlantasMasVendidas) ;
+    res.status(200).send( this.plantasService.listaPlantasMasVendidas()) ;
   }
   
 
