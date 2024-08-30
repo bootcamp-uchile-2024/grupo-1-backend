@@ -45,7 +45,7 @@ export class PlantasController {
   })
   @ApiResponse({
     status: 200,
-    description: 'Listado Fertilizantes mas vendidos ',
+    description: 'Listado Plantas mas vendidas ',
  
   })
   listaMasVendidas(@Res() res:Response) {
