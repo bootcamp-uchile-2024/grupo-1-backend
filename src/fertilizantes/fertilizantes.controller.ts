@@ -10,11 +10,11 @@ export class FertilizantesController {
   constructor(private readonly fertilizantesService: FertilizantesService) {}
   @ApiOperation({
     summary: 'Historia Usuario : H0003',
-    description: 'Permite crear fertilizantes para incorporar en catalogo de productos',
+    description: 'Permite crear fertilizantes para incorporar en catálogo de productos',
   })
   @ApiResponse({
     status: 200,
-    description: 'Producto tipo fertilizante creado en catalogo de productos',
+    description: 'Producto tipo fertilizante creado en catálogo de productos',
  
   })
   @Post()
@@ -26,11 +26,11 @@ export class FertilizantesController {
   @Get()
   @ApiOperation({
     summary: 'Historia Usuario : H0004',
-    description: 'Como cliente quiero poder ver el catalogo de productos filtrados por categoria =  Fertilizantes',
+    description: 'Como cliente quiero poder ver el catálogo de productos filtrados por categoria =  Fertilizantes',
   })
   @ApiResponse({
     status: 200,
-    description: 'Catalogo Fertilizantes',
+    description: 'Catálogo Fertilizantes',
  
   })
   findAll(@Res() res:Response) {
@@ -39,11 +39,11 @@ export class FertilizantesController {
   @Get('/MasVendidos/')
   @ApiOperation({
     summary: 'Historia Usuario : H0001 y H0002',
-    description: 'Como cliente quiero ver los productos mas vendidos ',
+    description: 'Como cliente quiero ver los productos más vendidos ',
   })
   @ApiResponse({
     status: 200,
-    description: 'Listado Fertilizantes mas vendidos ',
+    description: 'Listado Fertilizantes más vendidos ',
  
   })
   listaMasVendidas(@Res() res:Response) {

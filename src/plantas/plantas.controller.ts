@@ -32,7 +32,7 @@ export class PlantasController {
   })
   @ApiResponse({
     status: 200,
-    description: 'Catalogo Plantas',
+    description: 'Catálogo Plantas',
  
   })
   findAll(@Res() res:Response) {
@@ -41,11 +41,11 @@ export class PlantasController {
   @Get('/MasVendidos/')
   @ApiOperation({
     summary: 'Historia Usuario : H0001 y H0002',
-    description: 'Como cliente quiero ver los productos mas vendidos ',
+    description: 'Como cliente quiero ver los productos más vendidos ',
   })
   @ApiResponse({
     status: 200,
-    description: 'Listado Fertilizantes mas vendidos ',
+    description: 'Listado de plantas más vendidas ',
  
   })
   listaMasVendidas(@Res() res:Response) {

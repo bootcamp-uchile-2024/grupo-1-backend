@@ -11,11 +11,11 @@ export class ControlPlagasController {
 
   @ApiOperation({
     summary: 'Historia Usuario : H0003',
-    description: 'Permite crear control de plagas para incorporar en catalogo de productos',
+    description: 'Permite crear control de plagas para incorporar en catálogo de productos',
   })
   @ApiResponse({
     status: 200,
-    description: 'Producto tipo control plagas creado en catalogo de productos',
+    description: 'Producto tipo control plagas creado en catálogo de productos',
  
   })
   @Post()
@@ -26,11 +26,11 @@ export class ControlPlagasController {
   @Get()
   @ApiOperation({
     summary: 'Historia Usuario : H0004',
-    description: 'Como cliente quiero poder ver el catalogo de productos filtrados por categoria =  Control Plagas',
+    description: 'Como cliente quiero poder ver el catálogo de productos filtrados por categoria =  Control Plagas',
   })
   @ApiResponse({
     status: 200,
-    description: 'Catalogo Control Plagas',
+    description: 'Catálago Control Plagas',
  
   })
   findAll(@Res() res:Response) {
@@ -39,11 +39,11 @@ export class ControlPlagasController {
   @Get('/MasVendidos/')
   @ApiOperation({
     summary: 'Historia Usuario : H0001 y H0002',
-    description: 'Como cliente quiero ver los productos mas vendidos ',
+    description: 'Como cliente quiero ver los productos más vendidos ',
   })
   @ApiResponse({
     status: 200,
-    description: 'Listado Control de Plagas mas vendidos ',
+    description: 'Listado Control de Plagas más vendidos ',
  
   })
   listaMasVendidas(@Res() res:Response) {
