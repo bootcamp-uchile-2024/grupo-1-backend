@@ -12,7 +12,7 @@ export class DespachosService {
   {
     let sigueCompra: VerDespachos = new VerDespachos();
      sigueCompra.EstadosDespacho = EstadosDespacho.EN_CAMINO;
-     sigueCompra.fechaEstimada = new Date('30/08/2024');
+     sigueCompra.fechaEstimada =  new Date('2024/08/31');
      sigueCompra.nroSeguimiento =152525;
      sigueCompra.proveedorDespacho = 'Blue-Express';
      this.seguimiento.push(sigueCompra)
