@@ -5,19 +5,17 @@ import { VerSustratos } from './dto/ver-sustratos-dto';
 
 @Injectable()
 export class SustratosService {
-  
-  masVendidos: VerSustratos[] =[];
-  catalogo: VerSustratos[] =[];
-  constructor()
-  {
-   /* let ventasSustratos: VerSustratos = new VerSustratos();
+  masVendidos: VerSustratos[] = [];
+  catalogo: VerSustratos[] = [];
+  constructor() {
+    /* let ventasSustratos: VerSustratos = new VerSustratos();
     ventasSustratos.id=3 ;
     ventasSustratos.nombreProducto= 'Mezcla para plantas de interior con perlita';
     ventasSustratos.stock= 80;
     ventasSustratos.precio= 1500;
     ventasSustratos.imagen= 'https://example.com/sustrato_3.jpg';
     ventasSustratos.valoracion= 4.5;
-    ventasSustratos.cantidadVentas= 140; 
+    ventasSustratos.cantidadVentas= 140;
      this.masVendidos.push(ventasSustratos);
     this.catalogo.push(ventasSustratos);
     let ventasSustratos2: VerSustratos = new VerSustratos();
@@ -27,8 +25,8 @@ export class SustratosService {
     ventasSustratos2.precio= 1600;
     ventasSustratos2.imagen= 'https://example.com/sustrato_10.jpg';
     ventasSustratos2.valoracion= 6.0;
-    ventasSustratos2.cantidadVentas= 161; 
-    
+    ventasSustratos2.cantidadVentas= 161;
+
     this.masVendidos.push(ventasSustratos2);
     this.catalogo.push(ventasSustratos2);
     let catalogo3: VerSustratos = new VerSustratos();
@@ -38,7 +36,7 @@ export class SustratosService {
     catalogo3.precio= 210;
     catalogo3.imagen= 'https://example.com/sustrato_11.jpg';
     catalogo3.valoracion= 7.0;
-    catalogo3.cantidadVentas= 10; 
+    catalogo3.cantidadVentas= 10;
     this.catalogo.push(catalogo3);*/
   }
   create(createSustratoDto: CreateSustratoDto) {

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SustratosController } from './sustratos.controller';
-import { SustratosService } from './sustratos.service';
+import { SustratosService } from '../sustratos.service';
 
 describe('SustratosController', () => {
   let controller: SustratosController;
