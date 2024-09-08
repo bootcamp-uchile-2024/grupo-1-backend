@@ -11,6 +11,8 @@ import { FertilizantesModule } from './fertilizantes/fertilizantes.module';
 import { SustratosModule } from './sustratos/sustratos.module';
 import { ControlPlagasModule } from './control-plagas/control-plagas.module';
 import { OrdenComprasModule } from './orden-compras/orden-compras.module';
+import { ValidationPipe } from '@nestjs/common';
+import { MaceterosModule } from './maceteros/maceteros.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -25,6 +27,12 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config, {
     include: [AppModule],
   });
+
+
+  const productos = SwaggerModule.createDocument(app, config, {
+    include: [ProductosModule],
+  });
+
     //documentacion plantas
     
     const plantasSwagger = SwaggerModule.createDocument(app, config, {
@@ -54,20 +62,10 @@ const ocSwagger = SwaggerModule.createDocument(app, config, {
 const despachoSwagger = SwaggerModule.createDocument(app, config, {
   include: [DespachosModule],
 });
-/*
-  //documentacion ventas
-  const ventasSwagger = SwaggerModule.createDocument(app, config, {
-    include: [VentasModule],
-  });
-  //documentacion despachos
-  const despachosSwagger = SwaggerModule.createDocument(app, config, {
-    include: [DespachosModule],
-  });
-  //documentacion compras
-  const comprasSwagger = SwaggerModule.createDocument(app, config, {
-    include: [ComprasModule],
-  });*/
-
+ 
+SwaggerModule.setup('api/productos', app, productos, {
+  yamlDocumentUrl: 'swagger/yaml',
+});
   SwaggerModule.setup('api/plantas', app, plantasSwagger, {
     yamlDocumentUrl: 'swagger/yaml',
   });
@@ -95,16 +93,8 @@ const despachoSwagger = SwaggerModule.createDocument(app, config, {
   SwaggerModule.setup('api/ordenCompra', app, ocSwagger, {
     yamlDocumentUrl: 'swagger/yaml',
   });
- /* SwaggerModule.setup('api/ventas', app, ventasSwagger, {
-    yamlDocumentUrl: 'swagger/yaml',
-  });
-
-  SwaggerModule.setup('api/despachos', app, despachosSwagger, {
-    yamlDocumentUrl: 'swagger/yaml',
-  });
-  SwaggerModule.setup('api/compras', app, comprasSwagger, {
-    yamlDocumentUrl: 'swagger/yaml',
-  });*/
+ 
+  app.useGlobalPipes(new ValidationPipe());
   await app.listen(3000);
 }
 bootstrap();

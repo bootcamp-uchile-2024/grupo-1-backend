@@ -3,8 +3,9 @@ import { PlantasService } from './plantas.service';
 import { CreatePlantaDto } from './dto/create-planta.dto';
 import { UpdatePlantaDto } from './dto/update-planta.dto';
 import { Response } from 'express';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { VerPlantas } from './dto/ver-plantas-dto';
+@ApiTags('Plantas')
 
 @Controller('plantas')
 export class PlantasController {
