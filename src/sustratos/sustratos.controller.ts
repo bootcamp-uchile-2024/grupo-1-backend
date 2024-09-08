@@ -2,9 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Res } from '@nestjs/
 import { SustratosService } from './sustratos.service';
 import { CreateSustratoDto } from './dto/create-sustrato.dto';
 import { UpdateSustratoDto } from './dto/update-sustrato.dto';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
-
+@ApiTags('Sustratos')
 @Controller('sustratos')
 export class SustratosController {
   constructor(private readonly sustratosService: SustratosService) {}

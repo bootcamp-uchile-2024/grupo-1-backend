@@ -1,5 +1,5 @@
-import { VerProductos } from "src/productos/dto/ver-productos-dto";
+import { VerProductosDto } from "src/productos/dto/ver-productos.dto";
 
-export class VerFertilizantes extends VerProductos{
+export class VerFertilizantes extends VerProductosDto{
    public marca:string; 
 }
