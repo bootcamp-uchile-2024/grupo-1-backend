@@ -13,9 +13,13 @@ import { ControlPlagasModule } from './control-plagas/control-plagas.module';
 import { OrdenComprasModule } from './orden-compras/orden-compras.module';
 import { ValidationPipe } from '@nestjs/common';
 import { MaceterosModule } from './maceteros/maceteros.module';
+import { LogRespuestasInterceptor } from './log-respuestas/log-respuestas.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Configuración del interceptor para imprimir log de respuestas OK
+  app.useGlobalInterceptors(new LogRespuestasInterceptor());
 
   // Configuración de Swagger para la aplicación principal
   const config = new DocumentBuilder()
@@ -28,44 +32,43 @@ async function bootstrap() {
     include: [AppModule],
   });
 
-
   const productos = SwaggerModule.createDocument(app, config, {
     include: [ProductosModule],
   });
 
-    //documentacion plantas
-    
-    const plantasSwagger = SwaggerModule.createDocument(app, config, {
-      include: [PlantasModule],
-    });
-    //documentacion fertilizantes
-    const fertilizantesSwagger = SwaggerModule.createDocument(app, config, {
-      include: [FertilizantesModule],
-    });
-    //documentacion sustratos
-    const sustratosSwagger = SwaggerModule.createDocument(app, config, {
-      include: [SustratosModule],
-    });    
-    //documentacion controlPlagas
-    const controlPlagasSwagger = SwaggerModule.createDocument(app, config, {
-      include: [ControlPlagasModule],
-    });    
+  //documentacion plantas
+
+  const plantasSwagger = SwaggerModule.createDocument(app, config, {
+    include: [PlantasModule],
+  });
+  //documentacion fertilizantes
+  const fertilizantesSwagger = SwaggerModule.createDocument(app, config, {
+    include: [FertilizantesModule],
+  });
+  //documentacion sustratos
+  const sustratosSwagger = SwaggerModule.createDocument(app, config, {
+    include: [SustratosModule],
+  });
+  //documentacion controlPlagas
+  const controlPlagasSwagger = SwaggerModule.createDocument(app, config, {
+    include: [ControlPlagasModule],
+  });
   //documentacion usuario
   const usuarioSwagger = SwaggerModule.createDocument(app, config, {
     include: [UsuariosModule],
   });
-//documentacion OC
-const ocSwagger = SwaggerModule.createDocument(app, config, {
-  include: [OrdenComprasModule],
-});
-//documentacion OC
-const despachoSwagger = SwaggerModule.createDocument(app, config, {
-  include: [DespachosModule],
-});
- 
-SwaggerModule.setup('api/productos', app, productos, {
-  yamlDocumentUrl: 'swagger/yaml',
-});
+  //documentacion OC
+  const ocSwagger = SwaggerModule.createDocument(app, config, {
+    include: [OrdenComprasModule],
+  });
+  //documentacion OC
+  const despachoSwagger = SwaggerModule.createDocument(app, config, {
+    include: [DespachosModule],
+  });
+
+  SwaggerModule.setup('api/productos', app, productos, {
+    yamlDocumentUrl: 'swagger/yaml',
+  });
   SwaggerModule.setup('api/plantas', app, plantasSwagger, {
     yamlDocumentUrl: 'swagger/yaml',
   });
@@ -83,7 +86,6 @@ SwaggerModule.setup('api/productos', app, productos, {
     yamlDocumentUrl: 'swagger/yaml',
   });
 
-
   SwaggerModule.setup('api', app, document, {
     yamlDocumentUrl: 'swagger/yaml',
   });
@@ -93,9 +95,8 @@ SwaggerModule.setup('api/productos', app, productos, {
   SwaggerModule.setup('api/ordenCompra', app, ocSwagger, {
     yamlDocumentUrl: 'swagger/yaml',
   });
- 
+
   app.useGlobalPipes(new ValidationPipe());
   await app.listen(3000);
 }
 bootstrap();
-
