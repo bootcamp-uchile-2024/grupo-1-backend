@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   Res,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
@@ -14,6 +16,7 @@ import { SustratosService } from '../sustratos.service';
 import { CreateSustratoDto } from '../dto/create-sustrato.dto';
 @ApiTags('Sustratos')
 @Controller('sustratos')
+@UsePipes(new ValidationPipe({ transform: true }))
 export class SustratosController {
   constructor(private readonly sustratosService: SustratosService) {}
   @ApiOperation({
@@ -26,7 +29,15 @@ export class SustratosController {
     description: 'Producto tipo sustrato creado en catalogo de productos',
   })
   @Post()
-  create(@Body() createSustratoDto: CreateSustratoDto, @Res() res: Response) {
+  create(
+    @Body(
+      new ValidationPipe({
+        transform: true,
+      }),
+    )
+    createSustratoDto: CreateSustratoDto,
+    @Res() res: Response,
+  ) {
     res.status(200).send(createSustratoDto);
     //return this.sustratosService.create(createSustratoDto);
   }
