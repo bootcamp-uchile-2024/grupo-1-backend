@@ -1,40 +1,57 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res } from '@nestjs/common';
-import { SustratosService } from './sustratos.service';
-import { CreateSustratoDto } from './dto/create-sustrato.dto';
-import { UpdateSustratoDto } from './dto/update-sustrato.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Res,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
+import { CreateSustratoDto } from '../dto/create-sustrato.dto';
+import { SustratosService } from '../service/sustratos.service';
 @ApiTags('Sustratos')
 @Controller('sustratos')
+@UsePipes(new ValidationPipe({ transform: true }))
 export class SustratosController {
   constructor(private readonly sustratosService: SustratosService) {}
   @ApiOperation({
     summary: 'Historia Usuario : H0003',
-    description: 'Permite crear sustratos para incorporar en catalogo de productos',
+    description:
+      'Permite crear sustratos para incorporar en catalogo de productos',
   })
   @ApiResponse({
     status: 200,
     description: 'Producto tipo sustrato creado en catalogo de productos',
- 
   })
+  @ApiBody({ type: CreateSustratoDto })
   @Post()
-  create(@Body() createSustratoDto: CreateSustratoDto,@Res() res:Response) {
+  create(
+    @Body(
+      new ValidationPipe({
+        transform: true,
+      }),
+    )
+    createSustratoDto: CreateSustratoDto,
+    @Res() res: Response,
+  ) {
     res.status(200).send(createSustratoDto);
-        //return this.sustratosService.create(createSustratoDto);
+    //return this.sustratosService.create(createSustratoDto);
   }
 
   @Get()
   @ApiOperation({
     summary: 'Historia Usuario : H0004',
-    description: 'Como cliente quiero poder ver el catalogo de productos filtrados por categoria =  Sustratos',
+    description:
+      'Como cliente quiero poder ver el catalogo de productos filtrados por categoria =  Sustratos',
   })
   @ApiResponse({
     status: 200,
     description: 'Catalogo Sustratos',
- 
   })
-  findAll(@Res() res:Response) {
-    res.status(200).send(this.sustratosService.findAll())
+  findAll(@Res() res: Response) {
+    res.status(200).send(this.sustratosService.findAll());
   }
   @Get('/MasVendidos/')
   @ApiOperation({
@@ -44,14 +61,12 @@ export class SustratosController {
   @ApiResponse({
     status: 200,
     description: 'Listado Sustratos mas vendidos ',
- 
   })
-  listaMasVendidas(@Res() res:Response) {
-    res.status(200).send( this.sustratosService.listaMasVendidas()) ;
+  listaMasVendidas(@Res() res: Response) {
+    res.status(200).send(this.sustratosService.listaMasVendidas());
   }
-  
 
- /* @Get(':id')
+  /* @Get(':id')
   findOne(@Param('id') id: string) {
     return this.sustratosService.findOne(+id);
   }
