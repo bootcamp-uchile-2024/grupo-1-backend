@@ -9,7 +9,13 @@ import {
   ParseIntPipe,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiParam,
+} from '@nestjs/swagger';
 import { UsuariosService } from './usuarios.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
@@ -56,6 +62,11 @@ export class UsuariosController {
   @ApiResponse({ status: 200, description: 'Usuario actualizado con éxito.' })
   @ApiResponse({ status: 404, description: 'Usuario no encontrado.' })
   @ApiBody({ type: UpdateUsuarioDto })
+  @ApiParam({
+    name: 'id',
+    description: 'id del usuario a actualizar',
+    required: true,
+  })
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
