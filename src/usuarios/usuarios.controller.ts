@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { UsuariosService } from './usuarios.service';
@@ -24,17 +26,16 @@ export class UsuariosController {
     description: 'Lista de usuarios obtenida con éxito.',
   })
   findAll() {
-    // lógica para obtener todos los usuarios
-    this.usuariosService.findAll();
+    return this.usuariosService.findAll();
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Obtener un usuario por ID' })
   @ApiResponse({ status: 200, description: 'Usuario obtenido con éxito.' })
   @ApiResponse({ status: 404, description: 'Usuario no encontrado.' })
-  findOne(@Param('id') id: string) {
-    // lógica para obtener un usuario por ID
-    this.usuariosService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    // Validar que el ID sea un número con ParseIntPipe
+    return this.usuariosService.findOne(id);
   }
 
   @Post()
@@ -42,9 +43,12 @@ export class UsuariosController {
   @ApiResponse({ status: 201, description: 'Usuario creado con éxito.' })
   @ApiResponse({ status: 400, description: 'Datos inválidos.' })
   @ApiBody({ type: CreateUsuarioDto })
-  create(@Body() createUserDto: any) {
-    // lógica para crear un nuevo usuario
-    this.usuariosService.create(createUserDto);
+  create(
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    createUserDto: CreateUsuarioDto,
+  ) {
+    // Validar el cuerpo de la petición con ValidationPipe y el DTO de creación
+    return this.usuariosService.create(createUserDto);
   }
 
   @Patch(':id')
@@ -52,17 +56,21 @@ export class UsuariosController {
   @ApiResponse({ status: 200, description: 'Usuario actualizado con éxito.' })
   @ApiResponse({ status: 404, description: 'Usuario no encontrado.' })
   @ApiBody({ type: UpdateUsuarioDto })
-  update(@Param('id') id: string, @Body() updateUserDto: any) {
-    // lógica para actualizar un usuario existente
-    this.usuariosService.update(+id, updateUserDto);
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    updateUserDto: UpdateUsuarioDto,
+  ) {
+    // Validar que el ID sea un número y validar el cuerpo de la petición con ValidationPipe
+    return this.usuariosService.update(id, updateUserDto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Eliminar un usuario' })
   @ApiResponse({ status: 200, description: 'Usuario eliminado con éxito.' })
   @ApiResponse({ status: 404, description: 'Usuario no encontrado.' })
-  remove(@Param('id') id: string) {
-    // lógica para eliminar un usuario
-    this.usuariosService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    // Validar que el ID sea un número
+    return this.usuariosService.remove(id);
   }
 }
