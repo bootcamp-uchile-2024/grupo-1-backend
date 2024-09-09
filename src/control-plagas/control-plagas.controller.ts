@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, ValidationPipe } from '@nestjs/common';
 import { ControlPlagasService } from './control-plagas.service';
 import { CreateControlPlagasDto } from './dto/create-control-plagas.dto';
 import { UpdateControlPlagasDto } from './dto/update-control-plagas.dto';
@@ -19,7 +19,7 @@ export class ControlPlagasController {
  
   })
   @Post()
-  create(@Body() createControlPlagasDto: CreateControlPlagasDto,@Res() res:Response) {
+  create(@Body(new ValidationPipe()) createControlPlagasDto: CreateControlPlagasDto,@Res() res:Response) {
     res.status(200).send(createControlPlagasDto);
   }
 

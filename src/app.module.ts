@@ -12,6 +12,7 @@ import { SustratosModule } from './sustratos/sustratos.module';
 import { ControlPlagasModule } from './control-plagas/control-plagas.module';
 import { OrdenComprasModule } from './orden-compras/orden-compras.module';
 import { DetalleOrdenComprasModule } from './detalle-orden-compras/detalle-orden-compras.module';
+import { PlantaCuidadosModule } from './planta-cuidados/planta-cuidados.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { DetalleOrdenComprasModule } from './detalle-orden-compras/detalle-orden
     ControlPlagasModule,
     OrdenComprasModule,
     DetalleOrdenComprasModule,
+    PlantaCuidadosModule,
   ],
   controllers: [AppController],
   providers: [AppService],

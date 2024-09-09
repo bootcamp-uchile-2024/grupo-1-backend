@@ -3,7 +3,7 @@ import { CreatePlantaDto } from './dto/create-planta.dto';
 import { UpdatePlantaDto } from './dto/update-planta.dto';
 import { VerPlantas } from './dto/ver-plantas-dto';
 import { Planta } from './entities/planta.entity';
-import { DificultadDeCuidado, Estacion, FrecuenciaDeRiego, Habitad, LuzRequerida, NivelDeHumedad, TipoDeSuelo } from './entities/enum-plantas';
+import { DificultadDeCuidado, Estacion, FrecuenciaDeRiego, Habitat, LuzRequerida, NivelDeHumedad, TipoDeSuelo } from './entities/enum-plantas';
 
 @Injectable()
 export class PlantasService {

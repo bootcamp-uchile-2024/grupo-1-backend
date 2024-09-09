@@ -6,11 +6,16 @@ import {
   Patch,
   Param,
   Delete,
+  Res,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { UsuariosService } from './usuarios.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
+import { Response } from 'express';
+import { VerUsuarioDto } from './dto/Ver-Usuario-Dto';
+
 
 @ApiTags('usuarios')
 @Controller('usuarios')
@@ -22,10 +27,14 @@ export class UsuariosController {
   @ApiResponse({
     status: 200,
     description: 'Lista de usuarios obtenida con éxito.',
+    type: VerUsuarioDto,
+    isArray: true,
   })
-  findAll() {
-    // lógica para obtener todos los usuarios
-    this.usuariosService.findAll();
+  findAll(@Res() res: Response) {
+    const usuarios = this.usuariosService.findAll();
+    const usuarioDtos = usuarios.map(usuario => new VerUsuarioDto(usuario.nombre,usuario.email,usuario.plantas));
+
+    res.status(200).send(usuarioDtos);
   }
 
   @Get(':id')
@@ -42,9 +51,9 @@ export class UsuariosController {
   @ApiResponse({ status: 201, description: 'Usuario creado con éxito.' })
   @ApiResponse({ status: 400, description: 'Datos inválidos.' })
   @ApiBody({ type: CreateUsuarioDto })
-  create(@Body() createUserDto: any) {
-    // lógica para crear un nuevo usuario
-    this.usuariosService.create(createUserDto);
+  create(@Body(new ValidationPipe()) createUsuarioDto: CreateUsuarioDto, @Res() res: Response) {
+    const newUsuario = this.usuariosService.create(createUsuarioDto);
+    res.status(201).send(newUsuario);
   }
 
   @Patch(':id')

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, ValidationPipe } from '@nestjs/common';
 import { FertilizantesService } from './fertilizantes.service';
 import { CreateFertilizanteDto } from './dto/create-fertilizante.dto';
 import { UpdateFertilizanteDto } from './dto/update-fertilizante.dto';
@@ -18,7 +18,7 @@ export class FertilizantesController {
  
   })
   @Post()
-  create(@Body() createFertilizanteDto: CreateFertilizanteDto,@Res() res:Response) {
+  create(@Body(new ValidationPipe()) createFertilizanteDto: CreateFertilizanteDto,@Res() res:Response) {
      res.status(200).send(createFertilizanteDto);
   //  return this.fertilizantesService.create(createFertilizanteDto);
   }

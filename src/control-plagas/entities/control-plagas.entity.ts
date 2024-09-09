@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Producto } from "src/productos/entities/producto.entity";
-import { ComposicionControlPlaga, Eficacia, MetodoAplicacion, TipoPlaga } from "./enum-control-plagas";
+import { Eficacia, MetodoAplicacion, TipoPlaga } from "./enum-control-plagas";
 
 export class ControlPlagas extends Producto {
 
@@ -11,13 +11,14 @@ export class ControlPlagas extends Producto {
         example: ['Pulgones', 'Cochinillas', 'Acaros' ]
     })
     public TipoPlagaControlada: TipoPlaga[];
+
     @ApiProperty({
-        type: [ComposicionControlPlaga],
-        isArray: true,
-        description: 'Lista de Composicion Producto ',
-        example: ['Aceite de neem(azadiractina) ']
+        name: 'Composicion Producto ',
+        example: 'Aceite de neem(azadiractina)'
     })
-    public composicion: ComposicionControlPlaga[];
+    public composicion: string;
+
+
     @ApiProperty({
         type: [MetodoAplicacion],
         isArray: true,
@@ -42,4 +43,11 @@ export class ControlPlagas extends Producto {
         enum: Eficacia,
     })
     public eficacia: Eficacia;
+
+    @ApiProperty({
+        description: 'Indica si el producto es tóxico',
+        example: true
+    })
+    public Toxicidad: boolean;
 }
+

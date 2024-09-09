@@ -1,15 +1,117 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
+import { Usuario } from './entities/usuario.entity';
+import { ComunaSantiago } from './entities/comunas.stgo-enum';
 
 @Injectable()
 export class UsuariosService {
+
+  usuarios: Usuario[] = [
+    new Usuario(
+      1,
+      '12345678-9',
+      'Carlo Escobar',
+      'carlo.escobar@mail.com',
+      'pprrprr3223#43', 
+      '+56912345678',
+      'Calle Falsa 123',
+      'Santiago',
+      'Metropolitana',
+      ComunaSantiago.Santiago,
+      '1234567',
+      [] // Plantas
+    ),
+    new Usuario(
+      2,
+      '98765432-1',
+      'Maria González',
+      'maria.gonzalez@mail.com',
+      'batman211',
+      '+56987654321',
+      'Av. Siempre Viva 742',
+      'Santiago',
+      'Metropolitana',
+      ComunaSantiago.Ñuñoa,
+      '7654321',
+      [] // Plantas
+    ),
+    new Usuario(
+      3,
+      '12312312-3',
+      'Pen-Sil López',
+      'pensil.lopez@mail.com',
+      'contraseñajeje2',
+      '+56912312345',
+      'Pasaje Los Arboles 15',
+      'Santiago',
+      'Metropolitana',
+      ComunaSantiago.Providencia,
+      '2345678',
+      [] // Plantas
+    ),
+    new Usuario(
+      4,
+      '32132132-4',
+      'Ana Ramirez',
+      'ana.ramirez@mail.com',
+      'abcdefg23',
+      '+56932132145',
+      'Calle Las Rosas 56',
+      'Santiago',
+      'Metropolitana',
+      ComunaSantiago.LasCondes,
+      '8765432',
+      [] // Plantas
+    )
+  ];
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
   create(createUsuarioDto: CreateUsuarioDto) {
-    return 'Modulo Usuario - Epica Usuarios / Crea un usuario';
+    const newUsuario = new Usuario(
+      this.usuarios.length + 1,
+      createUsuarioDto.rut,
+      createUsuarioDto.nombre,
+      createUsuarioDto.email,
+      createUsuarioDto.password, 
+      createUsuarioDto.telefono,
+      createUsuarioDto.direccion,
+      createUsuarioDto.ciudad,
+      createUsuarioDto.region,
+      createUsuarioDto.ComunaSantiago,
+      createUsuarioDto.codigoPostal,
+      createUsuarioDto.plantas,
+    );
+
+    this.usuarios.push(newUsuario);
+
+    return newUsuario;
   }
 
   findAll() {
-    return `Modulo Usuario - Epica Usuarios / Retorna todos los usuarios`;
+    return this.usuarios;
   }
 
   findOne(id: number) {

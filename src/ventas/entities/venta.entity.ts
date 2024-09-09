@@ -36,7 +36,7 @@ export class Venta {
   public totaldescto: number;
   @ApiProperty({
     description: 'Cliente que realiza la compra',
-    example: new Usuario(),
+    example: 'new Usuario()',
     type: Usuario,
   })
   public rutcliente: Usuario;

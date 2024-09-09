@@ -1,5 +1,5 @@
 
-export class Area{
+export class Equipo{
 
     nombreArea:string;
     jefe:string;

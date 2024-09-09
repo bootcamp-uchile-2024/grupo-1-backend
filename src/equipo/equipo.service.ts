@@ -1,31 +1,31 @@
 import { Injectable } from '@nestjs/common';
-import { Area } from 'src/models/Area';
+import { Equipo } from './entities/equipo.entity';
 
 @Injectable()
 export class EquipoService {
 
-      equipo:Area[];
+      equipo:Equipo[];
 
       constructor(){
         this.equipo= [
-          new Area("Diseño_UX_UI", "Amalia Luna", [
+          new Equipo("Diseño_UX_UI", "Amalia Luna", [
             "Amalia Luna",
             "Valeria Gutiérrez",
             "Macarena Campos",
             "Valentina Tabilo"
           ]),
-          new Area("Front-End", "Cristian Levio", [
+          new Equipo("Front-End", "Cristian Levio", [
             "Cristian Levio",
             "Sebastián Rubilar",
             "Esteban Menares"
           ]),
-          new Area("Back-End", "Christian Castillo", [
+          new Equipo("Back-End", "Christian Castillo", [
             "Christian Castillo",
             "Flor Granados",
             "Rodrigo Cabello",
             "Camilo Orellana"
           ]),
-          new Area("Mobile", "María Elena Valencia", [
+          new Equipo("Mobile", "María Elena Valencia", [
             "María Elena Valencia"
           ])
         ];
@@ -73,7 +73,7 @@ export class EquipoService {
         return this.ecommerce;
       }
 
-      getAreas(nombreArea?: string): Area[] {
+      getAreas(nombreArea?: string): Equipo[] {
         if (nombreArea) {
           return this.equipo.filter(area =>
             area.nombreArea.toLowerCase() === nombreArea.toLowerCase()

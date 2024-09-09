@@ -3,11 +3,7 @@ import { Producto } from "src/productos/entities/producto.entity";
 import { TipoFertizante, TipoPlantasRecomendadas } from "./enum-fertilizantes";
 
 export class Fertilizante extends Producto {
-  @ApiProperty({
-    name: 'marca Fertilizante',
-    example: 'MasVida'
-  })
-  public marca: string;
+
   @ApiProperty({
     name: 'Composicion (NPK)',
     example: '20-20-20'
@@ -38,5 +34,7 @@ export class Fertilizante extends Producto {
     enum: TipoPlantasRecomendadas, example: TipoPlantasRecomendadas.PLANTAS_INTERIOR,
   })
   public tiposPlantasRecomendadas: TipoPlantasRecomendadas;
+
+  
 
 }

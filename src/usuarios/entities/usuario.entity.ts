@@ -1,28 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
-//import { ComunaSantiago } from './comunas.stgo-enum';
+import { Planta } from 'src/plantas/entities/planta.entity';
+import { ComunaSantiago } from './comunas.stgo-enum';
 
 export class Usuario {
-  @ApiProperty({ name: 'id', example: 1 })
-  public id: number;
-  @ApiProperty({ name: 'rut', example: '12345678-9' })
-  public rut: string;
-  @ApiProperty({ name: 'nombre', example: 'Juan Perez' })
-  public nombre: string;
-  @ApiProperty({ name: 'email', example: 'mail@emaildeprueba.cl' })
-  public email: string;
-  @ApiProperty({ name: 'password', example: 'password' })
-  private password: string;
-  @ApiProperty({ name: 'telefono', example: '+56912345678' })
-  public telefono: string;
-  @ApiProperty({ name: 'direccion', example: 'Calle Falsa 123' })
-  public direccion: string;
-  @ApiProperty({ name: 'ciudad', example: 'Santiago' })
-  public ciudad: string;
-  @ApiProperty({ name: 'region', example: 'Metropolitana' })
-  public region: string;
-  @ApiProperty({ name: 'comuna', example: 'Santiago' })
-  public comuna: string;
-  @ApiProperty({ name: 'codigoPostal', example: '1234567' })
-  public codigoPostal: string;
+    constructor(
+    public id: number,
+    public rut: string,
+    public nombre: string,
+    public email: string,
+    public password: string,
+    public telefono: string,
+    public direccion: string,
+    public ciudad: string,
+    public region: string,
+    public comunaSantiago: ComunaSantiago,
+    public codigoPostal: string,
+    public plantas: Planta[],
+  ) {}
+ }
 
-}

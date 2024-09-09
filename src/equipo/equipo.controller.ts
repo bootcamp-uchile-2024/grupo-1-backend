@@ -9,7 +9,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { EquipoService } from './equipo.service';
-import { Area } from 'src/models/Area';
+import { Equipo } from './entities/equipo.entity';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @ApiTags('equipos')
@@ -23,7 +23,7 @@ export class EquipoController {
   }
 
   @Get('informacion/areas')
-  getAreas(@Query('nombreArea') nombreArea?: string): Area[] {
+  getAreas(@Query('nombreArea') nombreArea?: string): Equipo[] {
     return this.equipoService.getAreas(nombreArea ? nombreArea : undefined);
   }
 
