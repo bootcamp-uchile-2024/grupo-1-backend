@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CreateSustratoDto } from './dto/create-sustrato.dto';
-import { UpdateSustratoDto } from './dto/update-sustrato.dto';
-import { VerSustratos } from './dto/ver-sustratos-dto';
-import { Sustrato } from './entities/sustrato.entity';
+import { CreateSustratoDto } from '../dto/create-sustrato.dto';
+import { UpdateSustratoDto } from '../dto/update-sustrato.dto';
+import { Sustrato } from '../entities/sustrato.entity';
+import { VerSustratos } from '../dto/ver-sustratos-dto';
 
 @Injectable()
 export class SustratosService {
@@ -53,7 +53,7 @@ export class SustratosService {
   findAll() {
     return this.catalogo;
   }
-  findOne(id: number, ParseIntPipe: Number) {
+  findOne(id: number) {
     return `This action returns a #${id} sustrato`;
   }
 

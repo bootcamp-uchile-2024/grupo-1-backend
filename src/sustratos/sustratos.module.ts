@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { SustratosService } from './sustratos.service';
 import { SustratosController } from './controller/sustratos.controller';
+import { SustratosService } from './service/sustratos.service';
 
 @Module({
   controllers: [SustratosController],

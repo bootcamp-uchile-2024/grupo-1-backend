@@ -8,6 +8,7 @@ import {
   Delete,
   ParseIntPipe,
   ValidationPipe,
+  UsePipes,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -16,12 +17,13 @@ import {
   ApiBody,
   ApiParam,
 } from '@nestjs/swagger';
-import { UsuariosService } from './usuarios.service';
-import { CreateUsuarioDto } from './dto/create-usuario.dto';
-import { UpdateUsuarioDto } from './dto/update-usuario.dto';
+import { UsuariosService } from '../service/usuarios.service';
+import { CreateUsuarioDto } from '../dto/create-usuario.dto';
+import { UpdateUsuarioDto } from '../dto/update-usuario.dto';
 
 @ApiTags('usuarios')
 @Controller('usuarios')
+@UsePipes(new ValidationPipe({ transform: true }))
 export class UsuariosController {
   constructor(private readonly usuariosService: UsuariosService) {}
 
@@ -36,6 +38,12 @@ export class UsuariosController {
   }
 
   @Get(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'id del usuario a obtener',
+    required: true,
+    schema: { type: 'integer' },
+  })
   @ApiOperation({ summary: 'Obtener un usuario por ID' })
   @ApiResponse({ status: 200, description: 'Usuario obtenido con éxito.' })
   @ApiResponse({ status: 404, description: 'Usuario no encontrado.' })
@@ -77,6 +85,12 @@ export class UsuariosController {
   }
 
   @Delete(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'id del usuario a eliminar',
+    required: true,
+    schema: { type: 'integer' },
+  })
   @ApiOperation({ summary: 'Eliminar un usuario' })
   @ApiResponse({ status: 200, description: 'Usuario eliminado con éxito.' })
   @ApiResponse({ status: 404, description: 'Usuario no encontrado.' })

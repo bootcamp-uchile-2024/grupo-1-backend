@@ -3,17 +3,14 @@ import {
   Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
   Res,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
-import { SustratosService } from '../sustratos.service';
 import { CreateSustratoDto } from '../dto/create-sustrato.dto';
+import { SustratosService } from '../service/sustratos.service';
 @ApiTags('Sustratos')
 @Controller('sustratos')
 @UsePipes(new ValidationPipe({ transform: true }))
@@ -28,6 +25,7 @@ export class SustratosController {
     status: 200,
     description: 'Producto tipo sustrato creado en catalogo de productos',
   })
+  @ApiBody({ type: CreateSustratoDto })
   @Post()
   create(
     @Body(

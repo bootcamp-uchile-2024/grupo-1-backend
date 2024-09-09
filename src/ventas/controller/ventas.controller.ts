@@ -8,14 +8,22 @@ import {
   Delete,
   ParseIntPipe,
   ValidationPipe,
+  UsePipes,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { VentasService } from './ventas.service';
-import { CreateVentaDto } from './dto/create-venta.dto';
-import { UpdateVentaDto } from './dto/update-venta.dto';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBody,
+} from '@nestjs/swagger';
+import { VentasService } from '../service/ventas.service';
+import { CreateVentaDto } from '../dto/create-venta.dto';
+import { UpdateVentaDto } from '../dto/update-venta.dto';
 
 @ApiTags('ventas')
 @Controller('ventas')
+@UsePipes(new ValidationPipe({ transform: true }))
 export class VentasController {
   constructor(private readonly ventasService: VentasService) {}
 
@@ -30,6 +38,12 @@ export class VentasController {
   }
 
   @Get(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'id de la venta a obtener',
+    required: true,
+    schema: { type: 'integer' },
+  })
   @ApiOperation({ summary: 'Obtener una venta por ID' })
   @ApiResponse({ status: 200, description: 'Venta obtenida con éxito.' })
   @ApiResponse({ status: 404, description: 'Venta no encontrada.' })
@@ -39,6 +53,9 @@ export class VentasController {
   }
 
   @Post()
+  @ApiBody({
+    type: typeof CreateVentaDto,
+  })
   @ApiOperation({ summary: 'Crear una nueva venta' })
   @ApiResponse({ status: 201, description: 'Venta creada con éxito.' })
   @ApiResponse({ status: 400, description: 'Datos inválidos.' })
@@ -51,6 +68,15 @@ export class VentasController {
   }
 
   @Patch(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'id de la venta a actualizar',
+    required: true,
+    schema: { type: 'UpdateVentaDto' },
+  })
+  @ApiBody({
+    type: typeof UpdateVentaDto,
+  })
   @ApiOperation({ summary: 'Actualizar una venta existente' })
   @ApiResponse({ status: 200, description: 'Venta actualizada con éxito.' })
   @ApiResponse({ status: 404, description: 'Venta no encontrada.' })
@@ -64,6 +90,12 @@ export class VentasController {
   }
 
   @Delete(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'description',
+    required: true,
+    schema: { type: 'integer' },
+  })
   @ApiOperation({ summary: 'Eliminar una venta' })
   @ApiResponse({ status: 200, description: 'Venta eliminada con éxito.' })
   @ApiResponse({ status: 404, description: 'Venta no encontrada.' })
