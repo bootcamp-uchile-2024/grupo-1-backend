@@ -100,6 +100,14 @@ export class ProductosService {
     //  .slice(0, 3); /*solo devuelve  3*/
     return productosMasVentas;
   }
+  findOneID(id: number) {
+    const productoBuscado = this.productos.filter(prod => prod.idProducto == id);
+    if (!productoBuscado) {
+      throw new ErrorPlantopia('Producto No encontrado', 404);
+    }
+    
+    return productoBuscado;
+  }
 }
 
 

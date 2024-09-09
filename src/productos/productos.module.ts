@@ -8,6 +8,7 @@ import { ProductosService } from './service/productos.service';
 @Module({
   controllers: [ProductosController],
   providers: [ProductosService],
-  imports:[MaceterosModule]
+  imports:[MaceterosModule],
+  exports:[ProductosService]
 })
 export class ProductosModule {}
