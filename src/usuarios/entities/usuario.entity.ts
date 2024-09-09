@@ -10,7 +10,7 @@ import {
   Matches,
 } from 'class-validator';
 
-export class CreateUsuarioDto {
+export class Usuario {
   @ApiProperty({
     name: 'rut',
     example: '12345678-9',
