@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { VentasService } from './ventas.service';
@@ -24,7 +26,6 @@ export class VentasController {
     description: 'Lista de ventas obtenida con éxito.',
   })
   findAll() {
-    // lógica para obtener todas las ventas
     return this.ventasService.findAll();
   }
 
@@ -32,17 +33,20 @@ export class VentasController {
   @ApiOperation({ summary: 'Obtener una venta por ID' })
   @ApiResponse({ status: 200, description: 'Venta obtenida con éxito.' })
   @ApiResponse({ status: 404, description: 'Venta no encontrada.' })
-  findOne(@Param('id') id: string) {
-    // lógica para obtener una venta por ID
-    return this.ventasService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    // Uso de ParseIntPipe para validar que el ID sea un número
+    return this.ventasService.findOne(id);
   }
 
   @Post()
   @ApiOperation({ summary: 'Crear una nueva venta' })
   @ApiResponse({ status: 201, description: 'Venta creada con éxito.' })
   @ApiResponse({ status: 400, description: 'Datos inválidos.' })
-  create(@Body() createVentaDto: any) {
-    // lógica para crear una nueva venta
+  create(
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    createVentaDto: CreateVentaDto,
+  ) {
+    // Uso de ValidationPipe para validar el cuerpo de la petición con los DTOs
     return this.ventasService.create(createVentaDto);
   }
 
@@ -50,17 +54,20 @@ export class VentasController {
   @ApiOperation({ summary: 'Actualizar una venta existente' })
   @ApiResponse({ status: 200, description: 'Venta actualizada con éxito.' })
   @ApiResponse({ status: 404, description: 'Venta no encontrada.' })
-  update(@Param('id') id: string, @Body() updateVentaDto: any) {
-    // lógica para actualizar una venta existente
-    return this.ventasService.update(+id, updateVentaDto);
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    updateVentaDto: UpdateVentaDto,
+  ) {
+    // ParseIntPipe para validar el ID y ValidationPipe para validar el cuerpo de la petición
+    return this.ventasService.update(id, updateVentaDto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Eliminar una venta' })
   @ApiResponse({ status: 200, description: 'Venta eliminada con éxito.' })
   @ApiResponse({ status: 404, description: 'Venta no encontrada.' })
-  remove(@Param('id') id: string) {
-    // lógica para eliminar una venta
-    return this.ventasService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.ventasService.remove(id);
   }
 }
