@@ -6,7 +6,7 @@ import { FormaMacetero } from 'src/maceteros/entities/enum-macetero';
 
 import { CreateMaceteroDto } from 'src/maceteros/dto/create-macetero.dto';
 
-import { ErrorPlantopia } from 'src/error-plantopia/error-plantopia';
+import { ErrorPlantopia } from 'src/comunes/error-plantopia/error-plantopia';
 import { Producto } from '../entities/producto.entity';
 import { TipoProductos } from '../entities/enum-productos';
 import { MaceterosService } from 'src/maceteros/service/maceteros.service';
