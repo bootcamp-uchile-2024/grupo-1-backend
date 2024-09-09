@@ -10,7 +10,7 @@ export class Venta {
   public idventa: number;
   @ApiProperty({
     description: 'Productos de la venta',
-    example: [new Producto()],
+ //  example: [new Producto()],
     type: [Producto],
   })
   public idproducto: Producto[];

@@ -2,9 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Res } from '@nestjs/
 import { OrdenComprasService } from './orden-compras.service';
 import { CreateOrdenCompraDto } from './dto/create-orden-compra.dto';
 import { UpdateOrdenCompraDto } from './dto/update-orden-compra.dto';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
-
+@ApiTags('Orden de Compra')
 @Controller('orden-compras')
 export class OrdenComprasController {
   constructor(private readonly ordenComprasService: OrdenComprasService) {}

@@ -9,7 +9,7 @@ export class ControlPlagasService {
   catalogo: VerControlPlagas[] =[];
   constructor()
   {
-    let ventasSustratos: VerControlPlagas = new VerControlPlagas();
+    /*let ventasSustratos: VerControlPlagas = new VerControlPlagas();
     ventasSustratos.id=4 ;
     ventasSustratos.nombreProducto= 'Aceite de neem';
     ventasSustratos.stock= 150;
@@ -31,14 +31,14 @@ export class ControlPlagasService {
     this.masVendidos.push(ventasSustratos2);
     this.catalogo.push(ventasSustratos2);
     let catalogo3: VerControlPlagas = new VerControlPlagas();
-    catalogo3.id=13 ;
+  catalogo3.id=13 ;
     catalogo3.nombreProducto= 'Insecticida a base de piretrina';
     catalogo3.stock= 200;
     catalogo3.precio= 15500;
     catalogo3.imagen= 'https://example.com/controlplaga_13.jpg';
     catalogo3.valoracion= 7.0;
     catalogo3.cantidadVentas= 2; 
-    this.catalogo.push(catalogo3);
+    this.catalogo.push(catalogo3);*/
   }
   create(createControlPlagasDto: CreateControlPlagasDto) {
     return 'This action adds a new controlPlagas';

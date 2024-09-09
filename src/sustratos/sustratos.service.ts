@@ -10,7 +10,7 @@ export class SustratosService {
   catalogo: VerSustratos[] =[];
   constructor()
   {
-    let ventasSustratos: VerSustratos = new VerSustratos();
+   /* let ventasSustratos: VerSustratos = new VerSustratos();
     ventasSustratos.id=3 ;
     ventasSustratos.nombreProducto= 'Mezcla para plantas de interior con perlita';
     ventasSustratos.stock= 80;
@@ -39,7 +39,7 @@ export class SustratosService {
     catalogo3.imagen= 'https://example.com/sustrato_11.jpg';
     catalogo3.valoracion= 7.0;
     catalogo3.cantidadVentas= 10; 
-    this.catalogo.push(catalogo3);
+    this.catalogo.push(catalogo3);*/
   }
   create(createSustratoDto: CreateSustratoDto) {
     return 'This action adds a new sustrato';

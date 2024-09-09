@@ -11,7 +11,7 @@ export class PlantasService {
   catalogo: VerPlantas[] =[];
   constructor()
   {
-    let ventasPlantas: VerPlantas = new VerPlantas();
+    /*let ventasPlantas: VerPlantas = new VerPlantas();
     ventasPlantas.id=1 ;
     ventasPlantas.nombreProducto= 'Rosa';
     ventasPlantas.stock= 100;
@@ -40,7 +40,7 @@ export class PlantasService {
     catalogo3.valoracion= 7.0;
     catalogo3.cantidadVentas= 10; 
     
-    this.catalogo.push(catalogo3);
+    this.catalogo.push(catalogo3);*/
   }
   
   create(createPlantaDto: CreatePlantaDto) {
