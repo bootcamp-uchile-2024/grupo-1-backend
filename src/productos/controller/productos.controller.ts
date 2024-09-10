@@ -285,14 +285,28 @@ export class ProductosController {
     description: 'Ingresar un nuevo sustrato',
   })
   @ApiBody({
-    type: typeof CreateSustratoDto,
+    type: CreateSustratoDto,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Sustrato ingresado correctamente.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Datos inválidos.',
   })
   @Post('sustrato')
   ingresarSustrato(
     @Body() CreateSustratoDto: CreateSustratoDto,
     @Res() res: Response,
   ) {
-    console.log(' en construccion');
-    return this.productosService.ingresarSustrato(CreateSustratoDto);
+    const addSustrato =
+      this.productosService.ingresarSustrato(CreateSustratoDto);
+    if (addSustrato) {
+      res.status(200).send({
+        message: 'Sustrato ingresado correctamente',
+        addSustrato,
+      });
+    }
   }
 }

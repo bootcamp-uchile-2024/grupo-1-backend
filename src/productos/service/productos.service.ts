@@ -13,9 +13,20 @@ import { ControlPlagasService } from 'src/control-plagas/control-plagas.service'
 import { CreateFertilizanteDto } from 'src/fertilizantes/dto/create-fertilizante.dto';
 import { FertilizantesService } from 'src/fertilizantes/fertilizantes.service';
 import { CreateSustratoDto } from 'src/sustratos/dto/create-sustrato.dto';
+import { SustratosService } from 'src/sustratos/service/sustratos.service';
+import { createReadStream } from 'fs';
+import { TexturaSustrato } from 'src/sustratos/entities/enum-sustratos';
+import { create } from 'domain';
 
 @Injectable()
 export class ProductosService {
+  categoria: any;
+  nombreProducto: any;
+  urlImagen: any;
+  descripcionProducto: any;
+  valorProducto: any;
+  descuento: any;
+  valorNormal: any;
   ingresarSustrato(CreateSustratoDto: CreateSustratoDto) {
     const idSustrato: number = this.obtCantidadProductos() + 1;
     const productoSustrato: Producto = new Producto(
@@ -41,6 +52,7 @@ export class ProductosService {
     private readonly servicioPLantas: PlantasService,
     private readonly servicioControlPlagas: ControlPlagasService,
     private readonly servicioFertilizantes: FertilizantesService,
+    private readonly servicioSustratos: SustratosService,
   ) {
     this.productos = [
       new Producto(
@@ -395,5 +407,25 @@ export class ProductosService {
     }
 
     return productoBuscado;
+  }
+  addSustratos(CreateSustratoDto: CreateSustratoDto) {
+  //  const idSustrato: number = this.obtCantidadProductos() + 1;
+  //  const productoSustrato: Producto = new Producto(
+  //    CreateSustratoDto.categoria,
+  //    CreateSustratoDto.nombreProducto,
+  //    CreateSustratoDto.urlImagen,
+  //    CreateSustratoDto.descripcionProducto,
+  //    CreateSustratoDto.valorProducto,
+  //    CreateSustratoDto.descuento,
+  //    CreateSustratoDto.valorNormal,
+  //    CreateSustratoDto.composicion,
+  //    CreateSustratoDto.textura,
+  //    CreateSustratoDto.retencionDeHumedad,
+  //    CreateSustratoDto.drenaje,
+  //    CreateSustratoDto.plantasRecomendadas,
+  //    CreateSustratoDto.observaciones,
+  //    CreateSustratoDto.codigoProducto,
+  //  );
+  //  this.productos.push(productoSustrato);
   }
 }

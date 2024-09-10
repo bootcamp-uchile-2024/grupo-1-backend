@@ -7,10 +7,10 @@ import { TipoProductos } from "src/productos/entities/enum-productos";
 export class CreateFertilizanteDto extends CreateProductoDto {
   @ApiProperty({
     name: 'categoria',
-    description: 'Enum Tipo Producto',   
+    description: 'Enum Tipo Producto',
     enum: TipoProductos, example: TipoProductos.Fertilizantes
   })
-  public categoria: TipoProductos; 
+  public categoria: TipoProductos;
   @IsString()
   @ApiProperty({
     description: 'Composicion (NPK)',
@@ -47,5 +47,4 @@ export class CreateFertilizanteDto extends CreateProductoDto {
     enum: TipoPlantasRecomendadas, example: TipoPlantasRecomendadas.PLANTAS_INTERIOR,
   })
   public tiposPlantasRecomendadas: TipoPlantasRecomendadas;
-
 }

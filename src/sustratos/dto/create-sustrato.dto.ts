@@ -40,7 +40,7 @@ export class CreateSustratoDto extends CreateProductoDto {
 
   @ApiProperty({
     name: 'urlImagen',
-    example: 'http://default.com/sustrato1.jpg',
+    example: ['http://default.com/sustrato1.jpg'],
     description: 'URL de la imagen del producto',
   })
   @IsArray()
@@ -89,7 +89,7 @@ export class CreateSustratoDto extends CreateProductoDto {
 
   @ApiProperty({
     name: 'composicion',
-    example: 'Turba, Perlita',
+    example: ['Turba'],
     description: 'Composición del sustrato',
   })
   @IsArray()
@@ -99,7 +99,7 @@ export class CreateSustratoDto extends CreateProductoDto {
 
   @ApiProperty({
     name: 'textura',
-    example: 'Ligero, Aireado',
+    example: ['Ligero'],
     description: 'Textura del sustrato',
   })
   @IsArray()
@@ -144,5 +144,10 @@ export class CreateSustratoDto extends CreateProductoDto {
   @IsString()
   @IsOptional()
   observaciones: string;
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    name: 'codigoProducto',
+  })
   codigoProducto: string;
 }

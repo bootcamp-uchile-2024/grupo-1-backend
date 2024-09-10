@@ -98,7 +98,7 @@ async function bootstrap() {
   });
 
   app.useGlobalPipes(new ValidationPipe());
-  app.useGlobalFilters(new GlobalFilter());  
+  app.useGlobalFilters(new GlobalFilter());
   await app.listen(3000);
 }
 bootstrap();

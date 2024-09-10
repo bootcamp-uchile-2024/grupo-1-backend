@@ -5,5 +5,6 @@ import { SustratosService } from './service/sustratos.service';
 @Module({
   controllers: [SustratosController],
   providers: [SustratosService],
+  exports: [SustratosService],
 })
 export class SustratosModule {}

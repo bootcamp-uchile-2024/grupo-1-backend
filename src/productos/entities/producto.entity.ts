@@ -49,7 +49,7 @@ export class Producto {
     categoria: TipoProductos,
     valoracion: number,
     cantidadVentas: number,
-    codigoProducto: string
+    codigoProducto: string,
   ) {
     this.idProducto = idProducto;
     this.nombreProducto = nombreProducto;
