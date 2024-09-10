@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { CreateDespachoDto } from './dto/create-despacho.dto';
-import { UpdateDespachoDto } from './dto/update-despacho.dto';
-import { VerDespachos } from './dto/ver-despachos-dto';
-import { EstadosDespacho } from './entities/enum-despachos';
+import { VerDespachos } from '../dto/ver-despachos-dto';
+import { EstadosDespacho } from '../entities/enum-despachos';
+ 
 
 @Injectable()
 export class DespachosService {

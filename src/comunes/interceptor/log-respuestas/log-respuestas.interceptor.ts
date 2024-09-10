@@ -4,8 +4,8 @@ import {
   ExecutionContext,
   CallHandler,
 } from '@nestjs/common';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 
 @Injectable()
 export class LogRespuestasInterceptor implements NestInterceptor {
@@ -24,14 +24,24 @@ export class LogRespuestasInterceptor implements NestInterceptor {
               {
                 requestUrl: request.url,
                 requestMethod: method,
-                responseData: data,
+                //responseData: data,
               },
             );
           }
         },
-        error: (err) => {
-          console.log('Error en la respuesta Interceptor 🚨 :', err);
-        },
+      }),
+      catchError((err) => {
+        const statusCode = err.status || err.statusCode || 500;
+        const errorResponse = {
+          statusCode,
+          message: err.message || 'Internal Server Error',
+          error: err.response || 'Unknown Error',
+        };
+
+       
+
+        // Continuar el error en el flujo sin "caer" la aplicación
+        return throwError(() => err);
       }),
     );
   }

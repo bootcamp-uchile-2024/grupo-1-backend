@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
-import { PlantasService } from './plantas.service';
-import { PlantasController } from './plantas.controller';
+import { PlantasController } from './controller/plantas.controller';
+import { PlantasService } from './service/plantas.service';
+ 
 
 @Module({
   controllers: [PlantasController],

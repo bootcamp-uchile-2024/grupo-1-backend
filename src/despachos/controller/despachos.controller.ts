@@ -8,11 +8,10 @@ import {
   Delete,
   Res,
 } from '@nestjs/common';
-import { DespachosService } from './despachos.service';
-import { CreateDespachoDto } from './dto/create-despacho.dto';
-import { UpdateDespachoDto } from './dto/update-despacho.dto';
+ 
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Response } from 'express';
+import { DespachosService } from '../service/despachos.service';
 
 @ApiTags('Despachos')
 @Controller('despachos')

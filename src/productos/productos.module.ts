@@ -20,4 +20,4 @@ import { SustratosModule } from 'src/sustratos/sustratos.module';
   ],
   exports: [ProductosService],
 })
-export class ProductosModule {}
+export class ProductosModule { }

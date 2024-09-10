@@ -1,15 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { CreateControlPlagasDto } from './dto/create-control-plagas.dto';
-import { UpdateControlPlagasDto } from './dto/update-control-plagas.dto';
-import { VerControlPlagas } from './dto/ver-control-plagas-dto';
-import { ControlPlagas } from './entities/control-plagas.entity';
+import { ControlPlagas } from '../entities/control-plagas.entity';
 import { TipoProductos } from 'src/productos/entities/enum-productos';
-import { Eficacia, MetodoAplicacion, TipoPlaga } from './entities/enum-control-plagas';
+import { Eficacia, MetodoAplicacion, TipoPlaga } from '../entities/enum-control-plagas';
+import { CreateControlPlagasDto } from '../dto/create-control-plagas.dto';
 
 @Injectable()
 export class ControlPlagasService {
   controlPlagas: ControlPlagas[] = [];
-  constructor() {
+  constructor() { 
     this.controlPlagas =  [
       new ControlPlagas(14,'control plaga prueba 1',['http://lugar.com/imagen_cp1.png'], 0, 2500, ['Arica a Pta.Arenas'], 10,'no tiene', TipoProductos.ControlPlagas,0,2500,'CP1',[TipoPlaga.COCHINILLAS, TipoPlaga.ACAROS],'50 ml de fosforo',[MetodoAplicacion.RIEGO],'cada 2 horas','lejos de nños',Eficacia.ALTA,true),
       new ControlPlagas(15,'control plaga prueba 1',['http://lugar.com/imagen_cp1.png'], 0, 2500, ['Arica a Pta.Arenas'], 10,'no tiene', TipoProductos.ControlPlagas,0,2500,'CP1',[TipoPlaga.ESCAMAS, TipoPlaga.HONGOS_MILDIU],'50 ml de fisfato',[MetodoAplicacion.CERCA_PLANTAS_AFECTADAS],'cada 2 dias','lejos de nños',Eficacia.ALTA,true)
@@ -77,11 +75,5 @@ export class ControlPlagasService {
     return  null;
   }
 
-  update(id: number, updateControlPlagasDto: UpdateControlPlagasDto) {
-    return `This action updates a #${id} controlPlagas`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} controlPlagas`;
-  }
+   
 }

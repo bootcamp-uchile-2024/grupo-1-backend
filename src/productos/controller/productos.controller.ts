@@ -33,7 +33,7 @@ import { CreateSustratoDto } from 'src/sustratos/dto/create-sustrato.dto';
 @ApiTags('productos')
 @Controller('productos')
 export class ProductosController {
-  constructor(private readonly productosService: ProductosService) {}
+  constructor(private readonly productosService: ProductosService) { }
 
   @Get('masvendidos')
   @ApiOperation({
@@ -59,35 +59,7 @@ export class ProductosController {
   }
 
   /* INICIO HISTORIA 3 */
-  /* crea un tipo producto macetero*/
-  @ApiOperation({
-    summary: 'Historia Usuario : H003',
-    description:
-      'Permite crear macetero para incorporar en catalogo de productos',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Producto tipo Macetero creado en catalogo de productos',
-  })
-  @Post('macetero')
-  @UsePipes(new ValidationPipe())
-  @ApiOperation({ summary: 'Crear un nuevo macetero' })
-  @ApiResponse({ status: 200, description: 'Macetero creado.' })
-  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
-  @ApiBody({ type: CreateMaceteroDto })
-  crearMacetero(
-    @Body() CreateMaceteroDto: CreateMaceteroDto,
-    @Res() res: Response,
-  ) {
-    try {
-      const resultado = this.productosService.createMacetero(CreateMaceteroDto);
-      res.status(200).send(resultado);
-    } catch (error) {
-      res.status(error.statusCode).send({
-        message: error.message,
-      });
-    }
-  }
+
   /* ******************************** */
   /* crea un tipo producto PLANTA*/
   @ApiOperation({
@@ -115,36 +87,6 @@ export class ProductosController {
       });
     }
   }
-
-  /************************************************* */
-  /* crea un tipo producto SUSTRATO*/
-  /*@ApiOperation({
-    summary: 'Historia Usuario : H003',
-    description: 'Permite crear macetero para incorporar en catalogo de productos',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Producto tipo Macetero creado en catalogo de productos',
-
-  })
-  @Post('sustrato')
-  @UsePipes(new ValidationPipe())
-  @ApiOperation({ summary: 'Crear una nueva Planta' })
-  @ApiResponse({ status: 200, description: 'Planta creada.' })
-  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
-  @ApiBody({ type: CreateMaceteroDto })
-  crearSustrato(@Body() CreateMaceteroDto:CreateMaceteroDto, @Res() res:Response){
-    try {
-      const resultado = this.productosService.createMacetero(CreateMaceteroDto);
-      res.status(200).send(resultado);
-    } catch (error) {
-      res.status(error.statusCode).send({
-        message: error.message
-      });
-    }
-  }
-*/
-
   /* crea un tipo producto FERTILIZANTE*/
   @ApiOperation({
     summary: 'Historia Usuario : H003',
@@ -177,7 +119,32 @@ export class ProductosController {
     }
   }
 
-  /************************************************* */
+  /* crea un tipo producto SUSTRATO*/
+  @ApiOperation({
+    summary: 'Historia Usuario : H003',
+    description: 'Permite crear sustrato para incorporar en catalogo de productos',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Producto tipo sustrato creado en catalogo de productos',
+
+  })
+  @Post('sustrato')
+  @UsePipes(new ValidationPipe())
+  @ApiOperation({ summary: 'Crear una nueva Planta' })
+  @ApiResponse({ status: 200, description: 'Planta creada.' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
+  @ApiBody({ type: CreateSustratoDto })
+  crearSustrato(@Body() createSustratoDto: CreateSustratoDto, @Res() res: Response) {
+    try {
+      const resultado = this.productosService.createSustrato(createSustratoDto);
+      res.status(200).send(resultado);
+    } catch (error) {
+      res.status(error.statusCode).send({
+        message: error.message
+      });
+    }
+  }
 
   /* crea un tipo producto CONTROL PLAGAS*/
   @ApiOperation({
@@ -210,7 +177,35 @@ export class ProductosController {
       });
     }
   }
-
+  /* crea un tipo producto macetero*/
+  @ApiOperation({
+    summary: 'Historia Usuario : H003',
+    description:
+      'Permite crear macetero para incorporar en catalogo de productos',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Producto tipo Macetero creado en catalogo de productos',
+  })
+  @Post('macetero')
+  @UsePipes(new ValidationPipe())
+  @ApiOperation({ summary: 'Crear un nuevo macetero' })
+  @ApiResponse({ status: 200, description: 'Macetero creado.' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
+  @ApiBody({ type: CreateMaceteroDto })
+  crearMacetero(
+    @Body() CreateMaceteroDto: CreateMaceteroDto,
+    @Res() res: Response,
+  ) {
+    try {
+      const resultado = this.productosService.createMacetero(CreateMaceteroDto);
+      res.status(200).send(resultado);
+    } catch (error) {
+      res.status(error.statusCode).send({
+        message: error.message,
+      });
+    }
+  }
   /**************** fin HISTORIA 3 */
 
   @Get('catalogo')
@@ -241,7 +236,7 @@ export class ProductosController {
     name: 'tipo',
     enum: TipoProductos,
     required: false,
-    schema: { type: 'number' },
+    schema: { type: 'string' },
   })
   findbyType(
     @Query('tipo', new ParseEnumPipe(TipoProductos)) tipo: TipoProductos,
@@ -281,33 +276,8 @@ export class ProductosController {
       res.status(error.statusCode).send({ message: error.message });
     }
   }
-  @ApiBody({
-    type: CreateSustratoDto,
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Sustrato ingresado correctamente.',
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Datos inválidos.',
-  })
-  @ApiOperation({
-    summary: 'Agregar un nuevo sustrato al catalogo de productos.',
-    description: 'Agregar un nuevo sustrato al catálogo de productos.',
-  })
-  @Post('sustrato')
-  ingresarSustrato(
-    @Body() CreateSustratoDto: CreateSustratoDto,
-    @Res() res: Response,
-  ) {
-    const addSustrato =
-      this.productosService.ingresarSustrato(CreateSustratoDto);
-    if (addSustrato) {
-      res.status(200).send({
-        message: 'Sustrato ingresado correctamente',
-        addSustrato,
-      });
-    }
-  }
+
+
+
+
 }

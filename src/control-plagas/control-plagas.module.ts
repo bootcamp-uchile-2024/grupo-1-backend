@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
-import { ControlPlagasService } from './control-plagas.service';
-import { ControlPlagasController } from './control-plagas.controller';
+import { ControlPlagasController } from './contoller/control-plagas.controller';
+import { ControlPlagasService } from './service/control-plagas.service';
+
 
 @Module({
   controllers: [ControlPlagasController],

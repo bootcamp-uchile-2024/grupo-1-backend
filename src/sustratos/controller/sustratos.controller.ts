@@ -52,7 +52,7 @@ export class SustratosController {
   })
   findAll(@Res() res: Response) {
     res.status(200).send(this.sustratosService.findAll());
-  }
+  }/*
   @Get('/MasVendidos/')
   @ApiOperation({
     summary: 'Historia Usuario : H0001 y H0002',
@@ -66,7 +66,7 @@ export class SustratosController {
     res.status(200).send(this.sustratosService.listaMasVendidas());
   }
 
-  /* @Get(':id')
+   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.sustratosService.findOne(+id);
   }

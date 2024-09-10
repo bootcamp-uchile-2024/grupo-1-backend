@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
-import { PlantaCuidadosService } from './planta-cuidados.service';
-import { PlantaCuidadosController } from './planta-cuidados.controller';
-
+import { PlantaCuidadosController } from './controller/planta-cuidados.controller';
+import { PlantaCuidadosService } from './service/planta-cuidados.service';
 @Module({
   controllers: [PlantaCuidadosController],
   providers: [PlantaCuidadosService],

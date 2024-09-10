@@ -8,9 +8,11 @@ import {
   Patch,
   Delete,
 } from '@nestjs/common';
-import { EquipoService } from './equipo.service';
-import { Equipo } from './entities/equipo.entity';
+ 
+ 
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { EquipoService } from '../service/equipo.service';
+import { Equipo } from '../entities/equipo.entity';
 
 @ApiTags('equipos')
 @Controller('equipos')

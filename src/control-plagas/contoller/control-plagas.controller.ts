@@ -1,13 +1,11 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Res, ValidationPipe } from '@nestjs/common';
-import { ControlPlagasService } from './control-plagas.service';
-import { CreateControlPlagasDto } from './dto/create-control-plagas.dto';
-import { UpdateControlPlagasDto } from './dto/update-control-plagas.dto';
+
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 @ApiTags('Control de Plagas')
 @Controller('control-plagas')
 export class ControlPlagasController {
-  constructor(private readonly controlPlagasService: ControlPlagasService) {}
+  /*constructor(private readonly controlPlagasService: ControlPlagasService) {}
 
   @ApiOperation({
     summary: 'Historia Usuario : H0003',

@@ -1,7 +1,8 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { PlantaCuidadosService } from './planta-cuidados.service';
-import { CreatePlantaCuidadoDto } from './dto/create-planta-cuidado.dto';
-import { UpdatePlantaCuidadoDto } from './dto/update-planta-cuidado.dto';
+import { PlantaCuidadosService } from '../service/planta-cuidados.service';
+import { CreatePlantaCuidadoDto } from '../dto/create-planta-cuidado.dto';
+import { UpdatePlantaCuidadoDto } from '../dto/update-planta-cuidado.dto';
+ 
 
 @Controller('planta-cuidados')
 export class PlantaCuidadosController {

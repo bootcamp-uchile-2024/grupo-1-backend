@@ -2,59 +2,64 @@ import { Injectable } from '@nestjs/common';
 import { CreateSustratoDto } from '../dto/create-sustrato.dto';
 import { UpdateSustratoDto } from '../dto/update-sustrato.dto';
 import { Sustrato } from '../entities/sustrato.entity';
-import { VerSustratos } from '../dto/ver-sustratos-dto';
+import { ComposicionSustrato, RetencionHumedad, TexturaSustrato } from '../entities/enum-sustratos';
+import { TipoProductos } from 'src/productos/entities/enum-productos';
+import { TipoPlantasRecomendadas } from 'src/fertilizantes/entities/enum-fertilizantes';
 
 @Injectable()
 export class SustratosService {
-  masVendidos: VerSustratos[] = [];
-  catalogo: VerSustratos[] = [];
-  addSustratos: Sustrato[] = [];
-
-  constructor() {
-    /* let ventasSustratos: VerSustratos = new VerSustratos();
-    ventasSustratos.id=3 ;
-    ventasSustratos.nombreProducto= 'Mezcla para plantas de interior con perlita';
-    ventasSustratos.stock= 80;
-    ventasSustratos.precio= 1500;
-    ventasSustratos.imagen= 'https://example.com/sustrato_3.jpg';
-    ventasSustratos.valoracion= 4.5;
-    ventasSustratos.cantidadVentas= 140;
-     this.masVendidos.push(ventasSustratos);
-    this.catalogo.push(ventasSustratos);
-    let ventasSustratos2: VerSustratos = new VerSustratos();
-    ventasSustratos2.id=10;
-    ventasSustratos2.nombreProducto= 'Sustrato con turba y perlita';
-    ventasSustratos2.stock= 180;
-    ventasSustratos2.precio= 1600;
-    ventasSustratos2.imagen= 'https://example.com/sustrato_10.jpg';
-    ventasSustratos2.valoracion= 6.0;
-    ventasSustratos2.cantidadVentas= 161;
-
-    this.masVendidos.push(ventasSustratos2);
-    this.catalogo.push(ventasSustratos2);
-    let catalogo3: VerSustratos = new VerSustratos();
-    catalogo3.id=11 ;
-    catalogo3.nombreProducto= 'Sustrato universal con buen drenaje';
-    catalogo3.stock= 170;
-    catalogo3.precio= 210;
-    catalogo3.imagen= 'https://example.com/sustrato_11.jpg';
-    catalogo3.valoracion= 7.0;
-    catalogo3.cantidadVentas= 10;
-    this.catalogo.push(catalogo3);*/
+  sustratos:Sustrato[]=[];
+  constructor(){
+   this.sustratos = [new Sustrato(16,'Mezcla para plantas de interior con perlita',['http://lugar.com/imagen_s1.png'],0,25000,['Arica a Pta.Arenas'],1500,'Ideal para plantas de interior que necesitan drenaje',TipoProductos.Sustratos,0,481,'SU1', [ComposicionSustrato.TURBA,ComposicionSustrato.PERLITA],	 [TexturaSustrato.LIGERO, TexturaSustrato.AIREADO], RetencionHumedad.MEDIA,TipoPlantasRecomendadas.PLANTAS_INTERIOR,'Ideal para plantas de interior que necesitan un buen equilibrio entre retención de humedad y drenaje'),
+                     new Sustrato(17,'Sustrato con turba y perlita',	['http://lugar.com/imagen_s1.png'],0,25000,['Arica a Pta.Arenas'],1500,'Ideal para plantas de interior que necesitan drenaje',TipoProductos.Sustratos,0,481,'SU2',  [ComposicionSustrato.TURBA,ComposicionSustrato.PERLITA,ComposicionSustrato.VERMICULITA], [TexturaSustrato.LIGERO, TexturaSustrato.AIREADO],RetencionHumedad.ALTA,TipoPlantasRecomendadas.ORQUIDIAS ,'Plantas de interior con requerimientos moderados de humedad	Adecuado para plantas que requieren alta retención de humedad con buen drenaje.'),
+                     new Sustrato(18,'Sustrato con turba y perlita',	['http://lugar.com/imagen_s1.png'],0,25000,['Arica a Pta.Arenas'],1500,'Ideal para plantas de interior que necesitan drenaje',TipoProductos.Sustratos,0,481,'SU2',  [ComposicionSustrato.TURBA,ComposicionSustrato.PERLITA,ComposicionSustrato.VERMICULITA], [TexturaSustrato.LIGERO, TexturaSustrato.AIREADO],RetencionHumedad.ALTA,TipoPlantasRecomendadas.PLANTAS_INTERIOR ,'Plantas de interior con requerimientos moderados de humedad	Adecuado para plantas que requieren alta retención de humedad con buen drenaje.')
+                    ];
   }
-  create(createSustratoDto: CreateSustratoDto) {
-    return 'This action adds a new sustrato';
+  obtCantidad() {
+    const cantidad = this.sustratos.length;
+    return  cantidad;
+  }
+  createCodigo(){
+    const numeroCodigo =  this.obtCantidad() + 1;
+    const codigo = 'SU' + numeroCodigo;
+    return codigo
   }
 
-  listaMasVendidas() {
-    return this.masVendidos;
+  create(cretaSustratoDto: CreateSustratoDto, idProducto: number, codigoProducto:string) {
+    const creSustrato: Sustrato = new  Sustrato(  idProducto,cretaSustratoDto.nombreProducto,
+                                                  cretaSustratoDto.imagenProducto,
+                                                  cretaSustratoDto.descuento,
+                                                  cretaSustratoDto.precioNormal, 
+                                                  cretaSustratoDto.coberturaDeDespacho,
+                                                  cretaSustratoDto.stock,
+                                                  cretaSustratoDto.descripcionProducto,
+                                                  TipoProductos.Sustratos,
+                                                  0,
+                                                  0,
+                                                  codigoProducto,
+                                                  cretaSustratoDto.composicion,
+                                                  cretaSustratoDto.textura,
+                                                  cretaSustratoDto.drenaje,
+                                                  cretaSustratoDto.plantasRecomendadas,
+                                                  cretaSustratoDto.observaciones
+                                                  
+                                                  );
+
+    this.sustratos.push(creSustrato);
+    return creSustrato;
   }
+
 
   findAll() {
-    return this.catalogo;
+    return this.sustratos;
   }
   findOne(id: number) {
-    return `This action returns a #${id} sustrato`;
+    const sustratoEncontrado = this.sustratos.find(prod=>prod.idProducto === id);
+    // console.log(sustratoEncontrado);  
+     if(sustratoEncontrado){
+       return sustratoEncontrado;
+     }
+     return  null;
   }
 
   update(id: number, updateSustratoDto: UpdateSustratoDto) {

@@ -1,9 +1,10 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Res, ValidationPipe } from '@nestjs/common';
-import { FertilizantesService } from './fertilizantes.service';
-import { CreateFertilizanteDto } from './dto/create-fertilizante.dto';
+ 
+ 
 
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
+import { FertilizantesService } from '../service/fertilizantes.service';
 @ApiTags('Fertilizantes')
 @Controller('fertilizantes')
 export class FertilizantesController {

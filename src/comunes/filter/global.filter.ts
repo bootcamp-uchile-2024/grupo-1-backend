@@ -10,6 +10,7 @@ export class GlobalFilter<ImATeapotException> implements ExceptionFilter {
     const status = exception.getStatus();
     const message = exception.message;
     
+    
     response.status(status).json({
       /*queda mas mejor el  */
       statusCode: status,

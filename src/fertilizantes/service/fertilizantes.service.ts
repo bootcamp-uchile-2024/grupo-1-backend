@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { CreateFertilizanteDto } from './dto/create-fertilizante.dto';
-import { UpdateFertilizanteDto } from './dto/update-fertilizante.dto';
-import { VerFertilizantes } from './dto/ver-fertilizantes-dto';
-import { Fertilizante } from './entities/fertilizante.entity';
-import { TipoProductos } from 'src/productos/entities/enum-productos';
-import { TipoFertizante, TipoPlantasRecomendadas } from './entities/enum-fertilizantes';
+
 import { FrecuenciaDeRiego } from 'src/plantas/entities/enum-plantas';
+import { Fertilizante } from '../entities/fertilizante.entity';
+import { TipoProductos } from 'src/productos/entities/enum-productos';
+import { TipoFertizante, TipoPlantasRecomendadas } from '../entities/enum-fertilizantes';
+import { CreateFertilizanteDto } from '../dto/create-fertilizante.dto';
 
 @Injectable()
 export class FertilizantesService {
@@ -74,11 +73,5 @@ export class FertilizantesService {
     return  null;
   }
 
-  update(id: number, updateFertilizanteDto: UpdateFertilizanteDto) {
-    return `This action updates a #${id} fertilizante`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} fertilizante`;
-  }
+   
 }

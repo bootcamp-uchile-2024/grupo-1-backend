@@ -27,65 +27,8 @@ export class CreateSustratoDto extends CreateProductoDto {
   })
   @IsEnum(TipoProductos)
   @IsNotEmpty()
-  categoria: TipoProductos.Sustratos;
-
-  @ApiProperty({
-    name: 'nombreProducto',
-    example: 'Mezcla para plantas de interior con perlita',
-    description: 'Nombre del producto',
-  })
-  @IsString()
-  @IsNotEmpty()
-  nombreProducto: string;
-
-  @ApiProperty({
-    name: 'urlImagen',
-    example: ['http://default.com/sustrato1.jpg'],
-    description: 'URL de la imagen del producto',
-  })
-  @IsArray()
-  @IsUrl({}, { each: true })
-  urlImagen: string[];
-
-  @ApiProperty({
-    name: 'descripcionProducto',
-    example: 'descripcion del producto sustrato',
-    description: 'Descripción del producto en stock',
-  })
-  @IsString()
-  @IsNotEmpty()
-  descripcionProducto: string;
-
-  @ApiProperty({
-    name: 'valorProducto',
-    example: 5000,
-    description: 'Valor del producto',
-  })
-  @IsNumber()
-  @Min(0)
-  @IsNotEmpty()
-  valorProducto: number;
-
-  @ApiProperty({
-    name: 'descuento',
-    example: 0,
-    description: 'Descuento del producto',
-  })
-  @IsNumber()
-  @Min(0)
-  @Max(100)
-  @IsOptional()
-  descuento?: number;
-
-  @ApiProperty({
-    name: 'valorNormal',
-    example: 8000,
-    description: 'Valor normal del producto',
-  })
-  @IsNumber()
-  @Min(0)
-  @IsOptional()
-  valorNormal?: number;
+  public categoria: TipoProductos.Sustratos;
+ 
 
   @ApiProperty({
     name: 'composicion',
@@ -95,7 +38,7 @@ export class CreateSustratoDto extends CreateProductoDto {
   @IsArray()
   @IsEnum(ComposicionSustrato, { each: true })
   @IsNotEmpty()
-  composicion: ComposicionSustrato[];
+  public composicion: ComposicionSustrato[];
 
   @ApiProperty({
     name: 'textura',
@@ -105,7 +48,7 @@ export class CreateSustratoDto extends CreateProductoDto {
   @IsArray()
   @IsEnum(TexturaSustrato, { each: true })
   @IsNotEmpty()
-  textura: TexturaSustrato[];
+  public textura: TexturaSustrato[];
 
   @ApiProperty({
     name: 'retencionDeHumedad',
@@ -114,7 +57,7 @@ export class CreateSustratoDto extends CreateProductoDto {
   })
   @IsEnum(RetencionHumedad)
   @IsNotEmpty()
-  retencionDeHumedad: RetencionHumedad;
+  public retencionDeHumedad: RetencionHumedad;
 
   @ApiProperty({
     name: 'drenaje',
@@ -123,7 +66,7 @@ export class CreateSustratoDto extends CreateProductoDto {
   })
   @IsString()
   @IsNotEmpty()
-  drenaje: string;
+  public drenaje: string;
 
   @ApiProperty({
     name: 'plantasRecomendadas',
@@ -133,7 +76,7 @@ export class CreateSustratoDto extends CreateProductoDto {
   })
   @IsEnum(TipoPlantasRecomendadas)
   @IsNotEmpty()
-  plantasRecomendadas: TipoPlantasRecomendadas;
+  public plantasRecomendadas: TipoPlantasRecomendadas;
 
   @ApiProperty({
     name: 'observaciones',
@@ -143,11 +86,6 @@ export class CreateSustratoDto extends CreateProductoDto {
   })
   @IsString()
   @IsOptional()
-  observaciones: string;
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({
-    name: 'codigoProducto',
-  })
-  codigoProducto: string;
+  public observaciones: string;
+  
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { CreatePlantaCuidadoDto } from './dto/create-planta-cuidado.dto';
-import { UpdatePlantaCuidadoDto } from './dto/update-planta-cuidado.dto';
+import { CreatePlantaCuidadoDto } from '../dto/create-planta-cuidado.dto';
+import { UpdatePlantaCuidadoDto } from '../dto/update-planta-cuidado.dto';
+ 
 
 @Injectable()
 export class PlantaCuidadosService {
