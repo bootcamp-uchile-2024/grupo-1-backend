@@ -292,6 +292,7 @@ export class ProductosController {
     @Body() CreateSustratoDto: CreateSustratoDto,
     @Res() res: Response,
   ) {
+    console.log(' en construccion');
     return this.productosService.ingresarSustrato(CreateSustratoDto);
   }
 }
