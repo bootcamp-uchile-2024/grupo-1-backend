@@ -281,9 +281,6 @@ export class ProductosController {
       res.status(error.statusCode).send({ message: error.message });
     }
   }
-  @ApiOperation({
-    description: 'Ingresar un nuevo sustrato',
-  })
   @ApiBody({
     type: CreateSustratoDto,
   })
@@ -294,6 +291,10 @@ export class ProductosController {
   @ApiResponse({
     status: 400,
     description: 'Datos inválidos.',
+  })
+  @ApiOperation({
+    summary: 'Agregar un nuevo sustrato al catalogo de productos.',
+    description: 'Agregar un nuevo sustrato al catálogo de productos.',
   })
   @Post('sustrato')
   ingresarSustrato(

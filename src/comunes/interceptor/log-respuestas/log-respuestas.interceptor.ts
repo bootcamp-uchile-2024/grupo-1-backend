@@ -12,6 +12,7 @@ export class LogRespuestasInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const response = context.switchToHttp().getResponse();
     const request = context.switchToHttp().getRequest();
+    const method = request.method;
 
     return next.handle().pipe(
       tap({
@@ -22,7 +23,8 @@ export class LogRespuestasInterceptor implements NestInterceptor {
               `✅ Respuesta exitosa [${statusCode}] Interceptor ➡️ 🚀 :`,
               {
                 requestUrl: request.url,
-                responseData: 'Sin Contenido por ser post',
+                requestMethod: method,
+                responseData: data,
               },
             );
           }
