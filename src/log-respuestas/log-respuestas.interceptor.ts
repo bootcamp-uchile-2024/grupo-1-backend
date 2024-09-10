@@ -22,7 +22,7 @@ export class LogRespuestasInterceptor implements NestInterceptor {
           }
         },
         error: (err) => {
-          //  console.error('Error en la respuesta Interceptor 🚨 :', err);
+          console.error('Error en la respuesta Interceptor 🚨 :', err);
         },
       }),
     );

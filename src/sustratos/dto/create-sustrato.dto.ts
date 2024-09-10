@@ -27,7 +27,7 @@ export class CreateSustratoDto extends CreateProductoDto {
   })
   @IsEnum(TipoProductos)
   @IsNotEmpty()
-  categoria: TipoProductos;
+  categoria: TipoProductos.Sustratos;
 
   @ApiProperty({
     name: 'nombreProducto',
@@ -144,4 +144,5 @@ export class CreateSustratoDto extends CreateProductoDto {
   @IsString()
   @IsOptional()
   observaciones: string;
+  codigoProducto: string;
 }
