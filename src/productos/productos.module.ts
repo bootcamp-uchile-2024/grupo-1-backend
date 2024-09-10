@@ -1,19 +1,21 @@
 import { Module } from '@nestjs/common';
 
-
 import { MaceterosModule } from 'src/maceteros/maceteros.module';
 import { PlantasModule } from 'src/plantas/plantas.module';
 import { ProductosController } from './controller/productos.controller';
 import { ProductosService } from './service/productos.service';
+import { ControlPlagasModule } from 'src/control-plagas/control-plagas.module';
+import { FertilizantesModule } from 'src/fertilizantes/fertilizantes.module';
 
 @Module({
   controllers: [ProductosController],
   providers: [ProductosService],
-<<<<<<< HEAD
-  imports:[MaceterosModule,PlantasModule]
-=======
-  imports:[MaceterosModule],
-  exports:[ProductosService]
->>>>>>> main
+  imports: [
+    MaceterosModule,
+    PlantasModule,
+    ControlPlagasModule,
+    FertilizantesModule,
+  ],
+  exports: [ProductosService],
 })
 export class ProductosModule {}

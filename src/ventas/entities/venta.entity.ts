@@ -67,10 +67,7 @@ export class Venta {
 
   @ApiProperty({
     description: 'Cliente que realiza la compra',
-<<<<<<< HEAD
     example: 'new Usuario()',
-=======
->>>>>>> main
     type: Usuario,
   })
   @ValidateNested()

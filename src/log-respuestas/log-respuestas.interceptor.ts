@@ -10,11 +10,9 @@ import { tap } from 'rxjs/operators';
 @Injectable()
 export class LogRespuestasInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    
     return next.handle().pipe(
       tap({
         next: (response) => {
-         
           if (
             response &&
             response.statusCode >= 200 &&
@@ -24,11 +22,7 @@ export class LogRespuestasInterceptor implements NestInterceptor {
           }
         },
         error: (err) => {
-<<<<<<< HEAD
-          console.error('Error en la respuesta Interceptor 🚨 :', err);
-=======
-            console.log('Error en la respuesta Interceptor 🚨 :', err);
->>>>>>> c803e4c56afe58793d193871d646e331b1b7e0c8
+          console.log('Error en la respuesta Interceptor 🚨 :', err);
         },
       }),
     );

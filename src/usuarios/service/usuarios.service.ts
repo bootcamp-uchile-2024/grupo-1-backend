@@ -1,19 +1,13 @@
 import { Injectable } from '@nestjs/common';
-<<<<<<< HEAD:src/usuarios/usuarios.service.ts
-import { CreateUsuarioDto } from './dto/create-usuario.dto';
-import { UpdateUsuarioDto } from './dto/update-usuario.dto';
-import { Usuario } from './entities/usuario.entity';
-import { ComunaSantiago } from './entities/comunas.stgo-enum';
+import { Usuario } from '../entities/usuario.entity';
+import { ComunaSantiago } from '../entities/comunas.stgo-enum';
 import { PlantasService } from 'src/plantas/plantas.service';
-=======
 import { CreateUsuarioDto } from '../dto/create-usuario.dto';
 import { UpdateUsuarioDto } from '../dto/update-usuario.dto';
->>>>>>> main:src/usuarios/service/usuarios.service.ts
 
 @Injectable()
 export class UsuariosService {
-
-  constructor(private readonly servicioPlantas:PlantasService ){}
+  constructor(private readonly servicioPlantas: PlantasService) {}
 
   usuarios: Usuario[] = [
     new Usuario(
@@ -21,14 +15,14 @@ export class UsuariosService {
       '12345678-9',
       'Carlo Escobar',
       'carlo.escobar@mail.com',
-      'pprrprr3223#43', 
+      'pprrprr3223#43',
       '+56912345678',
       'Calle Falsa 123',
       'Santiago',
       'Metropolitana',
       ComunaSantiago.Santiago,
       '1234567',
-      [this.servicioPlantas.plantas[0]] // Plantas
+      [this.servicioPlantas.plantas[0]], // Plantas
     ),
     new Usuario(
       2,
@@ -42,7 +36,7 @@ export class UsuariosService {
       'Metropolitana',
       ComunaSantiago.Ñuñoa,
       '7654321',
-      [] // Plantas
+      [], // Plantas
     ),
     new Usuario(
       3,
@@ -56,7 +50,7 @@ export class UsuariosService {
       'Metropolitana',
       ComunaSantiago.Providencia,
       '2345678',
-      [] // Plantas
+      [], // Plantas
     ),
     new Usuario(
       4,
@@ -70,40 +64,17 @@ export class UsuariosService {
       'Metropolitana',
       ComunaSantiago.LasCondes,
       '8765432',
-      [this.servicioPlantas.plantas[1],this.servicioPlantas.plantas[2]] // Plantas
-    )
+      [this.servicioPlantas.plantas[1], this.servicioPlantas.plantas[2]], // Plantas
+    ),
   ];
-  
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
   create(createUsuarioDto: CreateUsuarioDto) {
     const newUsuario = new Usuario(
       this.usuarios.length + 1,
       createUsuarioDto.rut,
       createUsuarioDto.nombre,
       createUsuarioDto.email,
-      createUsuarioDto.password, 
+      createUsuarioDto.password,
       createUsuarioDto.telefono,
       createUsuarioDto.direccion,
       createUsuarioDto.ciudad,
@@ -123,7 +94,7 @@ export class UsuariosService {
   }
 
   findOne(id: number): Usuario {
-    const usuario = this.usuarios.find(user => user.id === id);
+    const usuario = this.usuarios.find((user) => user.id === id);
     if (!usuario) {
       return null;
     }

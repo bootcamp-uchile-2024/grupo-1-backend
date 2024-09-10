@@ -7,9 +7,7 @@ import { TipoProductos } from 'src/productos/entities/enum-productos';
 
 @Injectable()
 export class ControlPlagasService {
-
-  constructor()
-  {
+  constructor() {
     /*let ventasSustratos: VerControlPlagas = new VerControlPlagas();
     ventasSustratos.id=4 ;
     ventasSustratos.nombreProducto= 'Aceite de neem';
@@ -17,7 +15,7 @@ export class ControlPlagasService {
     ventasSustratos.precio= 8750;
     ventasSustratos.imagen= 'https://example.com/controlplaga_4.jpg';
     ventasSustratos.valoracion= 8.0;
-    ventasSustratos.cantidadVentas= 180; 
+    ventasSustratos.cantidadVentas= 180;
      this.masVendidos.push(ventasSustratos);
     this.catalogo.push(ventasSustratos);
     let ventasSustratos2: VerControlPlagas = new VerControlPlagas();
@@ -27,8 +25,8 @@ export class ControlPlagasService {
     ventasSustratos2.precio= 10000;
     ventasSustratos2.imagen= 'https://example.com/controlplaga_12.jpg';
     ventasSustratos2.valoracion= 7.0;
-    ventasSustratos2.cantidadVentas= 251; 
-    
+    ventasSustratos2.cantidadVentas= 251;
+
     this.masVendidos.push(ventasSustratos2);
     this.catalogo.push(ventasSustratos2);
     let catalogo3: VerControlPlagas = new VerControlPlagas();
@@ -38,52 +36,54 @@ export class ControlPlagasService {
     catalogo3.precio= 15500;
     catalogo3.imagen= 'https://example.com/controlplaga_13.jpg';
     catalogo3.valoracion= 7.0;
-    catalogo3.cantidadVentas= 2; 
+    catalogo3.cantidadVentas= 2;
     this.catalogo.push(catalogo3);*/
   }
 
-  masVendidos: VerControlPlagas[] =[];
-  catalogo: VerControlPlagas[] =[];
-  controlPlagas: ControlPlagas[]= [];
+  masVendidos: VerControlPlagas[] = [];
+  catalogo: VerControlPlagas[] = [];
+  controlPlagas: ControlPlagas[] = [];
 
-  create(createControlPlagasDto: CreateControlPlagasDto, idProducto: number, codigoProducto:string) {
-    const creControlPLagas: ControlPlagas = new  ControlPlagas(  idProducto,createControlPlagasDto.nombreProducto,
-                                                  createControlPlagasDto.imagenProducto,
-                                                  createControlPlagasDto.descuento,
-                                                  createControlPlagasDto.precioNormal, 
-                                                  createControlPlagasDto.coberturaDeDespacho,
-                                                  createControlPlagasDto.stock,
-                                                  createControlPlagasDto.descripcionProducto,
-                                                  TipoProductos['Control Plagas'],
-                                                  0,
-                                                  0,
-                                                  codigoProducto,
-                                                  createControlPlagasDto.TipoPlagaControlada, 
-                                                  createControlPlagasDto.composicion,
-                                                  createControlPlagasDto.metodoAplicacion,
-                                                  createControlPlagasDto.frecuenciaAplicacion,
-                                                  createControlPlagasDto.precauciones,
-                                                  createControlPlagasDto.eficacia,
-                                                  createControlPlagasDto.Toxicidad)
+  create(
+    createControlPlagasDto: CreateControlPlagasDto,
+    idProducto: number,
+    codigoProducto: string,
+  ) {
+    const creControlPLagas: ControlPlagas = new ControlPlagas(
+      idProducto,
+      createControlPlagasDto.nombreProducto,
+      createControlPlagasDto.imagenProducto,
+      createControlPlagasDto.descuento,
+      createControlPlagasDto.precioNormal,
+      createControlPlagasDto.coberturaDeDespacho,
+      createControlPlagasDto.stock,
+      createControlPlagasDto.descripcionProducto,
+      TipoProductos['Control Plagas'],
+      0,
+      0,
+      codigoProducto,
+      createControlPlagasDto.TipoPlagaControlada,
+      createControlPlagasDto.composicion,
+      createControlPlagasDto.metodoAplicacion,
+      createControlPlagasDto.frecuenciaAplicacion,
+      createControlPlagasDto.precauciones,
+      createControlPlagasDto.eficacia,
+      createControlPlagasDto.Toxicidad,
+    );
 
     this.controlPlagas.push(creControlPLagas);
     return creControlPLagas;
   }
 
-
   obtCantidadControlPlagas() {
-    const cantidadControlPLagas= this.controlPlagas.length;
-    return  cantidadControlPLagas;
+    const cantidadControlPLagas = this.controlPlagas.length;
+    return cantidadControlPLagas;
   }
-  createCodigoControlPlagas(){
-    const numeroCodigo =  this.obtCantidadControlPlagas() + 1;
+  createCodigoControlPlagas() {
+    const numeroCodigo = this.obtCantidadControlPlagas() + 1;
     const codigoControlPlagas = 'CTRPLA' + numeroCodigo;
-    return codigoControlPlagas
+    return codigoControlPlagas;
   }
-
-
-
-
 
   listaMasVendidas() {
     return this.masVendidos;
