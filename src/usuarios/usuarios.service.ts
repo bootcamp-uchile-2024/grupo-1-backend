@@ -3,9 +3,12 @@ import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { Usuario } from './entities/usuario.entity';
 import { ComunaSantiago } from './entities/comunas.stgo-enum';
+import { PlantasService } from 'src/plantas/plantas.service';
 
 @Injectable()
 export class UsuariosService {
+
+  constructor(private readonly servicioPlantas:PlantasService ){}
 
   usuarios: Usuario[] = [
     new Usuario(
@@ -20,7 +23,7 @@ export class UsuariosService {
       'Metropolitana',
       ComunaSantiago.Santiago,
       '1234567',
-      [] // Plantas
+      [this.servicioPlantas.plantas[0]] // Plantas
     ),
     new Usuario(
       2,
@@ -62,7 +65,7 @@ export class UsuariosService {
       'Metropolitana',
       ComunaSantiago.LasCondes,
       '8765432',
-      [] // Plantas
+      [this.servicioPlantas.plantas[1],this.servicioPlantas.plantas[2]] // Plantas
     )
   ];
   
@@ -114,10 +117,13 @@ export class UsuariosService {
     return this.usuarios;
   }
 
-  findOne(id: number) {
-    return `Modulo Usuario - Epica Usuario / retorna por id  #${id} usuario`;
+  findOne(id: number): Usuario {
+    const usuario = this.usuarios.find(user => user.id === id);
+    if (!usuario) {
+      return null;
+    }
+    return usuario;
   }
-
   update(id: number, updateUsuarioDto: UpdateUsuarioDto) {
     return `Modulo Usuario - Epica Usuario / Actualiza Usuario #${id} usuario`;
   }

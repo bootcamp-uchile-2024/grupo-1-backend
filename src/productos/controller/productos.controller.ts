@@ -26,6 +26,9 @@ import { CreateMaceteroDto } from 'src/maceteros/dto/create-macetero.dto';
 import { CodigoProductoPipe } from 'src/comunes/pipes/codigo-producto.pipe';
 import { ProductosService } from '../service/productos.service';
 import { TipoProductos } from '../entities/enum-productos';
+import { CreatePlantaDto } from 'src/plantas/dto/create-planta.dto';
+import { CreateControlPlagasDto } from 'src/control-plagas/dto/create-control-plagas.dto';
+import { CreateFertilizanteDto } from 'src/fertilizantes/dto/create-fertilizante.dto';
 @ApiTags('productos')
 @Controller('productos')
 export class ProductosController {
@@ -83,24 +86,24 @@ export class ProductosController {
   }
   /* ******************************** */
   /* crea un tipo producto PLANTA*/
-  /*@ApiOperation({
+  @ApiOperation({
     summary: 'Historia Usuario : H003',
-    description: 'Permite crear macetero para incorporar en catalogo de productos',
+    description: 'Permite crear planta para incorporar en catalogo de productos',
   })
   @ApiResponse({
     status: 200,
-    description: 'Producto tipo Macetero creado en catalogo de productos',
+    description: 'Producto tipo planta creado en catalogo de productos',
  
   })
-  @Post('´plamta')
+  @Post('planta')
   @UsePipes(new ValidationPipe())
   @ApiOperation({ summary: 'Crear una nueva Planta' })
   @ApiResponse({ status: 200, description: 'Planta creada.' })
   @ApiResponse({ status: 400, description: 'Datos inválidos.' })
-  @ApiBody({ type: CreateMaceteroDto })
-  crearPlanta(@Body() CreateMaceteroDto:CreateMaceteroDto, @Res() res:Response){
+  @ApiBody({ type: CreatePlantaDto })
+  crearPlanta(@Body() CreatePlantaDto:CreatePlantaDto, @Res() res:Response){
     try {
-      const resultado = this.productosService.createMacetero(CreateMaceteroDto);
+      const resultado = this.productosService.createPlanta(CreatePlantaDto);
       res.status(200).send(resultado);
     } catch (error) {
       res.status(error.statusCode).send({
@@ -108,7 +111,7 @@ export class ProductosController {
       });
     }
   }
-*/
+
 
 
   /************************************************* */
@@ -140,26 +143,26 @@ export class ProductosController {
   }
 */
 
-  /************************************************* */
+  
   /* crea un tipo producto FERTILIZANTE*/
-  /*@ApiOperation({
+   @ApiOperation({
     summary: 'Historia Usuario : H003',
-    description: 'Permite crear macetero para incorporar en catalogo de productos',
+    description: 'Permite crear fertilizante para incorporar en catalogo de productos',
   })
   @ApiResponse({
     status: 200,
-    description: 'Producto tipo Macetero creado en catalogo de productos',
+    description: 'Producto tipo fertilizante creado en catalogo de productos',
  
   })
   @Post('fertilizante')
   @UsePipes(new ValidationPipe())
-  @ApiOperation({ summary: 'Crear una nueva Planta' })
-  @ApiResponse({ status: 200, description: 'Planta creada.' })
+  @ApiOperation({ summary: 'Crear un nuevo Fertilizante' })
+  @ApiResponse({ status: 200, description: 'Fertilizante creado.' })
   @ApiResponse({ status: 400, description: 'Datos inválidos.' })
-  @ApiBody({ type: CreateMaceteroDto })
-  crearFertilizante(@Body() CreateMaceteroDto:CreateMaceteroDto, @Res() res:Response){
+  @ApiBody({ type: CreateFertilizanteDto })
+  crearFertilizante(@Body() CreateFertilizanteDto:CreateFertilizanteDto, @Res() res:Response){
     try {
-      const resultado = this.productosService.createMacetero(CreateMaceteroDto);
+      const resultado = this.productosService.createFertilizante(CreateFertilizanteDto);
       res.status(200).send(resultado);
     } catch (error) {
       res.status(error.statusCode).send({
@@ -167,16 +170,19 @@ export class ProductosController {
       });
     }
   }
-*/
+
+
   /************************************************* */
+
+
   /* crea un tipo producto CONTROL PLAGAS*/
-  /*@ApiOperation({
+  @ApiOperation({
     summary: 'Historia Usuario : H003',
-    description: 'Permite crear macetero para incorporar en catalogo de productos',
+    description: 'Permite crear control de plagas para incorporar en catalogo de productos',
   })
   @ApiResponse({
     status: 200,
-    description: 'Producto tipo Macetero creado en catalogo de productos',
+    description: 'Producto control de plagas creado en catalogo de productos',
  
   })
   @Post('control-plagas')
@@ -184,10 +190,10 @@ export class ProductosController {
   @ApiOperation({ summary: 'Crear una nueva Planta' })
   @ApiResponse({ status: 200, description: 'Planta creada.' })
   @ApiResponse({ status: 400, description: 'Datos inválidos.' })
-  @ApiBody({ type: CreateMaceteroDto })
-  crearControlPlaga(@Body() CreateMaceteroDto:CreateMaceteroDto, @Res() res:Response){
+  @ApiBody({ type: CreateControlPlagasDto })
+  crearControlPlaga(@Body() CreateControlPlagasDto:CreateControlPlagasDto, @Res() res:Response){
     try {
-      const resultado = this.productosService.createMacetero(CreateMaceteroDto);
+      const resultado = this.productosService.createControlPlagas(CreateControlPlagasDto);
       res.status(200).send(resultado);
     } catch (error) {
       res.status(error.statusCode).send({
@@ -195,7 +201,8 @@ export class ProductosController {
       });
     }
   }
-*/
+
+
   /**************** fin HISTORIA 3 */
 
 

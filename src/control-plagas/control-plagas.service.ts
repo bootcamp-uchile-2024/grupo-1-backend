@@ -2,11 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { CreateControlPlagasDto } from './dto/create-control-plagas.dto';
 import { UpdateControlPlagasDto } from './dto/update-control-plagas.dto';
 import { VerControlPlagas } from './dto/ver-control-plagas-dto';
+import { ControlPlagas } from './entities/control-plagas.entity';
+import { TipoProductos } from 'src/productos/entities/enum-productos';
 
 @Injectable()
 export class ControlPlagasService {
-  masVendidos: VerControlPlagas[] =[];
-  catalogo: VerControlPlagas[] =[];
+
   constructor()
   {
     /*let ventasSustratos: VerControlPlagas = new VerControlPlagas();
@@ -40,9 +41,49 @@ export class ControlPlagasService {
     catalogo3.cantidadVentas= 2; 
     this.catalogo.push(catalogo3);*/
   }
-  create(createControlPlagasDto: CreateControlPlagasDto) {
-    return 'This action adds a new controlPlagas';
+
+  masVendidos: VerControlPlagas[] =[];
+  catalogo: VerControlPlagas[] =[];
+  controlPlagas: ControlPlagas[]= [];
+
+  create(createControlPlagasDto: CreateControlPlagasDto, idProducto: number, codigoProducto:string) {
+    const creControlPLagas: ControlPlagas = new  ControlPlagas(  idProducto,createControlPlagasDto.nombreProducto,
+                                                  createControlPlagasDto.imagenProducto,
+                                                  createControlPlagasDto.descuento,
+                                                  createControlPlagasDto.precioNormal, 
+                                                  createControlPlagasDto.coberturaDeDespacho,
+                                                  createControlPlagasDto.stock,
+                                                  createControlPlagasDto.descripcionProducto,
+                                                  TipoProductos['Control Plagas'],
+                                                  0,
+                                                  0,
+                                                  codigoProducto,
+                                                  createControlPlagasDto.TipoPlagaControlada, 
+                                                  createControlPlagasDto.composicion,
+                                                  createControlPlagasDto.metodoAplicacion,
+                                                  createControlPlagasDto.frecuenciaAplicacion,
+                                                  createControlPlagasDto.precauciones,
+                                                  createControlPlagasDto.eficacia,
+                                                  createControlPlagasDto.Toxicidad)
+
+    this.controlPlagas.push(creControlPLagas);
+    return creControlPLagas;
   }
+
+
+  obtCantidadControlPlagas() {
+    const cantidadControlPLagas= this.controlPlagas.length;
+    return  cantidadControlPLagas;
+  }
+  createCodigoControlPlagas(){
+    const numeroCodigo =  this.obtCantidadControlPlagas() + 1;
+    const codigoControlPlagas = 'CTRPLA' + numeroCodigo;
+    return codigoControlPlagas
+  }
+
+
+
+
 
   listaMasVendidas() {
     return this.masVendidos;

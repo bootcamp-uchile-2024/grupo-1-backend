@@ -5,5 +5,6 @@ import { PlantasController } from './plantas.controller';
 @Module({
   controllers: [PlantasController],
   providers: [PlantasService],
+  exports:[PlantasService]
 })
 export class PlantasModule {}

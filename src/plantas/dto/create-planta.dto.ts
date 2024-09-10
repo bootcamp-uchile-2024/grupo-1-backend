@@ -101,4 +101,6 @@ export class CreatePlantaDto extends CreateProductoDto {
   })
   public sustratosSugeridos: number[];
 
+  
+
 }

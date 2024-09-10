@@ -41,9 +41,16 @@ export class UsuariosController {
   @ApiOperation({ summary: 'Obtener un usuario por ID' })
   @ApiResponse({ status: 200, description: 'Usuario obtenido con éxito.' })
   @ApiResponse({ status: 404, description: 'Usuario no encontrado.' })
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string,@Res() res:Response) {
     // lógica para obtener un usuario por ID
-    this.usuariosService.findOne(+id);
+    const resultado=this.usuariosService.findOne(+id);
+    if(resultado){
+      res.status(201).send(resultado)
+    }else{
+      res.status(404).send({message:'Usuario no encontrado'})
+    }
+
+
   }
 
   @Post()

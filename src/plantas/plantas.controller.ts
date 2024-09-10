@@ -39,6 +39,8 @@ export class PlantasController {
   findAll(@Res() res:Response) {
     res.status(200).send(this.plantasService.findAll());
   }
+
+  /*
   @Get('/MasVendidos/')
   @ApiOperation({
     summary: 'Historia Usuario : H0001 y H0002',
@@ -52,7 +54,7 @@ export class PlantasController {
   listaMasVendidas(@Res() res:Response) {
     res.status(200).send( this.plantasService.listaPlantasMasVendidas()) ;
   }
-  
+  */
 
  
   
