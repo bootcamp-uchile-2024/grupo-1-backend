@@ -5,50 +5,24 @@ import { TipoProductos } from "src/productos/entities/enum-productos";
 
 export class ControlPlagas extends Producto {
 
-    @ApiProperty({
-        type: [TipoPlaga],
-        isArray: true,
-        description: 'Lista de Plagas controladas',
-        example: ['Pulgones', 'Cochinillas', 'Acaros' ]
-    })
+    @ApiProperty()
     public TipoPlagaControlada: TipoPlaga[];
 
-    @ApiProperty({
-        name: 'Composicion Producto ',
-        example: 'Aceite de neem(azadiractina)'
-    })
+    @ApiProperty()
     public composicion: string;
 
 
-    @ApiProperty({
-        type: [MetodoAplicacion],
-        isArray: true,
-        description: 'Metodos de Aplicacion Producto',
-        example: ['Spray foliar']
-    })
+    @ApiProperty()
     public metodoAplicacion: MetodoAplicacion[];
-    @ApiProperty({
-        name: 'frecuencia Aplicacion',
-        example: 'Cada 7-14 días según la infestación'
-    })
+    @ApiProperty()
     public frecuenciaAplicacion: string;
 
-    @ApiProperty({
-        name: 'precauciones',
-        example: 'Seguridad para mascotas, evitar el contacto directo con ojos y piel'
-    })
+    @ApiProperty()
     public precauciones: string;
-    @ApiProperty({
-        name: 'Eficacia',
-        example: Eficacia.ALTA,
-        enum: Eficacia,
-    })
+    @ApiProperty()
     public eficacia: Eficacia;
 
-    @ApiProperty({
-        description: 'Indica si el producto es tóxico',
-        example: true
-    })
+    @ApiProperty()
     public Toxicidad: boolean;
 
     constructor(idProducto: number, nombreProducto: string, imagenProducto: string[],

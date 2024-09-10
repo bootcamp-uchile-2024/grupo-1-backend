@@ -167,7 +167,7 @@ export class ProductosService {
         TipoProductos.Planta,
         4,
         150,
-        'P9',
+        'PL9',
       ),
       new Producto(
         10,
@@ -181,7 +181,7 @@ export class ProductosService {
         TipoProductos.Planta,
         5,
         200,
-        'P10',
+        'PL10',
       ),
       new Producto(
         11,
@@ -194,9 +194,17 @@ export class ProductosService {
         'Cactus pequeño ideal para decoración de interiores.',
         TipoProductos.Planta,
         3,
-        100,
-        'P11',
+        1000,
+        'PL11',
       ),
+   
+      new Producto(12,'fetilizante prueba 1',['http://lugar.com/imagen_f1.png'], 0, 2500, ['Arica a Pta.Arenas'], 10,'no tiene', TipoProductos.Fertilizantes,0,500,'FE1'),
+    new Producto(13,'fetilizante prueba 2',['http://lugar.com/imagen_f2.png'], 0, 1500, ['Arica a Pta.Arenas'], 10,'tampoco tiene', TipoProductos.Fertilizantes,0,500,'FE2'),
+    new Producto(14,'control plaga prueba 1',['http://lugar.com/imagen_cp1.png'], 0, 2500, ['Arica a Pta.Arenas'], 10,'no tiene', TipoProductos.ControlPlagas,0,2500,'CP1'),
+    new Producto(15,'control plaga prueba2',['http://lugar.com/imagen_cp2.png'], 0, 1500, ['Arica a Pta.Arenas'], 10,'tampoco tiene', TipoProductos.ControlPlagas,0,2510,'CP2')
+    
+   
+   
     ];
   }
 
@@ -204,12 +212,23 @@ export class ProductosService {
     return this.productos;
   }
   findbyType(categoria: TipoProductos) {
+    console.log(categoria);
     if (categoria) {
       const produtos = this.productos.filter(
         (prod) => prod.categoria == categoria,
       );
+      for (let i:number=0; i< this.productos.length; i++){
+        console.log('producto:' + this.productos[i].categoria + ' - filtro ' +  categoria );
+      }
+
       if (produtos.length > 0 && categoria == TipoProductos.Macetero) {
         return this.servicioMaceteros.findAll();
+      }else if (produtos.length > 0 && categoria == TipoProductos.Planta) {
+        return this.servicioPLantas.findAll();
+      }else if (produtos.length > 0 && categoria == TipoProductos.Fertilizantes) {
+        return this.servicioFertilizantes.findAll();
+      }else if (produtos.length > 0 && categoria == TipoProductos.ControlPlagas) {
+        return this.servicioControlPlagas.findAll();
       }
     }
     return null;
@@ -285,7 +304,7 @@ export class ProductosService {
       createControlPlagasDto.coberturaDeDespacho,
       createControlPlagasDto.stock,
       createControlPlagasDto.descripcionProducto,
-      TipoProductos.Planta,
+      TipoProductos.ControlPlagas,
       0,
       0,
       codigoProducto,
@@ -303,7 +322,7 @@ export class ProductosService {
   createFertilizante(createFertilizanteDto: CreateFertilizanteDto) {
     const idProducto: number = this.obtCantidadProductos() + 1;
     const codigoProducto =
-      this.servicioControlPlagas.createCodigoControlPlagas();
+      this.servicioFertilizantes.createCodigoFertilizantes();
     const productoFertilizante: Producto = new Producto(
       idProducto,
       createFertilizanteDto.nombreProducto,
@@ -339,7 +358,14 @@ export class ProductosService {
     const idProducto = tipoProducto.idProducto;
     if (categoria == TipoProductos.Macetero) {
       return this.servicioMaceteros.findOne(idProducto);
+    }else if(categoria == TipoProductos.Planta){
+      return this.servicioPLantas.findOne(idProducto);
+    }else if(categoria == TipoProductos.Fertilizantes){
+      return this.servicioFertilizantes.findOne(idProducto);
+    }else if(categoria == TipoProductos.ControlPlagas){
+      return this.servicioControlPlagas.findOne(idProducto);
     }
+
   }
 
   bestSellers() {

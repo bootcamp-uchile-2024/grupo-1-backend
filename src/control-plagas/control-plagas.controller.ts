@@ -36,6 +36,7 @@ export class ControlPlagasController {
   findAll(@Res() res:Response) {
     res.status(200).send(this.controlPlagasService.findAll())
   }
+    /*
   @Get('/MasVendidos/')
   @ApiOperation({
     summary: 'Historia Usuario : H0001 y H0002',
@@ -49,7 +50,7 @@ export class ControlPlagasController {
   listaMasVendidas(@Res() res:Response) {
     res.status(200).send( this.controlPlagasService.listaMasVendidas()) ;
   }
-  /*
+
 
   @Get(':id')
   findOne(@Param('id') id: string) {

@@ -55,7 +55,7 @@ export class PlantasService {
         TipoProductos.Planta, 
         4, 
         150, 
-        'P1', 
+        'PL1', 
         Habitat.INTERIOR, 
         LuzRequerida.BAJA, 
         FrecuenciaDeRiego.SEMANAL, 
@@ -81,7 +81,7 @@ export class PlantasService {
         TipoProductos.Planta, 
         5, 
         200, 
-        'P2', 
+        'PL2', 
         Habitat.EXTERIOR, 
         LuzRequerida.MEDIA, 
         FrecuenciaDeRiego.DIARIO, 
@@ -106,8 +106,8 @@ export class PlantasService {
         'Cactus pequeño ideal para decoración de interiores.', 
         TipoProductos.Planta, 
         3, 
-        100, 
-        'P3', 
+        1000, 
+        'PL3', 
         Habitat.INTERIOR, 
         LuzRequerida.ALTA, 
         FrecuenciaDeRiego.MENSUAL, 
@@ -132,7 +132,7 @@ export class PlantasService {
   }
   createCodigoPlanta(){
     const numeroCodigo =  this.obtCantidadPlantas() + 1;
-    const codigoPLanta = 'PLA' + numeroCodigo;
+    const codigoPLanta = 'PL' + numeroCodigo;
     return codigoPLanta
   }
 
@@ -206,7 +206,12 @@ export class PlantasService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} planta`;
+    const plantaEncontrada = this.plantas.find(prod=>prod.idProducto === id);
+    
+    if(plantaEncontrada){
+      return plantaEncontrada;
+    }
+    return  null;
   }
 
   update(id: number, updatePlantaDto: UpdatePlantaDto) {

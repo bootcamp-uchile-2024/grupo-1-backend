@@ -3,5 +3,5 @@ export enum TipoProductos {
     'Macetero' = 'Macetero',
     'Sustratos' = 'Sustrato',
     'Fertilizantes' = 'Fertilizantes',
-    'Control Plagas' = 'Control Plagas'
+    'ControlPlagas' = 'Control Plagas'
 }

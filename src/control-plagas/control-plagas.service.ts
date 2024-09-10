@@ -4,45 +4,22 @@ import { UpdateControlPlagasDto } from './dto/update-control-plagas.dto';
 import { VerControlPlagas } from './dto/ver-control-plagas-dto';
 import { ControlPlagas } from './entities/control-plagas.entity';
 import { TipoProductos } from 'src/productos/entities/enum-productos';
+import { Eficacia, MetodoAplicacion, TipoPlaga } from './entities/enum-control-plagas';
 
 @Injectable()
 export class ControlPlagasService {
+  controlPlagas: ControlPlagas[] = [];
   constructor() {
-    /*let ventasSustratos: VerControlPlagas = new VerControlPlagas();
-    ventasSustratos.id=4 ;
-    ventasSustratos.nombreProducto= 'Aceite de neem';
-    ventasSustratos.stock= 150;
-    ventasSustratos.precio= 8750;
-    ventasSustratos.imagen= 'https://example.com/controlplaga_4.jpg';
-    ventasSustratos.valoracion= 8.0;
-    ventasSustratos.cantidadVentas= 180;
-     this.masVendidos.push(ventasSustratos);
-    this.catalogo.push(ventasSustratos);
-    let ventasSustratos2: VerControlPlagas = new VerControlPlagas();
-    ventasSustratos2.id=12;
-    ventasSustratos2.nombreProducto= 'Jabón potásico';
-    ventasSustratos2.stock= 100;
-    ventasSustratos2.precio= 10000;
-    ventasSustratos2.imagen= 'https://example.com/controlplaga_12.jpg';
-    ventasSustratos2.valoracion= 7.0;
-    ventasSustratos2.cantidadVentas= 251;
+    this.controlPlagas =  [
+      new ControlPlagas(14,'control plaga prueba 1',['http://lugar.com/imagen_cp1.png'], 0, 2500, ['Arica a Pta.Arenas'], 10,'no tiene', TipoProductos.ControlPlagas,0,2500,'CP1',[TipoPlaga.COCHINILLAS, TipoPlaga.ACAROS],'50 ml de fosforo',[MetodoAplicacion.RIEGO],'cada 2 horas','lejos de nños',Eficacia.ALTA,true),
+      new ControlPlagas(15,'control plaga prueba 1',['http://lugar.com/imagen_cp1.png'], 0, 2500, ['Arica a Pta.Arenas'], 10,'no tiene', TipoProductos.ControlPlagas,0,2500,'CP1',[TipoPlaga.ESCAMAS, TipoPlaga.HONGOS_MILDIU],'50 ml de fisfato',[MetodoAplicacion.CERCA_PLANTAS_AFECTADAS],'cada 2 dias','lejos de nños',Eficacia.ALTA,true)
+  
 
-    this.masVendidos.push(ventasSustratos2);
-    this.catalogo.push(ventasSustratos2);
-    let catalogo3: VerControlPlagas = new VerControlPlagas();
-  catalogo3.id=13 ;
-    catalogo3.nombreProducto= 'Insecticida a base de piretrina';
-    catalogo3.stock= 200;
-    catalogo3.precio= 15500;
-    catalogo3.imagen= 'https://example.com/controlplaga_13.jpg';
-    catalogo3.valoracion= 7.0;
-    catalogo3.cantidadVentas= 2;
-    this.catalogo.push(catalogo3);*/
+    ];
   }
 
-  masVendidos: VerControlPlagas[] = [];
-  catalogo: VerControlPlagas[] = [];
-  controlPlagas: ControlPlagas[] = [];
+ 
+
 
   create(
     createControlPlagasDto: CreateControlPlagasDto,
@@ -58,7 +35,7 @@ export class ControlPlagasService {
       createControlPlagasDto.coberturaDeDespacho,
       createControlPlagasDto.stock,
       createControlPlagasDto.descripcionProducto,
-      TipoProductos['Control Plagas'],
+      TipoProductos.ControlPlagas,
       0,
       0,
       codigoProducto,
@@ -81,20 +58,23 @@ export class ControlPlagasService {
   }
   createCodigoControlPlagas() {
     const numeroCodigo = this.obtCantidadControlPlagas() + 1;
-    const codigoControlPlagas = 'CTRPLA' + numeroCodigo;
+    const codigoControlPlagas = 'CP' + numeroCodigo;
     return codigoControlPlagas;
   }
 
-  listaMasVendidas() {
-    return this.masVendidos;
-  }
+  
 
   findAll() {
-    return this.catalogo;
+    return this.controlPlagas;
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} controlPlagas`;
+    const controlPlagaEncontrado = this.controlPlagas.find(prod=>prod.idProducto === id);
+    //console.log(controlPlagaEncontrado);  
+    if(controlPlagaEncontrado){
+      return controlPlagaEncontrado;
+    }
+    return  null;
   }
 
   update(id: number, updateControlPlagasDto: UpdateControlPlagasDto) {

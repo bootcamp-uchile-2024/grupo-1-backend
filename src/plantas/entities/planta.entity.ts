@@ -7,87 +7,40 @@ import { PlantaCuidado } from "src/planta-cuidados/entities/planta-cuidado.entit
 import { TipoProductos } from "src/productos/entities/enum-productos";
 export class Planta extends Producto {
   
-  @ApiProperty({
-    name: 'habitat',
-    enum: Habitat,
-    example: Habitat.CUALQUIERA,
-  })
+  @ApiProperty()
   public habitat: Habitat;
 
-  @ApiProperty({
-    name: 'Cantidad de luz requerida',
-    enum: LuzRequerida,
-    example: LuzRequerida.ALTA,
-  })
+  @ApiProperty()
   public luz: LuzRequerida;
 
-  @ApiProperty({
-    description: 'Frecuencia de riego',
-    enum: FrecuenciaDeRiego,
-    example: FrecuenciaDeRiego.SEMANAL,
-  })
+  @ApiProperty()
   public frecuenciaDeRiego: FrecuenciaDeRiego;
 
-  @ApiProperty({
-    description: 'Nivel de humedad ideal',
-    enum: NivelDeHumedad,
-    example: NivelDeHumedad.ALTA,
-  })
+  @ApiProperty()
   public humedadIdeal: NivelDeHumedad;
 
-  @ApiProperty({
-    description: 'Temperatura Ideal en Grados Celcius',
-    example: 25,
-  })
+  @ApiProperty()
   public temperaturaIdeal: number;
 
-  @ApiProperty({
-    description: 'Toxicidad para Mascotas',
-    example: true,
-  })
+  @ApiProperty()
   public toxicidadMascotas: boolean;
 
-  @ApiProperty({
-    description: 'Tamaño Máximo Planta en centimetros',
-    example: 80
-  })
+  @ApiProperty()
   public tamanoMaximo: number;
 
-  @ApiProperty({
-    description: 'Tipo de suelo',
-    enum: TipoDeSuelo,
-    example: TipoDeSuelo.ARENOSO,
-  })
+  @ApiProperty()
   public tipoSuelo: TipoDeSuelo;
 
-  @ApiProperty({
-    description: 'Dificultad de cuidado',
-    enum: DificultadDeCuidado,
-    example: DificultadDeCuidado.BAJA,
-  })
+  @ApiProperty()
   public dificultadDeCuidado: DificultadDeCuidado;
 
-  @ApiProperty({
-    description: 'Estación de mayor crecimiento',
-    enum: Estacion,
-    example: Estacion.PRIMAVERA,
-  })
+  @ApiProperty()
   public estacion: Estacion;
 
-  @ApiProperty({
-    isArray: true,
-    description: 'Lista de Id Fertilizantes Sugeridos',
-    example: [2],
-    default: null
-  })
+  @ApiProperty()
   public fertilizantesSugeridos: number[];
 
-  @ApiProperty({
-    isArray: true,
-    description: 'Lista de Id Sustratos Sugeridos',
-    example: [3],
-    default: null
-  })
+  @ApiProperty()
   public sustratosSugeridos: number[];
 
 
