@@ -22,7 +22,7 @@ export class LogRespuestasInterceptor implements NestInterceptor {
               `✅ Respuesta exitosa [${statusCode}] Interceptor ➡️ 🚀 :`,
               {
                 requestUrl: request.url,
-                responseData: data,
+                responseData: 'Sin Contenido por ser post',
               },
             );
           }
