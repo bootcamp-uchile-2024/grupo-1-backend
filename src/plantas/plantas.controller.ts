@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, ValidationPipe } from '@nestjs/common';
 import { PlantasService } from './plantas.service';
 import { CreatePlantaDto } from './dto/create-planta.dto';
 import { UpdatePlantaDto } from './dto/update-planta.dto';
@@ -21,7 +21,7 @@ export class PlantasController {
     description: 'Producto tipo Planta creado en catalogo de productos',
  
   })
-  create(@Body() createPlantaDto: CreatePlantaDto, @Res() res: Response) {
+  create(@Body(new ValidationPipe()) createPlantaDto: CreatePlantaDto, @Res() res: Response) {
     res.status(200).send(createPlantaDto);
     //return this.plantasService.create(createPlantaDto);
 
@@ -39,6 +39,8 @@ export class PlantasController {
   findAll(@Res() res:Response) {
     res.status(200).send(this.plantasService.findAll());
   }
+
+  /*
   @Get('/MasVendidos/')
   @ApiOperation({
     summary: 'Historia Usuario : H0001 y H0002',
@@ -52,7 +54,7 @@ export class PlantasController {
   listaMasVendidas(@Res() res:Response) {
     res.status(200).send( this.plantasService.listaPlantasMasVendidas()) ;
   }
-  
+  */
 
  
   

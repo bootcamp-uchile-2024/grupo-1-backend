@@ -1,89 +1,106 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { CreateProductoDto } from "src/productos/dto/create-producto.dto";
-import { DificultadDeCuidado, Estacion, FrecuenciaDeRiego, Habitad, LuzRequerida, NivelDeHumedad, TipoDeSuelo } from "../entities/enum-plantas";
-
+import { DificultadDeCuidado, Estacion, FrecuenciaDeRiego, Habitat, LuzRequerida, NivelDeHumedad, TipoDeSuelo } from "../entities/enum-plantas";
+import { IsArray, IsBoolean, IsEnum, IsInt } from "class-validator";
 
 export class CreatePlantaDto extends CreateProductoDto {
-
+  
+  @IsEnum(Habitat)
   @ApiProperty({
-    name: 'nombreCientifico',
-    example: 'Rosa rubiginosa'
+    name: 'habitat',
+    enum: Habitat,
+    example: Habitat.CUALQUIERA,
   })
-  public nombreCientifico: string;
-
-  @ApiProperty({
-    name: 'Tamaño Maximo Planta en centimetros',
-    example: '80'
-  })
-  public tamano: number;
+  public habitat: Habitat;
+  @IsEnum(LuzRequerida)
   @ApiProperty({
     name: 'Cantidad de luz requerida',
-    enum: LuzRequerida, example: LuzRequerida.ALTA,
+    enum: LuzRequerida,
+    example: LuzRequerida.ALTA,
   })
-  public luzrequerida: LuzRequerida;
+  public luz: LuzRequerida;
+  
+  @IsEnum(FrecuenciaDeRiego)
   @ApiProperty({
     description: 'Frecuencia de riego',
-    example: FrecuenciaDeRiego.SEMANAL,
     enum: FrecuenciaDeRiego,
+    example: FrecuenciaDeRiego.SEMANAL,
   })
-  public frecuenciaderiego: FrecuenciaDeRiego;
+  public frecuenciaDeRiego: FrecuenciaDeRiego;
 
+  @IsEnum(NivelDeHumedad)
   @ApiProperty({
     description: 'Nivel de humedad ideal',
-    example: NivelDeHumedad.ALTA,
     enum: NivelDeHumedad,
+    example: NivelDeHumedad.ALTA,
   })
-  public humedadideal: NivelDeHumedad;
+  public humedadIdeal: NivelDeHumedad;
+
+  @IsInt()
   @ApiProperty({
     description: 'Temperatura Ideal en Grados Celcius',
     example: 25,
   })
   public temperaturaIdeal: number;
+
+  @IsBoolean()
   @ApiProperty({
     description: 'Toxicidad para Mascotas',
-    example: 'True',
+    example: true,
   })
   public toxicidadMascotas: boolean;
+  
+  @IsInt()
   @ApiProperty({
-    description: 'Ambiente donde viven ',
-    example: Habitad.CUALQUIERA,
-    enum: Habitad,
+    description: 'Tamaño Máximo Planta en centimetros',
+    example: 80
   })
-  public Habitad: Habitad;
+  public tamanoMaximo: number;
+
+  @IsEnum(TipoDeSuelo)
   @ApiProperty({
     description: 'Tipo de suelo',
-    example: TipoDeSuelo.ARENOSO,
     enum: TipoDeSuelo,
+    example: TipoDeSuelo.ARENOSO,
   })
-  public tiposuelo: TipoDeSuelo;
+  public tipoSuelo: TipoDeSuelo;
 
+  @IsEnum(DificultadDeCuidado)
   @ApiProperty({
     description: 'Dificultad de cuidado',
-    example: DificultadDeCuidado.BAJA,
     enum: DificultadDeCuidado,
+    example: DificultadDeCuidado.BAJA,
   })
-  public dificultaddecuidado: DificultadDeCuidado;
+  public dificultadDeCuidado: DificultadDeCuidado;
+
+  @IsEnum(Estacion)
   @ApiProperty({
-    description: 'Estacion',
-    example: Estacion.PRIMAVERA,
+    description: 'Estación de mayor crecimiento',
     enum: Estacion,
+    example: Estacion.PRIMAVERA,
   })
   public estacion: Estacion;
+
+  @IsArray()
+  @IsInt()
   @ApiProperty({
     isArray: true,
-    description: 'Lista de Id Fertiliantes',
+    description: 'Lista de Id Fertilizantes Sugeridos',
     example: [2],
     default: null
   })
   public fertilizantesSugeridos: number[];
+
+  @IsArray()
+  @IsInt()
   @ApiProperty({
     isArray: true,
     description: 'Lista de Id Sustratos Sugeridos',
     example: [3],
     default: null
-
   })
   public sustratosSugeridos: number[];
 
+  
 
 }

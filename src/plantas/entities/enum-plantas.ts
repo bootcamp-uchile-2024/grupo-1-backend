@@ -11,7 +11,7 @@ export enum Estacion {
   CUALQUIERA = 'Cualquiera',
 }
 
-export enum Habitad {
+export enum Habitat {
   INTERIOR = 'Interior',
   EXTERIOR = 'Exterior',
   CUALQUIERA = 'Cualquiera',

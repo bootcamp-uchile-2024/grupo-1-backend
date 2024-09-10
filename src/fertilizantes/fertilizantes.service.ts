@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { CreateFertilizanteDto } from './dto/create-fertilizante.dto';
 import { UpdateFertilizanteDto } from './dto/update-fertilizante.dto';
 import { VerFertilizantes } from './dto/ver-fertilizantes-dto';
+import { Fertilizante } from './entities/fertilizante.entity';
+import { TipoProductos } from 'src/productos/entities/enum-productos';
 
 @Injectable()
 export class FertilizantesService {
@@ -44,9 +46,47 @@ export class FertilizantesService {
     
     this.catalogo.push(catalogo3);*/
   }
-  create(createFertilizanteDto: CreateFertilizanteDto) {
-    return 'This action adds a new fertilizante';
+
+  fertilizantes:Fertilizante[]=[]
+
+
+
+
+  obtCantidadFertilizantes() {
+    const cantidadFertilizantes= this.fertilizantes.length;
+    return  cantidadFertilizantes;
   }
+  createCodigoFertilizantes(){
+    const numeroCodigo =  this.obtCantidadFertilizantes() + 1;
+    const codigoFertilizante = 'FER' + numeroCodigo;
+    return codigoFertilizante
+  }
+
+
+   create(createFertilizanteDto: CreateFertilizanteDto, idProducto: number, codigoProducto:string) {
+    const creFertilizante: Fertilizante = new  Fertilizante(  idProducto,createFertilizanteDto.nombreProducto,
+                                                  createFertilizanteDto.imagenProducto,
+                                                  createFertilizanteDto.descuento,
+                                                  createFertilizanteDto.precioNormal, 
+                                                  createFertilizanteDto.coberturaDeDespacho,
+                                                  createFertilizanteDto.stock,
+                                                  createFertilizanteDto.descripcionProducto,
+                                                  TipoProductos.Fertilizantes,
+                                                  0,
+                                                  0,
+                                                  codigoProducto,
+                                                  createFertilizanteDto.composición, 
+                                                  createFertilizanteDto.tipo, 
+                                                  createFertilizanteDto.frecuenciaAplicacion, 
+                                                  createFertilizanteDto.presentacion, 
+                                                  createFertilizanteDto.observaciones, 
+                                                  createFertilizanteDto.tiposPlantasRecomendadas 
+                                                );
+
+    this.fertilizantes.push(creFertilizante);
+    return creFertilizante;
+  }
+
 
   listaMasVendidas() {
     return this.masVendidos;
