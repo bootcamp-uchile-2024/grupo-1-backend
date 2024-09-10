@@ -3,7 +3,7 @@ import { CreateOrdenCompraDto } from '../dto/create-orden-compra.dto';
 import { UpdateOrdenCompraDto } from '../dto/update-orden-compra.dto';
 import { OrdenCompra } from '../entities/orden-compra.entity';
 import { EstadosOC } from '../entities/enum-orden-compra';
-import { ErrorPlantopia } from 'src/error-plantopia/error-plantopia';
+import { ErrorPlantopia } from 'src/comunes/error-plantopia/error-plantopia';
 import { DetalleOrdenCompra } from 'src/detalle-orden-compras/entities/detalle-orden-compra.entity';
 import { ProductosService } from 'src/productos/service/productos.service';
 import { DetalleOrdenComprasService } from 'src/detalle-orden-compras/service/detalle-orden-compras.service';

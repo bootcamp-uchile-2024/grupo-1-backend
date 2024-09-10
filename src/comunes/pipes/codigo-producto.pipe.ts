@@ -1,5 +1,5 @@
 import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
-import { ErrorPlantopia } from 'src/error-plantopia/error-plantopia';
+import { ErrorPlantopia } from 'src/comunes/error-plantopia/error-plantopia';
 
 @Injectable()
 export class CodigoProductoPipe implements PipeTransform<string> {

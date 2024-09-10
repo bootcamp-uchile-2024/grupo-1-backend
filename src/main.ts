@@ -14,6 +14,7 @@ import { OrdenComprasModule } from './orden-compras/orden-compras.module';
 import { ValidationPipe } from '@nestjs/common';
 import { MaceterosModule } from './maceteros/maceteros.module';
 import { LogRespuestasInterceptor } from './log-respuestas/log-respuestas.interceptor';
+import { GlobalFilter } from './comunes/filter/global.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -97,6 +98,7 @@ async function bootstrap() {
   });
 
   app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalFilters(new GlobalFilter());  
   await app.listen(3000);
 }
 bootstrap();

@@ -85,7 +85,7 @@ export class ProductosController {
       });
     }
   }
-  /* ******************************** */
+  /* ******************************** */  
   /* crea un tipo producto PLANTA*/
   /*@ApiOperation({
     summary: 'Historia Usuario : H003',
