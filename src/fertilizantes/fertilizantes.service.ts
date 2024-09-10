@@ -4,50 +4,23 @@ import { UpdateFertilizanteDto } from './dto/update-fertilizante.dto';
 import { VerFertilizantes } from './dto/ver-fertilizantes-dto';
 import { Fertilizante } from './entities/fertilizante.entity';
 import { TipoProductos } from 'src/productos/entities/enum-productos';
+import { TipoFertizante, TipoPlantasRecomendadas } from './entities/enum-fertilizantes';
+import { FrecuenciaDeRiego } from 'src/plantas/entities/enum-plantas';
 
 @Injectable()
 export class FertilizantesService {
-  masVendidos: VerFertilizantes[] =[];
-  catalogo: VerFertilizantes[] =[];
+  fertilizantes:Fertilizante[]=[]
   constructor()
   {
-   /* let ventasFertilizantes: VerFertilizantes = new VerFertilizantes();
-    ventasFertilizantes.id=2 ;
-    ventasFertilizantes.nombreProducto= 'Fertilizante equilibrado 20-20-20';
-    ventasFertilizantes.stock= 1200;
-    ventasFertilizantes.precio= 2500;
-    ventasFertilizantes.imagen= 'https://example.com/fertilizante_2.jpg';
-    ventasFertilizantes.valoracion= 5.5;
-    ventasFertilizantes.cantidadVentas= 120; 
-   ventasFertilizantes.marca ='Mas-Vida';
-
-    this.masVendidos.push(ventasFertilizantes);
-    this.catalogo.push(ventasFertilizantes);
-    let ventasFertilizantes2: VerFertilizantes = new VerFertilizantes();
-    ventasFertilizantes2.id=7 ;
-    ventasFertilizantes2.nombreProducto= 'Fertilizante líquido para follaje';
-    ventasFertilizantes2.stock= 245;
-    ventasFertilizantes2.precio= 3500;
-    ventasFertilizantes2.imagen= 'https://example.com/fertilizante_7.jpg';
-    ventasFertilizantes2.valoracion= 6.0;
-    ventasFertilizantes2.cantidadVentas= 1; 
-    ventasFertilizantes.marca ='Mas-Flora';
-    this.masVendidos.push(ventasFertilizantes2);
-    this.catalogo.push(ventasFertilizantes2);
-    let catalogo3: VerFertilizantes = new VerFertilizantes();
-    catalogo3.id=8 ;
-    catalogo3.nombreProducto= 'Fertilizante balanceado 10-10-10';
-    catalogo3.stock= 150;
-    catalogo3.precio= 4000;
-    catalogo3.imagen= 'https://example.com/fertilizante_9.jpg';
-    catalogo3.valoracion= 7.0;
-    catalogo3.cantidadVentas= 250; 
-    catalogo3.marca ='Mas-Flora';
+  this.fertilizantes =[  
+    new Fertilizante(12,'fetilizante prueba 1',['http://lugar.com/imagen_f1.png'], 0, 2500, ['Arica a Pta.Arenas'], 10,'no tiene', TipoProductos.Fertilizantes,0,500,'FE1','FERTI1',TipoFertizante.EQUILIBRADO_LIQUIDO, 'Todos los dias','500 mg','´carga3',TipoPlantasRecomendadas.ORQUIDIAS),
+    new Fertilizante(13,'fetilizante prueba 2',['http://lugar.com/imagen_f2.png'], 0, 1500, ['Arica a Pta.Arenas'], 10,'tampoco tiene', TipoProductos.Fertilizantes,0,500,'FE2','FERTI2',TipoFertizante.EQUILIBRADO_LIQUIDO, 'Todos los dias','500 mg','´carga3',TipoPlantasRecomendadas.ORQUIDIAS),
     
-    this.catalogo.push(catalogo3);*/
+   ];
+   
   }
 
-  fertilizantes:Fertilizante[]=[]
+
 
 
 
@@ -58,7 +31,7 @@ export class FertilizantesService {
   }
   createCodigoFertilizantes(){
     const numeroCodigo =  this.obtCantidadFertilizantes() + 1;
-    const codigoFertilizante = 'FER' + numeroCodigo;
+    const codigoFertilizante = 'FE' + numeroCodigo;
     return codigoFertilizante
   }
 
@@ -87,17 +60,18 @@ export class FertilizantesService {
     return creFertilizante;
   }
 
-
-  listaMasVendidas() {
-    return this.masVendidos;
-  }
-
+ 
   findAll() {
-    return this.catalogo;
+    return this.fertilizantes;
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} fertilizante`;
+    const fertilizanteEncontrado = this.fertilizantes.find(prod=>prod.idProducto === id);
+   // console.log(fertilizanteEncontrado);  
+    if(fertilizanteEncontrado){
+      return fertilizanteEncontrado;
+    }
+    return  null;
   }
 
   update(id: number, updateFertilizanteDto: UpdateFertilizanteDto) {

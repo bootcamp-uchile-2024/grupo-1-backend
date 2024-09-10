@@ -8,6 +8,7 @@ import { Response } from 'express';
 @Controller('fertilizantes')
 export class FertilizantesController {
   constructor(private readonly fertilizantesService: FertilizantesService) {}
+   /*
   @ApiOperation({
     summary: 'Historia Usuario : H0003',
     description: 'Permite crear fertilizantes para incorporar en catálogo de productos',
@@ -36,6 +37,7 @@ export class FertilizantesController {
   findAll(@Res() res:Response) {
     res.status(200).send(this.fertilizantesService.findAll())
   }
+ 
   @Get('/MasVendidos/')
   @ApiOperation({
     summary: 'Historia Usuario : H0001 y H0002',
@@ -46,10 +48,11 @@ export class FertilizantesController {
     description: 'Listado Fertilizantes más vendidos ',
  
   })
+  
   listaMasVendidas(@Res() res:Response) {
     res.status(200).send( this.fertilizantesService.listaMasVendidas()) ;
   }
-/*
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.fertilizantesService.findOne(+id);

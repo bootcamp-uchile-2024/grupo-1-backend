@@ -63,7 +63,7 @@ export class MaceterosService {
 
   findOne(id: number) {
     const maceteroEncontrado = this.maceteros.find(prod=>prod.idProducto === id);
-    console.log(maceteroEncontrado);  
+    //console.log(maceteroEncontrado);  
     if(maceteroEncontrado){
       return maceteroEncontrado;
     }

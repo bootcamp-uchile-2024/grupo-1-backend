@@ -5,35 +5,17 @@ import { TipoProductos } from "src/productos/entities/enum-productos";
 
 export class Fertilizante extends Producto {
 
-  @ApiProperty({
-    name: 'Composicion (NPK)',
-    example: '20-20-20'
-  })
+  @ApiProperty()
   public composición: string;
-  @ApiProperty({
-    name: 'Tipo Fertilizante',
-    enum: TipoFertizante, example: TipoFertizante.EQUILIBRADO_LIQUIDO,
-  })
+  @ApiProperty()
   public tipo: TipoFertizante;
-  @ApiProperty({
-    name: 'Frecuencia Aplicacion',
-    example: 'Cada 2 semanas en primavera y verano'
-  })
+  @ApiProperty()
   public frecuenciaAplicacion: string;
-  @ApiProperty({
-    name: 'Presentacion Fertilizante',
-    example: '500 cc'
-  })
+  @ApiProperty()
   public presentacion: string;
-  @ApiProperty({
-    name: 'observaciones',
-    example: ' Adecuado para plantas que requieren un balance NPK equilibrado.'
-  })
+  @ApiProperty()
   public observaciones: string;
-  @ApiProperty({
-    name: 'Tipo Plantas Recomendadas',
-    enum: TipoPlantasRecomendadas, example: TipoPlantasRecomendadas.PLANTAS_INTERIOR,
-  })
+  @ApiProperty()
   public tiposPlantasRecomendadas: TipoPlantasRecomendadas;
 
   constructor(

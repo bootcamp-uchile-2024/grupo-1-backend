@@ -2,19 +2,26 @@ import { ApiProperty } from "@nestjs/swagger";
 import { CreateProductoDto } from "src/productos/dto/create-producto.dto";
 import { DificultadDeCuidado, Estacion, FrecuenciaDeRiego, Habitat, LuzRequerida, NivelDeHumedad, TipoDeSuelo } from "../entities/enum-plantas";
 import { IsArray, IsBoolean, IsEnum, IsInt } from "class-validator";
+import { TipoProductos } from "src/productos/entities/enum-productos";
 
 export class CreatePlantaDto extends CreateProductoDto {
-  
+  @ApiProperty({
+    name: 'categoria',
+    description: 'Enum Tipo Producto',   
+    enum: TipoProductos, example: TipoProductos.Planta
+  })
+  public categoria: TipoProductos; 
+ 
   @IsEnum(Habitat)
   @ApiProperty({
-    name: 'habitat',
+    description: 'habitat',
     enum: Habitat,
     example: Habitat.CUALQUIERA,
   })
   public habitat: Habitat;
   @IsEnum(LuzRequerida)
   @ApiProperty({
-    name: 'Cantidad de luz requerida',
+    description: 'Cantidad de luz requerida',
     enum: LuzRequerida,
     example: LuzRequerida.ALTA,
   })
@@ -82,7 +89,7 @@ export class CreatePlantaDto extends CreateProductoDto {
   public estacion: Estacion;
 
   @IsArray()
-  @IsInt()
+  //@IsInt()
   @ApiProperty({
     isArray: true,
     description: 'Lista de Id Fertilizantes Sugeridos',
@@ -92,7 +99,7 @@ export class CreatePlantaDto extends CreateProductoDto {
   public fertilizantesSugeridos: number[];
 
   @IsArray()
-  @IsInt()
+  //@IsInt()
   @ApiProperty({
     isArray: true,
     description: 'Lista de Id Sustratos Sugeridos',
