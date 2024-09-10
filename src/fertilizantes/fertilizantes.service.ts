@@ -9,7 +9,7 @@ export class FertilizantesService {
   catalogo: VerFertilizantes[] =[];
   constructor()
   {
-    let ventasFertilizantes: VerFertilizantes = new VerFertilizantes();
+   /* let ventasFertilizantes: VerFertilizantes = new VerFertilizantes();
     ventasFertilizantes.id=2 ;
     ventasFertilizantes.nombreProducto= 'Fertilizante equilibrado 20-20-20';
     ventasFertilizantes.stock= 1200;
@@ -42,7 +42,7 @@ export class FertilizantesService {
     catalogo3.cantidadVentas= 250; 
     catalogo3.marca ='Mas-Flora';
     
-    this.catalogo.push(catalogo3);
+    this.catalogo.push(catalogo3);*/
   }
   create(createFertilizanteDto: CreateFertilizanteDto) {
     return 'This action adds a new fertilizante';

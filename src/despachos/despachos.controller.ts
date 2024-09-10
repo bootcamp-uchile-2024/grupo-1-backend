@@ -14,7 +14,7 @@ import { UpdateDespachoDto } from './dto/update-despacho.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Response } from 'express';
 
-@ApiTags('despachos')
+@ApiTags('Despachos')
 @Controller('despachos')
 export class DespachosController {
   constructor(private readonly despachosService: DespachosService) {}

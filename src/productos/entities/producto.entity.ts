@@ -1,41 +1,67 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { TipoProductos } from './enum-productos';
 export class Producto {
-  @ApiProperty({
-    name: 'id',
-    example: 1,
-  })
-  public id: number;
-  @ApiProperty({
-    description: 'Nombre del Producto',
-    example: 'Rosa',
-  })
+  @ApiProperty()
+  public idProducto: number;
+
+  @ApiProperty()
   public nombreProducto: string;
-  @ApiProperty({
-    description: 'Cantidad de stock disponible',
-    example: 100,
-  })
+
+  @ApiProperty()
+  public imagenProducto: string[];
+
+  @ApiProperty()
+  public descuento: number;
+
+  @ApiProperty()
+  public precioNormal: number;
+
+  @ApiProperty()
+  public coberturaDeDespacho: string[];
+
+  @ApiProperty()
   public stock: number;
-  @ApiProperty({
-    description: 'Precio del producto',
-    example: 50000,
-  })
-  public precio: number;
-  @ApiProperty({
-    description: 'URL de la imagen del producto',
-    example: 'http://example.com/imagen.jpg',
-  })
-  public imagen: string;
-  @ApiProperty({
-    name: 'valoracion',
-    default: 4.5,
-  })
+
+  @ApiProperty()
+  public descripcionProducto: string;
+
+  @ApiProperty()
+  public categoria: TipoProductos;
+
+  @ApiProperty()
   public valoracion: number;
-  @ApiProperty({
-    name: 'cantidad Ventas',
-    default: 0,
-  })
-  public  cantidadVentas: number;
-  
 
+  @ApiProperty()
+  public cantidadVentas: number;
+
+  @ApiProperty()
+  public codigoProducto: string;
+
+  constructor(
+    idProducto: number,
+    nombreProducto: string,
+    imagenProducto: string[],
+    descuento: number,
+    precioNormal: number,
+    coberturaDeDespacho: string[],
+    stock: number,
+    descripcionProducto: string,
+    categoria: TipoProductos,
+    valoracion: number,
+    cantidadVentas: number,
+    codigoProducto: string
+  ) {
+    this.idProducto = idProducto;
+    this.nombreProducto = nombreProducto;
+    this.imagenProducto = imagenProducto;
+    this.descuento = descuento;
+    this.precioNormal = precioNormal;
+    this.coberturaDeDespacho = coberturaDeDespacho;
+    this.stock = stock;
+    this.descripcionProducto = descripcionProducto;
+    this.categoria = categoria;
+    this.valoracion = valoracion;
+    this.cantidadVentas = cantidadVentas;
+    this.codigoProducto = codigoProducto;
+  }
 }
-

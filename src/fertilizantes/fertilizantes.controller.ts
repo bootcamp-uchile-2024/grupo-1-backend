@@ -2,9 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Res } from '@nestjs/
 import { FertilizantesService } from './fertilizantes.service';
 import { CreateFertilizanteDto } from './dto/create-fertilizante.dto';
 import { UpdateFertilizanteDto } from './dto/update-fertilizante.dto';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
-
+@ApiTags('Fertilizantes')
 @Controller('fertilizantes')
 export class FertilizantesController {
   constructor(private readonly fertilizantesService: FertilizantesService) {}
