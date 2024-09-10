@@ -26,18 +26,23 @@ import { CreateMaceteroDto } from 'src/maceteros/dto/create-macetero.dto';
 import { CodigoProductoPipe } from 'src/comunes/pipes/codigo-producto.pipe';
 import { ProductosService } from '../service/productos.service';
 import { TipoProductos } from '../entities/enum-productos';
+<<<<<<< HEAD
 import { CreatePlantaDto } from 'src/plantas/dto/create-planta.dto';
 import { CreateControlPlagasDto } from 'src/control-plagas/dto/create-control-plagas.dto';
 import { CreateFertilizanteDto } from 'src/fertilizantes/dto/create-fertilizante.dto';
+=======
+import { CreateSustratoDto } from 'src/sustratos/dto/create-sustrato.dto';
+>>>>>>> main
 @ApiTags('productos')
 @Controller('productos')
 export class ProductosController {
-  constructor(private readonly productosService: ProductosService) { }
+  constructor(private readonly productosService: ProductosService) {}
 
   @Get('masvendidos')
   @ApiOperation({
     summary: 'Historia Usuario : H001 y H002',
-    description: 'Como ussuario del sistema quiero ver los productos mas vendidos ',
+    description:
+      'Como ussuario del sistema quiero ver los productos mas vendidos ',
   })
   @ApiResponse({
     status: 200,
@@ -48,25 +53,24 @@ export class ProductosController {
     description: 'No hay mas vendidos',
   })
   bestSellers(@Res() res: Response) {
-    try{
+    try {
       const resultado = this.productosService.bestSellers();
       res.status(200).send(resultado);
-    }catch(error){
-      res.status(error.statusCode).send({message: error.message })
+    } catch (error) {
+      res.status(error.statusCode).send({ message: error.message });
     }
   }
 
-
-/* INICIO HISTORIA 3 */
+  /* INICIO HISTORIA 3 */
   /* crea un tipo producto macetero*/
   @ApiOperation({
     summary: 'Historia Usuario : H003',
-    description: 'Permite crear macetero para incorporar en catalogo de productos',
+    description:
+      'Permite crear macetero para incorporar en catalogo de productos',
   })
   @ApiResponse({
     status: 200,
     description: 'Producto tipo Macetero creado en catalogo de productos',
-
   })
   @Post('macetero')
   @UsePipes(new ValidationPipe())
@@ -74,13 +78,16 @@ export class ProductosController {
   @ApiResponse({ status: 200, description: 'Macetero creado.' })
   @ApiResponse({ status: 400, description: 'Datos inválidos.' })
   @ApiBody({ type: CreateMaceteroDto })
-  crearMacetero(@Body() CreateMaceteroDto: CreateMaceteroDto, @Res() res: Response) {
+  crearMacetero(
+    @Body() CreateMaceteroDto: CreateMaceteroDto,
+    @Res() res: Response,
+  ) {
     try {
       const resultado = this.productosService.createMacetero(CreateMaceteroDto);
       res.status(200).send(resultado);
     } catch (error) {
       res.status(error.statusCode).send({
-        message: error.message
+        message: error.message,
       });
     }
   }
@@ -92,8 +99,13 @@ export class ProductosController {
   })
   @ApiResponse({
     status: 200,
+<<<<<<< HEAD
     description: 'Producto tipo planta creado en catalogo de productos',
  
+=======
+    description: 'Producto tipo Macetero creado en catalogo de productos',
+
+>>>>>>> main
   })
   @Post('planta')
   @UsePipes(new ValidationPipe())
@@ -113,7 +125,6 @@ export class ProductosController {
   }
 
 
-
   /************************************************* */
   /* crea un tipo producto SUSTRATO*/
   /*@ApiOperation({
@@ -123,7 +134,7 @@ export class ProductosController {
   @ApiResponse({
     status: 200,
     description: 'Producto tipo Macetero creado en catalogo de productos',
- 
+
   })
   @Post('sustrato')
   @UsePipes(new ValidationPipe())
@@ -151,8 +162,13 @@ export class ProductosController {
   })
   @ApiResponse({
     status: 200,
+<<<<<<< HEAD
     description: 'Producto tipo fertilizante creado en catalogo de productos',
  
+=======
+    description: 'Producto tipo Macetero creado en catalogo de productos',
+
+>>>>>>> main
   })
   @Post('fertilizante')
   @UsePipes(new ValidationPipe())
@@ -182,8 +198,13 @@ export class ProductosController {
   })
   @ApiResponse({
     status: 200,
+<<<<<<< HEAD
     description: 'Producto control de plagas creado en catalogo de productos',
  
+=======
+    description: 'Producto tipo Macetero creado en catalogo de productos',
+
+>>>>>>> main
   })
   @Post('control-plagas')
   @UsePipes(new ValidationPipe())
@@ -205,8 +226,6 @@ export class ProductosController {
 
   /**************** fin HISTORIA 3 */
 
-
-
   @Get('catalogo')
   @ApiOperation({
     summary: 'Historia Usuario : H004',
@@ -221,18 +240,26 @@ export class ProductosController {
     res.status(200).send(resultado);
   }
 
-
   @Get('catalogo/categoria')
   @ApiOperation({
     summary: 'Historia Usuario : H004',
-    description: 'Como cliente quiero poder ver el catalogo de productos filtrados por categoria para poder encontrar los productos que quiero',
+    description:
+      'Como cliente quiero poder ver el catalogo de productos filtrados por categoria para poder encontrar los productos que quiero',
   })
   @ApiResponse({
     status: 200,
     description: 'Listado de Productos Filtrados por Tipo Producto',
   })
-  @ApiQuery({ name: 'tipo', enum: TipoProductos, required: false, schema: { type: 'number' } })
-  findbyType(@Query('tipo', new ParseEnumPipe(TipoProductos)) tipo: TipoProductos, @Res() res: Response) {
+  @ApiQuery({
+    name: 'tipo',
+    enum: TipoProductos,
+    required: false,
+    schema: { type: 'number' },
+  })
+  findbyType(
+    @Query('tipo', new ParseEnumPipe(TipoProductos)) tipo: TipoProductos,
+    @Res() res: Response,
+  ) {
     const resultado = this.productosService.findbyType(tipo);
     if (resultado) {
       res.status(200).send(resultado);
@@ -241,28 +268,37 @@ export class ProductosController {
     }
   }
 
-
-
   @Get('detalle/:codigoProducto')
   @ApiOperation({
     summary: 'Historia Usuario : H007',
-    description: 'Como cliente quiero poder buscar producto y ver detalle de el para ver si cumple lo que necesito',
+    description:
+      'Como cliente quiero poder buscar producto y ver detalle de el para ver si cumple lo que necesito',
   })
   @ApiProperty({ name: 'codigoProducto', type: 'string', example: 'MA1' })
   @ApiResponse({ status: 200, description: 'Producto obtenido con éxito.' })
   @ApiResponse({ status: 404, description: 'Producto no encontrado.' })
-  findOne(@Param('codigoProducto',CodigoProductoPipe) codigoProducto:string , @Res() res: Response) {
+  findOne(
+    @Param('codigoProducto', CodigoProductoPipe) codigoProducto: string,
+    @Res() res: Response,
+  ) {
     try {
       const resultado = this.productosService.findOne(codigoProducto);
       res.status(200).send(resultado);
     } catch (error) {
-      res.status(error.statusCode).send({ message: error.message })
+      res.status(error.statusCode).send({ message: error.message });
     }
-
   }
-
-  
-
-
-
+  @ApiOperation({
+    description: 'Ingresar un nuevo sustrato',
+  })
+  @ApiBody({
+    type: typeof CreateSustratoDto,
+  })
+  @Post('sustrato')
+  ingresarSustrato(
+    @Body() CreateSustratoDto: CreateSustratoDto,
+    @Res() res: Response,
+  ) {
+    return this.productosService.ingresarSustrato(CreateSustratoDto);
+  }
 }

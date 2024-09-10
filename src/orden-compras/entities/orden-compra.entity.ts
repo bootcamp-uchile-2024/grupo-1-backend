@@ -1,32 +1,38 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { EstadosOC } from "./enum-orden-compra";
-import { Usuario } from "src/usuarios/entities/usuario.entity";
 import { DetalleOrdenCompra } from "src/detalle-orden-compras/entities/detalle-orden-compra.entity";
 import { Despacho } from "src/despachos/entities/despacho.entity";
 
 export class OrdenCompra {
-    @ApiProperty({
-        name: 'id',
-        example: 1,
-      })
-      public idOC: number;
-      @ApiProperty({
-        description: 'fecha OC',
-        example: '15/07/2024',
-      })
-      public fechaOC: Date;
-      @ApiProperty({
-        name: 'Estado OC',
-        enum: EstadosOC, example: EstadosOC.CREADA,
-    })
-    public estadoOC: EstadosOC;
-    @ApiProperty({
-        name: 'id Usuario',
-        example: 1,
-        default: null
-      })
-    public cliente: number;
-    //public cliente: Usuario;
-    public detalle: DetalleOrdenCompra[];
-    public despacho :Despacho;
+  @ApiProperty()
+  public id: number;
+  @ApiProperty()
+  public fechaOC: Date;
+  @ApiProperty()
+  public estadoOC: EstadosOC;
+  @ApiProperty()
+  public emailComprador: string;
+  @ApiProperty()
+  public idCliente?: number;
+  @ApiProperty()
+  public despacho?: Despacho;
+  @ApiProperty()
+  public detalle: DetalleOrdenCompra[];
+  constructor(
+    id: number,
+    fechaOC: Date,
+    estadoOC: EstadosOC,
+    emailComprador: string,
+    idCliente: number,
+    despacho: Despacho,
+    detalle: DetalleOrdenCompra[]
+  ) {
+    this.id = id;
+    this.fechaOC = fechaOC;
+    this.estadoOC = estadoOC;
+    this.emailComprador= emailComprador;
+    this.idCliente = idCliente;
+    this.despacho = despacho;
+    this.detalle = detalle;
+  }
 }

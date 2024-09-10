@@ -9,6 +9,11 @@ import { ProductosService } from './service/productos.service';
 @Module({
   controllers: [ProductosController],
   providers: [ProductosService],
+<<<<<<< HEAD
   imports:[MaceterosModule,PlantasModule]
+=======
+  imports:[MaceterosModule],
+  exports:[ProductosService]
+>>>>>>> main
 })
 export class ProductosModule {}

@@ -1,9 +1,14 @@
 import { Injectable } from '@nestjs/common';
+<<<<<<< HEAD:src/usuarios/usuarios.service.ts
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { Usuario } from './entities/usuario.entity';
 import { ComunaSantiago } from './entities/comunas.stgo-enum';
 import { PlantasService } from 'src/plantas/plantas.service';
+=======
+import { CreateUsuarioDto } from '../dto/create-usuario.dto';
+import { UpdateUsuarioDto } from '../dto/update-usuario.dto';
+>>>>>>> main:src/usuarios/service/usuarios.service.ts
 
 @Injectable()
 export class UsuariosService {
