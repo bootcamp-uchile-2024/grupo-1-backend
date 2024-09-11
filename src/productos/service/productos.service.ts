@@ -42,7 +42,7 @@ export class ProductosService {
     new Producto( 8,'macetero plomo',['http://lugar.com/imagen_m2.png'], 0,2500,['Arica a Pta.Arenas'],10,'macetero interior',TipoProductos.Macetero,0, 0,'MA8'),
     new Producto( 9,'Planta de Interior Verde', ['http://lugar.com/imagen_p1.png'],5, 3000, ['Arica a Pta.Arenas'], 20, 'Planta ideal para interiores con poca luz.',TipoProductos.Planta, 4,150,'PL1'),
     new Producto(10,'Sombra de Jardín',['http://lugar.com/imagen_p2.png'], 10, 1500, ['Arica a Pta.Arenas'], 30,'Perfecta para dar sombra en jardines grandes.', TipoProductos.Planta,5,200,'PL2'),
-    new Producto(11,'Cactus Decorativo',['http://lugar.com/imagen_p3.png'], 0,500,['Arica a Pta.Arenas'],15,'Cactus pequeño ideal para decoración de interiores.',TipoProductos.Planta,3,1000,'PL3',),
+    new Producto(11,'Cactus Decorativo',['http://lugar.com/imagen_p3.png'], 0,500,['Arica a Pta.Arenas'],15,'Cactus pequeño ideal para decoración de interiores.',TipoProductos.Planta,3,1000,'PL3  ',),
     new Producto(12,'fetilizante prueba 1',['http://lugar.com/imagen_f1.png'], 0, 2500, ['Arica a Pta.Arenas'], 10,'no tiene', TipoProductos.Fertilizantes,0,500,'FE1'),
     new Producto(13,'fetilizante prueba 2',['http://lugar.com/imagen_f2.png'], 0, 1500, ['Arica a Pta.Arenas'], 10,'tampoco tiene', TipoProductos.Fertilizantes,0,500,'FE2'),
     new Producto(14,'control plaga prueba 1',['http://lugar.com/imagen_cp1.png'], 0, 2500, ['Arica a Pta.Arenas'], 10,'no tiene', TipoProductos.ControlPlagas,0,2500,'CP1'),
@@ -50,8 +50,7 @@ export class ProductosService {
     new Producto(16,'Mezcla para plantas de interior con perlita',['http://lugar.com/imagen_s1.png'],0,25000,['Arica a Pta.Arenas'],1500,'Ideal para plantas de interior que necesitan drenaje',TipoProductos.Sustratos,0,481,'SU1'),
     new Producto(17,'Sustrato con turba y perlita',	['http://lugar.com/imagen_s2.png'],0,25000,['Arica a Pta.Arenas'],1500,'Ideal para plantas de interior que necesitan drenaje',TipoProductos.Sustratos,0,481,'SU2'),
     new Producto(18,'Sustrato con turba y perlita',	['http://lugar.com/imagen_s3.png'],0,25000,['Arica a Pta.Arenas'],1500,'Ideal para plantas de interior que necesitan drenaje',TipoProductos.Sustratos,0,481,'SU2')
-    
-   
+      
    
     ];
   }
