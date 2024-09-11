@@ -18,6 +18,7 @@ import { GlobalFilter } from './comunes/filter/global.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors();
   // Configuración del interceptor para imprimir log de respuestas OK
   app.useGlobalInterceptors(new LogRespuestasInterceptor());
     // Configuración de Swagger para la aplicación principal
@@ -70,6 +71,7 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new GlobalFilter());
+  
   await app.listen(3000);
 }
 bootstrap();

@@ -1,4 +1,4 @@
-import { ArgumentsHost, BadRequestException, Catch, ExceptionFilter, HttpException, ImATeapotException } from '@nestjs/common';
+import { ArgumentsHost, BadRequestException, Catch, ExceptionFilter, HttpException, HttpStatus, ImATeapotException } from '@nestjs/common';
 import { Response } from 'express';
 @Catch()
 export class GlobalFilter<ImATeapotException> implements ExceptionFilter {
@@ -7,9 +7,10 @@ export class GlobalFilter<ImATeapotException> implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
-    const status = exception.getStatus();
+    //const status = exception.getStatus();/* ver tema 
     const message = exception.message;
-    
+    let status = HttpStatus.INTERNAL_SERVER_ERROR;
+    //let message = 'Internal server error';
     
     response.status(status).json({
       /*queda mas mejor el  */
