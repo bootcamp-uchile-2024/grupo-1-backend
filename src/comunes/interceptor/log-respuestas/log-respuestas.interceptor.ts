@@ -24,7 +24,7 @@ export class LogRespuestasInterceptor implements NestInterceptor {
               {
                 requestUrl: request.url,
                 requestMethod: method,
-                //responseData: data,
+                responseData: data,
               },
             );
           }
@@ -37,8 +37,6 @@ export class LogRespuestasInterceptor implements NestInterceptor {
           message: err.message || 'Internal Server Error',
           error: err.response || 'Unknown Error',
         };
-
-       
 
         // Continuar el error en el flujo sin "caer" la aplicación
         return throwError(() => err);

@@ -33,7 +33,7 @@ import { CreateSustratoDto } from 'src/sustratos/dto/create-sustrato.dto';
 @ApiTags('productos')
 @Controller('productos')
 export class ProductosController {
-  constructor(private readonly productosService: ProductosService) { }
+  constructor(private readonly productosService: ProductosService) {}
 
   @Get('masvendidos')
   @ApiOperation({
@@ -122,26 +122,29 @@ export class ProductosController {
   /* crea un tipo producto SUSTRATO*/
   @ApiOperation({
     summary: 'Historia Usuario : H003',
-    description: 'Permite crear sustrato para incorporar en catalogo de productos',
+    description:
+      'Permite crear sustrato para incorporar en catalogo de productos',
   })
   @ApiResponse({
     status: 200,
     description: 'Producto tipo sustrato creado en catalogo de productos',
-
   })
   @Post('sustrato')
   @UsePipes(new ValidationPipe())
-  @ApiOperation({ summary: 'Crear una nueva Planta' })
-  @ApiResponse({ status: 200, description: 'Planta creada.' })
+  @ApiOperation({ summary: 'Crear una tipo de producto sustrato ' })
+  @ApiResponse({ status: 200, description: 'sustrato creado.' })
   @ApiResponse({ status: 400, description: 'Datos inválidos.' })
   @ApiBody({ type: CreateSustratoDto })
-  crearSustrato(@Body() createSustratoDto: CreateSustratoDto, @Res() res: Response) {
+  crearSustrato(
+    @Body() createSustratoDto: CreateSustratoDto,
+    @Res() res: Response,
+  ) {
     try {
       const resultado = this.productosService.createSustrato(createSustratoDto);
       res.status(200).send(resultado);
     } catch (error) {
       res.status(error.statusCode).send({
-        message: error.message
+        message: error.message,
       });
     }
   }
@@ -276,8 +279,4 @@ export class ProductosController {
       res.status(error.statusCode).send({ message: error.message });
     }
   }
-
-
-
-
 }
