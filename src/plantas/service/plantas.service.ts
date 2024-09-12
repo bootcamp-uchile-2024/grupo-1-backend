@@ -21,7 +21,7 @@ export class PlantasService {
         12,
         'Cactus Opuntia',
         [
-          'https://acdn.mitiendanube.com/stores/001/202/679/products/opuntia-microdasys-amarilla11-f96f80e136ac2b347816196560098082-1024-1024.webp']
+          'https://acdn.mitiendanube.com/stores/001/202/679/products/opuntia-microdasys-amarilla11-f96f80e136ac2b347816196560098082-1024-1024.webp'],
         10,
         8360,
         ['Arica a Pta.Arenas'],
