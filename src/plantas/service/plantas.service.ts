@@ -21,8 +21,7 @@ export class PlantasService {
         12,
         'Cactus Opuntia',
         [
-          'https://cdn2.stylecraze.com/wp-content/uploads/2014/10/10-Different-Types-Of-Cactus-Plants.jpg',
-        ],
+          'https://acdn.mitiendanube.com/stores/001/202/679/products/opuntia-microdasys-amarilla11-f96f80e136ac2b347816196560098082-1024-1024.webp']
         10,
         8360,
         ['Arica a Pta.Arenas'],
