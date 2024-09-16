@@ -9,8 +9,8 @@ export class ControlPlagasService {
   controlPlagas: ControlPlagas[] = [];
   constructor() { 
     this.controlPlagas =  [
-      new ControlPlagas(14,'control plaga prueba 1',['http://lugar.com/imagen_cp1.png'], 0, 2500, ['Arica a Pta.Arenas'], 10,'no tiene', TipoProductos.ControlPlagas,0,2500,'CP1',[TipoPlaga.COCHINILLAS, TipoPlaga.ACAROS],'50 ml de fosforo',[MetodoAplicacion.RIEGO],'cada 2 horas','lejos de nños',Eficacia.ALTA,true),
-      new ControlPlagas(15,'control plaga prueba 1',['http://lugar.com/imagen_cp1.png'], 0, 2500, ['Arica a Pta.Arenas'], 10,'no tiene', TipoProductos.ControlPlagas,0,2500,'CP1',[TipoPlaga.ESCAMAS, TipoPlaga.HONGOS_MILDIU],'50 ml de fisfato',[MetodoAplicacion.CERCA_PLANTAS_AFECTADAS],'cada 2 dias','lejos de nños',Eficacia.ALTA,true)
+      new ControlPlagas(11,'control plaga prueba 1',['http://lugar.com/imagen_cp1.png'], 0, 2500, ['Arica a Pta.Arenas'], 10,'no tiene', TipoProductos.ControlPlagas,0,2500,'CP1',[TipoPlaga.COCHINILLAS, TipoPlaga.ACAROS],'50 ml de fosforo',[MetodoAplicacion.RIEGO],'cada 2 horas','lejos de nños',Eficacia.ALTA,true),
+      new ControlPlagas(28,'control plaga prueba 1',['http://lugar.com/imagen_cp1.png'], 0, 2500, ['Arica a Pta.Arenas'], 10,'no tiene', TipoProductos.ControlPlagas,0,2500,'CP1',[TipoPlaga.ESCAMAS, TipoPlaga.HONGOS_MILDIU],'50 ml de fisfato',[MetodoAplicacion.CERCA_PLANTAS_AFECTADAS],'cada 2 dias','lejos de nños',Eficacia.ALTA,true)
   
 
     ];
