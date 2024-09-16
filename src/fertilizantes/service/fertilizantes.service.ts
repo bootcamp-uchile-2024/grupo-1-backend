@@ -12,8 +12,8 @@ export class FertilizantesService {
   constructor()
   {
   this.fertilizantes =[  
-    new Fertilizante(12,'fetilizante prueba 1',['http://lugar.com/imagen_f1.png'], 0, 2500, ['Arica a Pta.Arenas'], 10,'no tiene', TipoProductos.Fertilizantes,0,500,'FE1','FERTI1',TipoFertizante.EQUILIBRADO_LIQUIDO, 'Todos los dias','500 mg','´carga3',TipoPlantasRecomendadas.ORQUIDIAS),
-    new Fertilizante(13,'fetilizante prueba 2',['http://lugar.com/imagen_f2.png'], 0, 1500, ['Arica a Pta.Arenas'], 10,'tampoco tiene', TipoProductos.Fertilizantes,0,500,'FE2','FERTI2',TipoFertizante.EQUILIBRADO_LIQUIDO, 'Todos los dias','500 mg','´carga3',TipoPlantasRecomendadas.ORQUIDIAS),
+    new Fertilizante(9,'fetilizante prueba 1',['http://lugar.com/imagen_f1.png'], 0, 2500, ['Arica a Pta.Arenas'], 10,'no tiene', TipoProductos.Fertilizantes,0,500,'FE1','FERTI1',TipoFertizante.EQUILIBRADO_LIQUIDO, 'Todos los dias','500 mg','´carga3',TipoPlantasRecomendadas.ORQUIDIAS),
+    new Fertilizante(10,'fetilizante prueba 2',['http://lugar.com/imagen_f2.png'], 0, 1500, ['Arica a Pta.Arenas'], 10,'tampoco tiene', TipoProductos.Fertilizantes,0,500,'FE2','FERTI2',TipoFertizante.EQUILIBRADO_LIQUIDO, 'Todos los dias','500 mg','´carga3',TipoPlantasRecomendadas.ORQUIDIAS),
     
    ];
    
