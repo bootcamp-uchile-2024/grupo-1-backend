@@ -17,6 +17,7 @@ import { LogRespuestasInterceptor } from './comunes/interceptor/log-respuestas/l
 import { GlobalFilter } from './comunes/filter/global.filter';
 import { ConfigService } from '@nestjs/config';
 import * as packageJson from '../package.json';
+import { url } from 'inspector';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -45,6 +46,7 @@ async function bootstrap() {
       .setVersion(packageJson.version)
       .setContact(packageJson.author, '', '')
       .setLicense(packageJson.license, '')
+      .addServer('http://localhost:3000', 'Local')
       .build();
   };
 
