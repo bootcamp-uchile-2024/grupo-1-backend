@@ -15,13 +15,19 @@ import { ValidationPipe } from '@nestjs/common';
 import { MaceterosModule } from './maceteros/maceteros.module';
 import { LogRespuestasInterceptor } from './comunes/interceptor/log-respuestas/log-respuestas.interceptor';
 import { GlobalFilter } from './comunes/filter/global.filter';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
+  const puerto = configService.get<number>('PUERTO');
+  const ambiente = configService.get<number>('AMBIENTE');
+  const version = configService.get<number>('VERSION');
+    
   app.enableCors();
   // Configuración del interceptor para imprimir log de respuestas OK
   app.useGlobalInterceptors(new LogRespuestasInterceptor());
-    // Configuración de Swagger para la aplicación principal
+  // Configuración de Swagger para la aplicación principal
   const config = new DocumentBuilder()
     .setTitle('API Plantopia APP')
     .setDescription('Esta es la documentación de la API de la APP Plantopia')
@@ -35,9 +41,7 @@ async function bootstrap() {
   const productos = SwaggerModule.createDocument(app, config, {
     include: [ProductosModule],
   });
-      //documentacion plantas
 
-  
   //documentacion usuario
   const usuarioSwagger = SwaggerModule.createDocument(app, config, {
     include: [UsuariosModule],
@@ -54,7 +58,7 @@ async function bootstrap() {
   SwaggerModule.setup('api/productos', app, productos, {
     yamlDocumentUrl: 'swagger/yaml',
   });
-   
+
   SwaggerModule.setup('api/despachos', app, despachoSwagger, {
     yamlDocumentUrl: 'swagger/yaml',
   });
@@ -72,6 +76,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new GlobalFilter());
   
-  await app.listen(3000);
+  await app.listen(puerto);
+  console.log('Aplicación escuchando en http://localhost:' + puerto + ' ,en ambiente de ' + ambiente  + ' con version: ' + version)  ;
 }
 bootstrap();
