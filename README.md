@@ -24,8 +24,16 @@ Camilo Orellana
 
 ## 💻 Requisitos Previos
 
-- Node.js (versión X.X.X)
-- npm (versión X.X.X)
+- Node.js (versión v20.15.1)
+- npm (versión 10.8.3)
+- Nest
+  ```bash
+  npm i -g @nestjs/cli
+  ```
+- Typescript
+  ```bash
+  npm install -g typescript
+  ```
 
 ## 💻 Instalacion del proyecto
 
@@ -46,7 +54,7 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## 📖 Documentacion API
+## 📖 Documentacion API 🌎
 
 Puedes encontrar la documentación completa de la API en el siguiente enlace:
 <https://plantopia.koyeb.app/api/productos>
@@ -93,7 +101,7 @@ src/
 ├── main.ts
 ```
 
-## License
+## License 📝
 
 Este archivo [`README.md`] proporciona una visión general del proyecto, instrucciones de instalación y uso, ejemplos de solicitudes, y detalles sobre la estructura del proyecto y cómo contribuir. Puedes ajustarlo según las necesidades específicas de tu proyecto.
 

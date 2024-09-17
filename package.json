@@ -1,8 +1,9 @@
 {
-  "name": "grupo-1-backend",
-  "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "name": "plantopia-api",
+  "version": "1.0.0",
+  "description": "API para la gestión de productos de Plantopia e-commerce",
+  "author": "Christian Castillo < Rodrigo Cabello < Camilo Orellana",
+  "url": "https://plantopia.koyeb.app/api",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
