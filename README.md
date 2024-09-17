@@ -2,6 +2,19 @@
 
 Somos un e-commerce dedicado a la venta de plantas, productos para jardinería y servicios especializados en el cuidado de plantas. Nuestra API permite gestionar y acceder a una amplia variedad de plantas, insumos y accesorios, así como a la información y recomendaciones para su correcto cuidado. Con ella, puedes explorar nuestro catálogo, realizar compras, y recibir consejos personalizados para mantener tus plantas en óptimas condiciones.
 
+## Tabla de Contenidos
+
+- [Plantopia - API](#plantopia---api)
+  - [Tabla de Contenidos](#tabla-de-contenidos)
+  - [🔗 Links](#-links)
+  - [👨🏻‍💻 Autores](#-autores)
+  - [💻 Requisitos Previos](#-requisitos-previos)
+  - [💻 Instalacion del proyecto](#-instalacion-del-proyecto)
+  - [🏃‍♂️ Ejecutar la APP](#️-ejecutar-la-app)
+  - [📖 Documentacion API 🌎](#-documentacion-api-)
+  - [🏛️ Estructura del Proyecto](#️-estructura-del-proyecto)
+  - [License 📝](#license-)
+
 ## 🔗 Links
 
 Christian Castillo
@@ -16,7 +29,7 @@ Camilo Orellana
 
 [![portfolio](https://img.shields.io/badge/my_portfolio-000?style=for-the-badge&logo=ko-fi&logoColor=white)](https://github.com/orellanasolec)
 
-## 👨🏻‍💻 Authors
+## 👨🏻‍💻 Autores
 
 - [@Ccastillo](https://www.github.com/ccastillo)
 - [@Roancamo](https://www.github.com/Roancamo)
@@ -27,12 +40,21 @@ Camilo Orellana
 - Node.js (versión v20.15.1)
 - npm (versión 10.8.3)
 - Nest
+
   ```bash
   npm i -g @nestjs/cli
   ```
+
 - Typescript
+
   ```bash
   npm install -g typescript
+  ```
+
+- Swagger
+
+  ```bash
+  npm install --save @nestjs/swagger
   ```
 
 ## 💻 Instalacion del proyecto
@@ -59,7 +81,7 @@ $ npm run start:prod
 Puedes encontrar la documentación completa de la API en el siguiente enlace:
 <https://plantopia.koyeb.app/api/productos>
 
-# 🏛️ Estructura del Proyecto
+## 🏛️ Estructura del Proyecto
 
 ```plaintext
 src/
