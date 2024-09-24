@@ -12,7 +12,8 @@ Somos un e-commerce dedicado a la venta de plantas, productos para jardinería y
   - [💻 Instalacion del proyecto](#-instalacion-del-proyecto)
   - [🏃‍♂️ Ejecutar la APP](#️-ejecutar-la-app)
   - [📖 Documentacion API 🌎](#-documentacion-api-)
-  - [🏛️ Estructura del Proyecto](#️-estructura-del-proyecto)
+  - [🌍 Variables de Entorno](#-variables-de-entorno)
+  - [📈 Estado del Proyecto](#-estado-del-proyecto)
   - [License 📝](#license-)
 
 ## 🔗 Links
@@ -81,6 +82,15 @@ $ npm run start:prod
 Puedes encontrar la documentación completa de la API en el siguiente enlace:
 <https://plantopia.koyeb.app/api/productos>
 
+## 🌍 Variables de Entorno
+
+Asegúrate de configurar las siguientes variables de entorno antes de ejecutar la aplicación:
+
+```plaintext
+puerto=3000
+ambiente=desarrollo
+version=1.0.0
+
 ## 🏛️ Estructura del Proyecto
 
 ```plaintext
@@ -122,6 +132,12 @@ src/
 ├── app.module.ts
 ├── main.ts
 ```
+
+## 📈 Estado del Proyecto
+
+El proyecto se encuentra en fase de desarrollo y estamos abiertos a
+contribuciones. Próximamente se implementarán nuevas funcionalidades como la
+integración con pasarelas de pago y sistema de notificaciones.
 
 ## License 📝
 
