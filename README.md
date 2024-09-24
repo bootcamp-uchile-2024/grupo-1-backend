@@ -12,7 +12,7 @@ Somos un e-commerce dedicado a la venta de plantas, productos para jardinería y
   - [💻 Instalacion del proyecto](#-instalacion-del-proyecto)
   - [🏃‍♂️ Ejecutar la APP](#️-ejecutar-la-app)
   - [📖 Documentacion API 🌎](#-documentacion-api-)
-  - [� Variables de Entorno](#-variables-de-entorno)
+  - [🌍 Variables de Entorno](#-variables-de-entorno)
   - [🏛️ Estructura del Proyecto](#️-estructura-del-proyecto)
   - [📈 Estado del Proyecto](#-estado-del-proyecto)
   - [License 📝](#license-)
@@ -90,6 +90,10 @@ Asegúrate de configurar las siguientes variables de entorno antes de ejecutar l
 ```plaintext
 puerto=3000
 ambiente=desarrollo
+version=1.0.0
+
+puerto=7000
+ambiente=produccion
 version=1.0.0
 ````
 
