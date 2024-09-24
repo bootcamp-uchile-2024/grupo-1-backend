@@ -87,11 +87,15 @@ Puedes encontrar la documentación completa de la API en el siguiente enlace:
 
 Asegúrate de configurar las siguientes variables de entorno antes de ejecutar la aplicación:
 
-```plaintext
+```textplain
+# Desarrollo
 puerto=3000
 ambiente=desarrollo
 version=1.0.0
+```
 
+```textplain
+# Produccion
 puerto=7000
 ambiente=produccion
 version=1.0.0
