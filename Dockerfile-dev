@@ -1,10 +1,10 @@
 FROM node:20.15.1-slim
 
-EXPOSE 7000
+EXPOSE 3000
 
 WORKDIR /app
 
-
+ENV AMBIENTE=desarrollo
 COPY package*.json /app/
 COPY  ./.eslintrc.js /app/.eslintrc.js    
 COPY ./.gitignore /app/.gitignore    
@@ -16,10 +16,11 @@ COPY ./tsconfig.build.json /app/tsconfig.build.json
 COPY ./tsconfig.json /app/tsconfig.json    
 COPY ./src /app/src
 COPY ./test /app/test
-COPY ./.env.productivo /app/.env.productivo
-ENV AMBIENTE=produccion
+COPY ./.env.develop /app/.env.develop
 
 RUN npm install
+
+
 
 CMD ["npm", "run", "start:dev"]
 

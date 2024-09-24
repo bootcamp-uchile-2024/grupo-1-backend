@@ -15,11 +15,15 @@ import { ValidationPipe } from '@nestjs/common';
 import { MaceterosModule } from './maceteros/maceteros.module';
 import { LogRespuestasInterceptor } from './comunes/interceptor/log-respuestas/log-respuestas.interceptor';
 import { GlobalFilter } from './comunes/filter/global.filter';
-import { ConfigService } from '@nestjs/config';
+
 import * as packageJson from '../package.json';
 import { url } from 'inspector';
+import { ConfigService } from '@nestjs/config';
+
+console.log(process.env)
 
 async function bootstrap() {
+
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
   const puerto = configService.get<number>('PUERTO');
