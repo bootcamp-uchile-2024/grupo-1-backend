@@ -1,5 +1,5 @@
-{
-  "compilerOptions": {
+{ 
+   "compilerOptions": {
     "module": "commonjs",
     "resolveJsonModule": true,     // para poder leer package.json
     "esModuleInterop": true,     // para poder leer package.json

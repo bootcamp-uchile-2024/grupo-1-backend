@@ -17,10 +17,10 @@ import { LogRespuestasInterceptor } from './comunes/interceptor/log-respuestas/l
 import { GlobalFilter } from './comunes/filter/global.filter';
 
 import * as packageJson from '../package.json';
-import { url } from 'inspector';
+//import { url } from 'inspector';
 import { ConfigService } from '@nestjs/config';
 
-console.log(process.env)
+
 
 async function bootstrap() {
 
@@ -50,7 +50,7 @@ async function bootstrap() {
       .setVersion(packageJson.version)
       .setContact(packageJson.author, '', '')
       .setLicense(packageJson.license, '')
-      .addServer('http://localhost:3000', 'Local')
+      .addServer(`http://localhost:${puerto}`, 'Local')
       .build();
   };
 
