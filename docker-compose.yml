@@ -1,13 +1,8 @@
-version: "2.17.2"
 
 services:
   plantopia:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: orellanasolec/plantopia:1.0.0
     ports:
-      - "7000:7000" 
+      - "7000:7000"
     environment:
-      PUERTO: 7000
       AMBIENTE: produccion
-      VERSION: 0.1.0
