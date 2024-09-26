@@ -1,11 +1,11 @@
-# Plantopia - API
+# 📚 Plantopia - API
 
 Somos un e-commerce dedicado a la venta de plantas, productos para jardinería y servicios especializados en el cuidado de plantas. Nuestra API permite gestionar y acceder a una amplia variedad de plantas, insumos y accesorios, así como a la información y recomendaciones para su correcto cuidado. Con ella, puedes explorar nuestro catálogo, realizar compras, y recibir consejos personalizados para mantener tus plantas en óptimas condiciones.
 
-## Tabla de Contenidos
+## 📝 Tabla de Contenidos
 
-- [Plantopia - API](#plantopia---api)
-  - [Tabla de Contenidos](#tabla-de-contenidos)
+- [📚 Plantopia - API](#-plantopia---api)
+  - [📝 Tabla de Contenidos](#-tabla-de-contenidos)
   - [🔗 Links](#-links)
   - [👨🏻‍💻 Autores](#-autores)
   - [💻 Requisitos Previos (Para Desarrollo)](#-requisitos-previos-para-desarrollo)
@@ -76,7 +76,7 @@ Ejecuta el siguiente comando
 
 docker pull orellanasolec/plantopia:$tag
 docker run -p 7000:7000 -e AMBIENTE=produccion orellanasolec/plantopia:$tag
-````
+```
 
 ## 💻 Instalacion del proyecto
 
