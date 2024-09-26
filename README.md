@@ -9,6 +9,7 @@ Somos un e-commerce dedicado a la venta de plantas, productos para jardinería y
   - [🔗 Links](#-links)
   - [👨🏻‍💻 Autores](#-autores)
   - [💻 Requisitos Previos](#-requisitos-previos)
+  - [🚀 Levantar la Imagen de Docker](#-levantar-la-imagen-de-docker)
   - [💻 Instalacion del proyecto](#-instalacion-del-proyecto)
   - [🏃‍♂️ Ejecutar la APP](#️-ejecutar-la-app)
   - [📖 Documentacion API 🌎](#-documentacion-api-)
@@ -59,11 +60,22 @@ Camilo Orellana
   npm install --save @nestjs/swagger
   ```
 
+## 🚀 Levantar la Imagen de Docker
+
+Para levantar la aplicación utilizando Docker, sigue los siguientes pasos:
+Ejecuta el siguiente comando
+
+```bash
+
+docker pull orellanasolec/plantopia
+docker run -p 7000:7000 -e AMBIENTE=produccion orellanasolec/plantopia
+```
+
 ## 💻 Instalacion del proyecto
 
 git clone <https://github.com/bootcamp-uchile-2024/grupo-1-backend.git>
 
-cd tu-repositorio
+cd grupo1-backend
 
 ## 🏃‍♂️ Ejecutar la APP
 
@@ -99,7 +111,7 @@ version=1.0.0
 puerto=7000
 ambiente=produccion
 version=1.0.0
-````
+```
 
 ## 🏛️ Estructura del Proyecto
 
