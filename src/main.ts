@@ -2,28 +2,20 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
-import { VentasModule } from './ventas/ventas.module';
 import { ProductosModule } from './productos/productos.module';
 import { DespachosModule } from './despachos/despachos.module';
-import { EquipoModule } from './equipo/equipo.module';
-import { PlantasModule } from './plantas/plantas.module';
-import { FertilizantesModule } from './fertilizantes/fertilizantes.module';
-import { SustratosModule } from './sustratos/sustratos.module';
-import { ControlPlagasModule } from './control-plagas/control-plagas.module';
 import { OrdenComprasModule } from './orden-compras/orden-compras.module';
 import { ValidationPipe } from '@nestjs/common';
-import { MaceterosModule } from './maceteros/maceteros.module';
 import { LogRespuestasInterceptor } from './comunes/interceptor/log-respuestas/log-respuestas.interceptor';
 import { GlobalFilter } from './comunes/filter/global.filter';
 
 import * as packageJson from '../package.json';
 //import { url } from 'inspector';
 import { ConfigService } from '@nestjs/config';
-
-
+import { SustratosModule } from './sustratos/sustratos.module';
+import { MaceterosModule } from './maceteros/maceteros.module';
 
 async function bootstrap() {
-
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
   const puerto = configService.get<number>('PUERTO');
@@ -58,7 +50,14 @@ async function bootstrap() {
     app,
     createSwaggerConfig('App'),
     {
-      include: [AppModule],
+      include: [
+        ProductosModule,
+        UsuariosModule,
+        OrdenComprasModule,
+        DespachosModule,
+        SustratosModule,
+        MaceterosModule,
+      ],
     },
   );
 
