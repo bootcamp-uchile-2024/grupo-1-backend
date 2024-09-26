@@ -8,7 +8,7 @@ Somos un e-commerce dedicado a la venta de plantas, productos para jardinería y
   - [Tabla de Contenidos](#tabla-de-contenidos)
   - [🔗 Links](#-links)
   - [👨🏻‍💻 Autores](#-autores)
-  - [💻 Requisitos Previos](#-requisitos-previos)
+  - [💻 Requisitos Previos (Para Desarrollo)](#-requisitos-previos-para-desarrollo)
   - [🚀 Levantar la Imagen de Docker](#-levantar-la-imagen-de-docker)
   - [💻 Instalacion del proyecto](#-instalacion-del-proyecto)
   - [🏃‍♂️ Ejecutar la APP](#️-ejecutar-la-app)
@@ -16,7 +16,7 @@ Somos un e-commerce dedicado a la venta de plantas, productos para jardinería y
   - [🌍 Variables de Entorno](#-variables-de-entorno)
   - [🏛️ Estructura del Proyecto](#️-estructura-del-proyecto)
   - [📈 Estado del Proyecto](#-estado-del-proyecto)
-  - [License 📝](#license-)
+  - [📝 License](#-license)
 
 ## 🔗 Links
 
@@ -38,7 +38,7 @@ Camilo Orellana
 - [@Roancamo](https://www.github.com/Roancamo)
 - [@Orellanasolec](https://www.github.com/orellanasolec)
 
-## 💻 Requisitos Previos
+## 💻 Requisitos Previos (Para Desarrollo)
 
 - Node.js (versión v20.15.1)
 - npm (versión 10.8.3)
@@ -60,6 +60,13 @@ Camilo Orellana
   npm install --save @nestjs/swagger
   ```
 
+- Librerias NPM adicionales (Pipes/variables de entorno)
+
+  ```bash
+  npm i --save @nestjs/config
+  npm install class-validator class-transformer
+  ```
+
 ## 🚀 Levantar la Imagen de Docker
 
 Para levantar la aplicación utilizando Docker, sigue los siguientes pasos:
@@ -67,9 +74,9 @@ Ejecuta el siguiente comando
 
 ```bash
 
-docker pull orellanasolec/plantopia
-docker run -p 7000:7000 -e AMBIENTE=produccion orellanasolec/plantopia
-```
+docker pull orellanasolec/plantopia:$tag
+docker run -p 7000:7000 -e AMBIENTE=produccion orellanasolec/plantopia:$tag
+````
 
 ## 💻 Instalacion del proyecto
 
@@ -101,16 +108,16 @@ Asegúrate de configurar las siguientes variables de entorno antes de ejecutar l
 
 ```textplain
 # Desarrollo
-puerto=3000
-ambiente=desarrollo
-version=1.0.0
+PUERTO=3000
+AMBIENTE=desarrollo
+VERSION=1.0.0
 ```
 
 ```textplain
 # Produccion
-puerto=7000
-ambiente=produccion
-version=1.0.0
+PUERTO=7000
+AMBIENTE=produccion
+VERSION=1.0.0
 ```
 
 ## 🏛️ Estructura del Proyecto
@@ -161,7 +168,7 @@ El proyecto se encuentra en fase de desarrollo y estamos abiertos a
 contribuciones. Próximamente se implementarán nuevas funcionalidades como la
 integración con pasarelas de pago y sistema de notificaciones.
 
-## License 📝
+## 📝 License
 
 Este archivo [`README.md`] proporciona una visión general del proyecto, instrucciones de instalación y uso, ejemplos de solicitudes, y detalles sobre la estructura del proyecto y cómo contribuir.
 licenciado bajo MIT
