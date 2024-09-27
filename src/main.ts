@@ -42,7 +42,6 @@ async function bootstrap() {
       .setVersion(packageJson.version)
       .setContact(packageJson.author, '', '')
       .setLicense(packageJson.license, '')
-      .addServer(`http://localhost:${puerto}`, 'Local')
       .build();
   };
 
