@@ -1,14 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Usuario } from '../entities/usuario.entity';
-import { ComunaSantiago } from '../entities/comunas.stgo-enum';
-import { PlantasService } from 'src/plantas/service/plantas.service';
+import { PlantasService } from 'src/productos/service/plantas.service';
 import { CreateUsuarioDto } from '../dto/create-usuario.dto';
-import { UpdateUsuarioDto } from '../dto/update-usuario.dto';
-
 @Injectable()
 export class UsuariosService {
   constructor(private readonly servicioPlantas: PlantasService) {}
-
   usuarios: Usuario[] = [
     new Usuario(
       1,
@@ -83,25 +79,18 @@ export class UsuariosService {
       createUsuarioDto.codigoPostal,
       createUsuarioDto.plantas,
     );
-
     this.usuarios.push(newUsuario);
-
     return newUsuario;
   }
-
   findAll() {
     return this.usuarios;
   }
-
   findOne(id: number): Usuario {
     const usuario = this.usuarios.find((user) => user.id === id);
     if (!usuario) {
       return null;
     }
     return usuario;
-  }
-  update(id: number, updateUsuarioDto: UpdateUsuarioDto) {
-    return `Modulo Usuario - Epica Usuario / Actualiza Usuario #${id} usuario`;
   }
 
   remove(id: number) {

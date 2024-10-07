@@ -1,42 +1,30 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { TipoProductos } from './enum-productos';
+import { TipoProductos } from '../enum/tipo-productos';
 export class Producto {
   @ApiProperty()
   public idProducto: number;
-
   @ApiProperty()
   public nombreProducto: string;
-
   @ApiProperty()
   public imagenProducto: string[];
-
   @ApiProperty()
   public descuento: number;
-
   @ApiProperty()
   public precioNormal: number;
-
   @ApiProperty()
   public coberturaDeDespacho: string[];
-
   @ApiProperty()
   public stock: number;
-
   @ApiProperty()
   public descripcionProducto: string;
-
   @ApiProperty()
   public categoria: TipoProductos;
-
   @ApiProperty()
   public valoracion: number;
-
   @ApiProperty()
   public cantidadVentas: number;
-
   @ApiProperty()
   public codigoProducto: string;
-
   constructor(
     idProducto: number,
     nombreProducto: string,

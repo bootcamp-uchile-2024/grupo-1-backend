@@ -3,12 +3,9 @@ import {
   Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
-  ParseIntPipe,
   ValidationPipe,
   UsePipes,
+  Res,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -17,89 +14,42 @@ import {
   ApiParam,
   ApiBody,
 } from '@nestjs/swagger';
-import { VentasService } from '../service/ventas.service';
-import { CreateVentaDto } from '../dto/create-venta.dto';
-import { UpdateVentaDto } from '../dto/update-venta.dto';
-
+import { Response } from 'express';
+import { OrdenComprasService } from '../service/orden-compras.service';
+import { CreateOrdenCompraDto } from '../dto/create-orden-compra.dto';
+import { ValidaOrdenPipePipe } from 'src/comunes/pipes/valida-orden.pipe.pipe';
 @ApiTags('ventas')
 @Controller('ventas')
 @UsePipes(new ValidationPipe({ transform: true }))
 export class VentasController {
-  constructor(private readonly ventasService: VentasService) {}
-
-  @Get()
-  @ApiOperation({ summary: 'Obtener todas las ventas' })
+  constructor(private readonly ordenComprasService: OrdenComprasService) {}
+  @UsePipes(new ValidationPipe())
+  @ApiOperation({
+    summary: 'Historia Usuario H005: Crea orden de compra con su detalle',
+    description:
+      'Esta funcionalidad permite apartir de un conjunto de productos crear orden de compra asignandole automaticamente el numero de compra y guardan el detalle de los productos seleccionados',
+  })
   @ApiResponse({
     status: 200,
-    description: 'Lista de ventas obtenida con éxito.',
+    description: 'Orden de Compra Creada desde carrito compras',
   })
-  findAll() {
-    return this.ventasService.findAll();
-  }
-
-  @Get(':id')
-  @ApiParam({
-    name: 'id',
-    description: 'id de la venta a obtener',
-    required: true,
-    schema: { type: 'integer' },
-  })
-  @ApiOperation({ summary: 'Obtener una venta por ID' })
-  @ApiResponse({ status: 200, description: 'Venta obtenida con éxito.' })
-  @ApiResponse({ status: 404, description: 'Venta no encontrada.' })
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    // Uso de ParseIntPipe para validar que el ID sea un número
-    return this.ventasService.findOne(id);
-  }
-
+  @ApiResponse({ status: 400, description: 'Orden no Creada' })
+  @ApiBody({ type: CreateOrdenCompraDto })
   @Post()
-  @ApiBody({
-    type: typeof CreateVentaDto,
-  })
-  @ApiOperation({ summary: 'Crear una nueva venta' })
-  @ApiResponse({ status: 201, description: 'Venta creada con éxito.' })
-  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
+  @UsePipes(ValidaOrdenPipePipe)
   create(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-    createVentaDto: CreateVentaDto,
+    @Body() CreateOrdenCompraDto: CreateOrdenCompraDto,
+    @Res() res: Response,
   ) {
-    // Uso de ValidationPipe para validar el cuerpo de la petición con los DTOs
-    return this.ventasService.create(createVentaDto);
+    try {
+      const resultado = this.ordenComprasService.create(CreateOrdenCompraDto);
+      res.status(200).send(resultado);
+    } catch (error) {
+      res.status(error.statusCode).send({ message: error.message });
+    }
   }
-
-  @Patch(':id')
-  @ApiParam({
-    name: 'id',
-    description: 'id de la venta a actualizar',
-    required: true,
-    schema: { type: 'UpdateVentaDto' },
-  })
-  @ApiBody({
-    type: typeof UpdateVentaDto,
-  })
-  @ApiOperation({ summary: 'Actualizar una venta existente' })
-  @ApiResponse({ status: 200, description: 'Venta actualizada con éxito.' })
-  @ApiResponse({ status: 404, description: 'Venta no encontrada.' })
-  update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-    updateVentaDto: UpdateVentaDto,
-  ) {
-    // ParseIntPipe para validar el ID y ValidationPipe para validar el cuerpo de la petición
-    return this.ventasService.update(id, updateVentaDto);
-  }
-
-  @Delete(':id')
-  @ApiParam({
-    name: 'id',
-    description: 'description',
-    required: true,
-    schema: { type: 'integer' },
-  })
-  @ApiOperation({ summary: 'Eliminar una venta' })
-  @ApiResponse({ status: 200, description: 'Venta eliminada con éxito.' })
-  @ApiResponse({ status: 404, description: 'Venta no encontrada.' })
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.ventasService.remove(id);
+  @Get()
+  findAll() {
+    return this.ordenComprasService.findAll();
   }
 }
