@@ -4,16 +4,12 @@ import { AppModule } from './app.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { ProductosModule } from './productos/productos.module';
 import { DespachosModule } from './despachos/despachos.module';
-import { OrdenComprasModule } from './orden-compras/orden-compras.module';
 import { ValidationPipe } from '@nestjs/common';
 import { LogRespuestasInterceptor } from './comunes/interceptor/log-respuestas/log-respuestas.interceptor';
 import { GlobalFilter } from './comunes/filter/global.filter';
-
 import * as packageJson from '../package.json';
-//import { url } from 'inspector';
 import { ConfigService } from '@nestjs/config';
-import { SustratosModule } from './sustratos/sustratos.module';
-import { MaceterosModule } from './maceteros/maceteros.module';
+import { VentasModule } from './ventas/ventas.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -21,19 +17,13 @@ async function bootstrap() {
   const puerto = configService.get<number>('PUERTO');
   const ambiente = configService.get<string>('AMBIENTE');
   const version = configService.get<string>('VERSION');
-
   app.enableCors();
-  // Configuración del interceptor para imprimir log de respuestas OK
   app.useGlobalInterceptors(new LogRespuestasInterceptor());
-
-  // Configuración de Swagger para cada módulo
-  // Configuración de Swagger para cada módulo
   const createSwaggerConfig = (moduleName: string) => {
     const title = `${packageJson.name} - ${moduleName} (${ambiente})`;
     const contacts = packageJson.contributors
       .map((contributor) => `${contributor.name} (${contributor.email})`)
       .join('\n');
-
     return new DocumentBuilder()
       .setTitle(title)
       .setDescription(
@@ -44,7 +34,6 @@ async function bootstrap() {
       .setLicense(packageJson.license, '')
       .build();
   };
-
   const document = SwaggerModule.createDocument(
     app,
     createSwaggerConfig('App'),
@@ -52,14 +41,11 @@ async function bootstrap() {
       include: [
         ProductosModule,
         UsuariosModule,
-        OrdenComprasModule,
+        VentasModule,
         DespachosModule,
-        SustratosModule,
-        MaceterosModule,
       ],
     },
   );
-
   const productos = SwaggerModule.createDocument(
     app,
     createSwaggerConfig('Productos'),
@@ -67,7 +53,6 @@ async function bootstrap() {
       include: [ProductosModule],
     },
   );
-
   const usuarioSwagger = SwaggerModule.createDocument(
     app,
     createSwaggerConfig('Usuarios'),
@@ -75,15 +60,13 @@ async function bootstrap() {
       include: [UsuariosModule],
     },
   );
-
-  const ocSwagger = SwaggerModule.createDocument(
+  const ventasSwagger = SwaggerModule.createDocument(
     app,
-    createSwaggerConfig('OrdenCompras'),
+    createSwaggerConfig('Ventas'),
     {
-      include: [OrdenComprasModule],
+      include: [VentasModule],
     },
   );
-
   const despachoSwagger = SwaggerModule.createDocument(
     app,
     createSwaggerConfig('Despachos'),
@@ -91,7 +74,6 @@ async function bootstrap() {
       include: [DespachosModule],
     },
   );
-
   SwaggerModule.setup('api/productos', app, productos, {
     yamlDocumentUrl: 'swagger/yaml',
   });
@@ -103,18 +85,14 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document, {
     yamlDocumentUrl: 'swagger/yaml',
   });
-
   SwaggerModule.setup('api/usuarios', app, usuarioSwagger, {
     yamlDocumentUrl: 'swagger/yaml',
   });
-
-  SwaggerModule.setup('api/ordenCompra', app, ocSwagger, {
+  SwaggerModule.setup('api/ventas', app, ventasSwagger, {
     yamlDocumentUrl: 'swagger/yaml',
   });
-
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new GlobalFilter());
-
   await app.listen(puerto);
   console.log(
     'Aplicación escuchando en http://localhost:' +

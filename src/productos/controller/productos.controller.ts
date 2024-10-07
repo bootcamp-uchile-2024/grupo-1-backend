@@ -3,9 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
   Res,
   Query,
   UsePipes,
@@ -22,32 +20,31 @@ import {
   ApiParam,
 } from '@nestjs/swagger';
 import { Response } from 'express';
-import { CreateMaceteroDto } from 'src/maceteros/dto/create-macetero.dto';
+import { CreateMaceteroDto } from '../dto/create-macetero.dto';
 import { CodigoProductoPipe } from 'src/comunes/pipes/codigo-producto.pipe';
 import { ProductosService } from '../service/productos.service';
-import { TipoProductos } from '../entities/enum-productos';
-import { CreatePlantaDto } from 'src/plantas/dto/create-planta.dto';
-import { CreateControlPlagasDto } from 'src/control-plagas/dto/create-control-plagas.dto';
-import { CreateFertilizanteDto } from 'src/fertilizantes/dto/create-fertilizante.dto';
-import { CreateSustratoDto } from 'src/sustratos/dto/create-sustrato.dto';
+import { TipoProductos } from '../enum/tipo-productos';
+import { CreatePlantaDto } from '../dto/create-planta.dto';
+import { CreateControlPlagasDto } from '../dto/create-control-plagas.dto';
+import { CreateFertilizanteDto } from '../dto/create-fertilizante.dto';
+import { CreateSustratoDto } from '../dto/create-sustrato.dto';
 @ApiTags('productos')
 @Controller('productos')
 export class ProductosController {
   constructor(private readonly productosService: ProductosService) {}
-
   @Get('masvendidos')
   @ApiOperation({
-    summary: 'Historia Usuario : H001 y H002',
+    summary: 'Historia Usuario H001: Productos mas vendidos',
     description:
-      'Como ussuario del sistema quiero ver los productos mas vendidos ',
+      'Permite listar los productos que tienen ventas y en donde el total de venta de cada uno sea igual o mayor al promedio de todas las ventas realizadas por plantopia',
   })
   @ApiResponse({
     status: 200,
-    description: 'Listado de todos los productos mas vendidos',
+    description: 'Productos mas vendidos',
   })
   @ApiResponse({
     status: 404,
-    description: 'No hay mas vendidos',
+    description: 'No hay ventas',
   })
   bestSellers(@Res() res: Response) {
     try {
@@ -57,27 +54,21 @@ export class ProductosController {
       res.status(error.statusCode).send({ message: error.message });
     }
   }
-
-  /* INICIO HISTORIA 3 */
-
-  /* ******************************** */
-  /* crea un tipo producto PLANTA*/
   @ApiOperation({
-    summary: 'Historia Usuario : H003',
+    summary: 'Historia Usuario H003: Crea un nuevo producto',
     description:
-      'Permite crear planta para incorporar en catalogo de productos',
+      'Crea un nuevo producto de tipo planta dentro del catálogo de pruductos de plantopia',
   })
-  @ApiResponse({
-    status: 200,
-    description: 'Producto tipo planta creado en catalogo de productos',
-  })
+  @ApiResponse({ status: 200, description: 'Producto Creado' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
   @Post('planta')
   @UsePipes(new ValidationPipe())
-  @ApiOperation({ summary: 'Crear una nueva Planta' })
-  @ApiResponse({ status: 200, description: 'Planta creada.' })
-  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
   @ApiBody({ type: CreatePlantaDto })
-  crearPlanta(@Body() CreatePlantaDto: CreatePlantaDto, @Res() res: Response) {
+  crearPlanta(
+    @Body()
+    CreatePlantaDto: CreatePlantaDto,
+    @Res() res: Response,
+  ) {
     try {
       const resultado = this.productosService.createPlanta(CreatePlantaDto);
       res.status(200).send(resultado);
@@ -87,21 +78,15 @@ export class ProductosController {
       });
     }
   }
-  /* crea un tipo producto FERTILIZANTE*/
   @ApiOperation({
-    summary: 'Historia Usuario : H003',
+    summary: 'Historia Usuario H003: Crea un nuevo producto',
     description:
-      'Permite crear fertilizante para incorporar en catalogo de productos',
+      'Crea un nuevo producto de tipo fertilizante dentro del catálogo de pruductos de plantopia',
   })
-  @ApiResponse({
-    status: 200,
-    description: 'Producto tipo fertilizante creado en catalogo de productos',
-  })
+  @ApiResponse({ status: 200, description: 'Producto Creado' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
   @Post('fertilizante')
   @UsePipes(new ValidationPipe())
-  @ApiOperation({ summary: 'Crear un nuevo Fertilizante' })
-  @ApiResponse({ status: 200, description: 'Fertilizante creado.' })
-  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
   @ApiBody({ type: CreateFertilizanteDto })
   crearFertilizante(
     @Body() CreateFertilizanteDto: CreateFertilizanteDto,
@@ -118,22 +103,15 @@ export class ProductosController {
       });
     }
   }
-
-  /* crea un tipo producto SUSTRATO*/
   @ApiOperation({
-    summary: 'Historia Usuario : H003',
+    summary: 'Historia Usuario H003: Crea un nuevo producto',
     description:
-      'Permite crear sustrato para incorporar en catalogo de productos',
+      'Crea un nuevo producto de tipo sustrato dentro del catálogo de pruductos de plantopia',
   })
-  @ApiResponse({
-    status: 200,
-    description: 'Producto tipo sustrato creado en catalogo de productos',
-  })
+  @ApiResponse({ status: 200, description: 'Producto Creado' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
   @Post('sustrato')
   @UsePipes(new ValidationPipe())
-  @ApiOperation({ summary: 'Crear una tipo de producto sustrato ' })
-  @ApiResponse({ status: 200, description: 'sustrato creado.' })
-  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
   @ApiBody({ type: CreateSustratoDto })
   crearSustrato(
     @Body() createSustratoDto: CreateSustratoDto,
@@ -148,22 +126,15 @@ export class ProductosController {
       });
     }
   }
-
-  /* crea un tipo producto CONTROL PLAGAS*/
   @ApiOperation({
-    summary: 'Historia Usuario : H003',
+    summary: 'Historia Usuario H003: Crea un nuevo producto',
     description:
-      'Permite crear control de plagas para incorporar en catalogo de productos',
+      'Crea un nuevo producto de tipo control-plagas dentro del catálogo de pruductos de plantopia',
   })
-  @ApiResponse({
-    status: 200,
-    description: 'Producto control de plagas creado en catalogo de productos',
-  })
+  @ApiResponse({ status: 200, description: 'Producto Creado' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
   @Post('control-plagas')
   @UsePipes(new ValidationPipe())
-  @ApiOperation({ summary: 'Crear una nueva Planta' })
-  @ApiResponse({ status: 200, description: 'Planta creada.' })
-  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
   @ApiBody({ type: CreateControlPlagasDto })
   crearControlPlaga(
     @Body() CreateControlPlagasDto: CreateControlPlagasDto,
@@ -180,21 +151,15 @@ export class ProductosController {
       });
     }
   }
-  /* crea un tipo producto macetero*/
   @ApiOperation({
-    summary: 'Historia Usuario : H003',
+    summary: 'Historia Usuario H003: Crea un nuevo producto',
     description:
-      'Permite crear macetero para incorporar en catalogo de productos',
+      'Crea un nuevo producto de tipo macetero dentro del catálogo de pruductos de plantopia',
   })
-  @ApiResponse({
-    status: 200,
-    description: 'Producto tipo Macetero creado en catalogo de productos',
-  })
+  @ApiResponse({ status: 200, description: 'Producto Creado' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
   @Post('macetero')
   @UsePipes(new ValidationPipe())
-  @ApiOperation({ summary: 'Crear un nuevo macetero' })
-  @ApiResponse({ status: 200, description: 'Macetero creado.' })
-  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
   @ApiBody({ type: CreateMaceteroDto })
   crearMacetero(
     @Body() CreateMaceteroDto: CreateMaceteroDto,
@@ -209,12 +174,12 @@ export class ProductosController {
       });
     }
   }
-  /**************** fin HISTORIA 3 */
 
   @Get('catalogo')
   @ApiOperation({
-    summary: 'Historia Usuario : H004',
-    description: 'Como cliente quiero poder ver el catalogo de productos',
+    summary: 'Historia Usuario H004: Listado de Productos Plantopia',
+    description:
+      'Lista todos los productos del catalogo de plantopia sin fitros',
   })
   @ApiResponse({
     status: 200,
@@ -227,13 +192,14 @@ export class ProductosController {
 
   @Get('catalogo/categoria')
   @ApiOperation({
-    summary: 'Historia Usuario : H004',
+    summary: 'Historia Usuario H004: Listado de Productos Plantopia',
     description:
-      'Como cliente quiero poder ver el catalogo de productos filtrados por categoria para poder encontrar los productos que quiero',
+      'Lista todos los productos del catalogo de plantopia filtrando por categoria(tipo de producto)',
   })
   @ApiResponse({
     status: 200,
-    description: 'Listado de Productos Filtrados por Tipo Producto',
+    description:
+      'Listado de todos los productos filtrados por categoria(tipo productos)',
   })
   @ApiQuery({
     name: 'tipo',
@@ -255,9 +221,9 @@ export class ProductosController {
 
   @Get('detalle/:codigoProducto')
   @ApiOperation({
-    summary: 'Historia Usuario : H007',
+    summary: 'Historia Usuario H007: Detalle de un producto',
     description:
-      'Como cliente quiero poder buscar producto y ver detalle de el para ver si cumple lo que necesito',
+      'Con el codigoProducto busca el detalle del producto, devolviendo todas las caracteristicas del producto y del tipo de producto al cual pertenece',
   })
   @ApiProperty({ name: 'codigoProducto', type: 'string', example: 'MA1' })
   @ApiResponse({ status: 200, description: 'Producto obtenido con éxito.' })

@@ -1,6 +1,6 @@
 services:
   plantopia:
-    image: orellanasolec/plantopia:1.0.0
+    image: roancamo/plantopia:1.1.0
     container_name: plantopia-dev
     ports:
       - "3000:3000"  

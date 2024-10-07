@@ -1,23 +1,14 @@
 import { Module } from '@nestjs/common';
-
-import { MaceterosModule } from 'src/maceteros/maceteros.module';
-import { PlantasModule } from 'src/plantas/plantas.module';
 import { ProductosController } from './controller/productos.controller';
 import { ProductosService } from './service/productos.service';
-import { ControlPlagasModule } from 'src/control-plagas/control-plagas.module';
-import { FertilizantesModule } from 'src/fertilizantes/fertilizantes.module';
-import { SustratosModule } from 'src/sustratos/sustratos.module';
-
+import { SustratosService } from './service/sustratos.service';
+import { PlantasService } from './service/plantas.service';
+import { MaceterosService } from './service/maceteros.service';
+import { FertilizantesService } from './service/fertilizantes.service';
+import { ControlPlagasService } from './service/control-plagas.service';
 @Module({
   controllers: [ProductosController],
-  providers: [ProductosService],
-  imports: [
-    MaceterosModule,
-    PlantasModule,
-    ControlPlagasModule,
-    FertilizantesModule,
-    SustratosModule,
-  ],
-  exports: [ProductosService],
+  providers: [ProductosService,SustratosService,PlantasService,MaceterosService,FertilizantesService,ControlPlagasService],
+  exports: [ProductosService,SustratosService,PlantasService,MaceterosService,FertilizantesService,ControlPlagasService],
 })
 export class ProductosModule { }
