@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateOrdenCompraDto } from '../dto/create-orden-compra.dto';
 import { OrdenCompra } from '../entities/orden-compra.entity';
-import { EstadosOC } from '../../orden-compras/enum/estadosOC';
+import { EstadosOC } from '../enum/estadosOC';
 import { ErrorPlantopia } from 'src/comunes/error-plantopia/error-plantopia';
 import { DetalleOrdenCompra } from 'src/ventas/entities/detalle-orden-compra.entity';
 import { ProductosService } from 'src/productos/service/productos.service';

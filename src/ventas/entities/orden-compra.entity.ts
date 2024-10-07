@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { EstadosOC } from '../../orden-compras/enum/estadosOC';
+import { EstadosOC } from '../enum/estadosOC';
 import { DetalleOrdenCompra } from 'src/ventas/entities/detalle-orden-compra.entity';
 import { Despacho } from 'src/despachos/entities/despacho.entity';
 export class OrdenCompra {
