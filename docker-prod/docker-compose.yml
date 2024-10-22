@@ -4,5 +4,20 @@ services:
     image: roancamo/plantopia:1.1.0
     ports:
       - "7000:7000"
+    env_file:
+      - ../.env.productivo  # Carga las variables de entorno desde el archivo .env.productivo
+    depends_on:
+      - mysql  # Asegúrate de que MySQL esté listo antes de levantar la app
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-prod
+    ports:
+      - "3307:3306"
     environment:
-      AMBIENTE: produccion
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: PlantopiaDB
+      MYSQL_USER: user_prod
+      MYSQL_PASSWORD: password_prod
+    volumes:
+      - ./db:/var/lib/mysql
