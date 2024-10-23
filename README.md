@@ -110,14 +110,24 @@ Asegúrate de configurar las siguientes variables de entorno antes de ejecutar l
 # Desarrollo
 PUERTO=3000
 AMBIENTE=desarrollo
-VERSION=1.0.0
+VERSION=1.1.0
+DB_HOST=mysql-dev
+DB_PORT=3307
+DB_USERNAME=user_dev
+DB_PASSWORD=password_dev
+DB_DATABASE=PlantopiaDB
 ```
 
 ```textplain
 # Produccion
 PUERTO=7000
 AMBIENTE=produccion
-VERSION=1.0.0
+VERSION=1.1.0
+DB_HOST=mysql-prod
+DB_PORT=3307
+DB_USERNAME=user_prod
+DB_PASSWORD=password_prod
+DB_DATABASE=PlantopiaDB
 ```
 
 ## 🏛️ Estructura del Proyecto
@@ -128,36 +138,42 @@ src/
 │   ├── pipes/
 │   ├── filters/
 │   └── interceptor/
-├── productos/
-│   ├── controllers/
-│   ├── dto/
-│   ├── entities/
-│   ├── services/
-│   └── productos.module.ts
-├── plantas/
-│   ├── controllers/
-│   ├── dto/
-│   ├── entities/
-│   ├── services/
-│   └── plantas.module.ts
-├── usuarios/
-│   ├── controllers/
-│   ├── dto/
-│   ├── entities/
-│   ├── services/
-│   └── usuarios.module.ts
-├── orden-compras/
-│   ├── controllers/
-│   ├── dto/
-│   ├── entities/
-│   ├── services/
-│   └── orden-compras.module.ts
 ├── despachos/
 │   ├── controllers/
 │   ├── dto/
 │   ├── entities/
 │   ├── services/
 │   └── despachos.module.ts
+├── localizaciones/
+│   ├── controllers/
+│   ├── dto/
+│   ├── entities/
+│   ├── services/
+│   └── localizaciones.module.ts
+├── productos/
+│   ├── controllers/
+│   ├── dto/
+│   ├── entities/
+│   ├── services/
+│   └── productos.module.ts
+├── servicios/
+│   ├── controllers/
+│   ├── dto/
+│   ├── entities/
+│   ├── services/
+│   └── servicios.module.ts
+├── usuarios/
+│   ├── controllers/
+│   ├── dto/
+│   ├── entities/
+│   ├── services/
+│   └── usuarios.module.ts
+├── ventas/
+│   ├── controllers/
+│   ├── dto/
+│   ├── entities/
+│   ├── services/
+│   └── ventas.module.ts
 ├── app.module.ts
 ├── main.ts
 ```
