@@ -102,5 +102,8 @@ async function bootstrap() {
       ' con version: ' +
       version,
   );
+
+ console.log(process.env.DB_PORT)
+ console.log(process.env.DB_HOST)
 }
 bootstrap();
