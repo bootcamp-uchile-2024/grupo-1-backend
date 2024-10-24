@@ -59,7 +59,8 @@ export class ProductosController {
     description: 'Producto no encontrado',
   })
   async findOne(@Param('id') id: number, @Res() res: Response) {
-    const producto = await this.productosService.porProducto(id);
+    const producto = await this.productosService.porProducto(+id);
+
     if (!producto) {
       return res.status(404).send({ message: 'Producto no encontrado' });
     }

@@ -235,19 +235,6 @@ INSERT INTO FormaMacetero (descripcion) VALUES
 ('Pirámide'),
 ('Irregular');
 
--- insert usuario
-INSERT INTO Usuario (idPerfil, rutUsuario, nombres, apellidos, email, clave, telefono, direccion, idComuna, codigoPostal) VALUES
-(1, '12345678-9', 'Cliente1', 'Prueba', 'cliente1@emaildeprueba.cl', 'clave123', 12345678, 'Direccion de Prueba 1', 1, '1234567'),
-(2, '98765432-1', 'Cliente2', 'Prueba', 'cliente2@emaildeprueba.cl', 'clave456', 12345679, 'Direccion de Prueba 2', 2, '7654321'),
-(3, '11223344-5', 'Cliente3', 'Prueba', 'cliente3@emaildeprueba.cl', 'clave789', 12345680, 'Direccion de Prueba 3', 3, '2345678'),
-(4, '55667788-9', 'Cliente4', 'Prueba', 'cliente4@emaildeprueba.cl', 'clave012', 12345681, 'Direccion de Prueba 4', 4, '8765432'),
-(5, '99887766-5', 'Cliente5', 'Prueba', 'cliente5@emaildeprueba.cl', 'clave345', 12345682, 'Direccion de Prueba 5', 5, '3456789'),
-(6, '22334455-6', 'Cliente6', 'Prueba', 'cliente6@emaildeprueba.cl', 'clave678', 12345683, 'Direccion de Prueba 6', 6, '9876543'),
-(7, '66778899-0', 'Cliente7', 'Prueba', 'cliente7@emaildeprueba.cl', 'clave901', 12345684, 'Direccion de Prueba 7', 7, '4567890'),
-(8, '33445566-7', 'Cliente8', 'Prueba', 'cliente8@emaildeprueba.cl', 'clave234', 12345685, 'Direccion de Prueba 8', 8, '0987654'),
-(9, '77889900-1', 'Cliente9', 'Prueba', 'cliente9@emaildeprueba.cl', 'clave567', 12345686, 'Direccion de Prueba 9', 9, '5678901'),
-(10, '44556677-8', 'Cliente10', 'Prueba', 'cliente10@emaildeprueba.cl', 'clave890', 12345687, 'Direccion de Prueba 10', 10, '6789012');
-
 -- insert perfil
 
 INSERT INTO Perfil (descripcion, accesoSistema) VALUES
@@ -283,6 +270,19 @@ INSERT INTO Comuna (idRegion, nombre) VALUES
 (5, 'Puerto Montt'),
 (5, 'Osorno');
 
+-- insert usuario
+INSERT INTO Usuario (idPerfil, rutUsuario, nombres, apellidos, email, clave, telefono, direccion, idComuna, codigoPostal) VALUES
+(1, '12345678-9', 'Cliente1', 'Prueba', 'cliente1@emaildeprueba.cl', 'clave123', 12345678, 'Direccion de Prueba 1', 1, '1234567'),
+(2, '98765432-1', 'Cliente2', 'Prueba', 'cliente2@emaildeprueba.cl', 'clave456', 12345679, 'Direccion de Prueba 2', 2, '7654321'),
+(3, '11223344-5', 'Cliente3', 'Prueba', 'cliente3@emaildeprueba.cl', 'clave789', 12345680, 'Direccion de Prueba 3', 3, '2345678'),
+(4, '55667788-9', 'Cliente4', 'Prueba', 'cliente4@emaildeprueba.cl', 'clave012', 12345681, 'Direccion de Prueba 4', 4, '8765432'),
+(5, '99887766-5', 'Cliente5', 'Prueba', 'cliente5@emaildeprueba.cl', 'clave345', 12345682, 'Direccion de Prueba 5', 5, '3456789'),
+(6, '22334455-6', 'Cliente6', 'Prueba', 'cliente6@emaildeprueba.cl', 'clave678', 12345683, 'Direccion de Prueba 6', 6, '9876543'),
+(7, '66778899-0', 'Cliente7', 'Prueba', 'cliente7@emaildeprueba.cl', 'clave901', 12345684, 'Direccion de Prueba 7', 7, '4567890'),
+(8, '33445566-7', 'Cliente8', 'Prueba', 'cliente8@emaildeprueba.cl', 'clave234', 12345685, 'Direccion de Prueba 8', 8, '0987654'),
+(9, '77889900-1', 'Cliente9', 'Prueba', 'cliente9@emaildeprueba.cl', 'clave567', 12345686, 'Direccion de Prueba 9', 9, '5678901'),
+(10, '44556677-8', 'Cliente10', 'Prueba', 'cliente10@emaildeprueba.cl', 'clave890', 12345687, 'Direccion de Prueba 10', 10, '6789012');
+
 -- Insertar EstadosVenta
 INSERT INTO EstadosVenta (descripcion) VALUES
 ('Pendiente'),
@@ -296,19 +296,6 @@ INSERT INTO EstadosVenta (descripcion) VALUES
 ('Completado'),
 ('Fallido');
 
--- Inserta FormaPago
-INSERT INTO FormaPago (descripcion, idEstadoFormaPago) VALUES
-('Tarjeta de Crédito', 1),
-('Tarjeta de Débito', 2),
-('Transferencia Bancaria', 3),
-('Pago en Efectivo', 4),
-('Cheque', 5),
-('PayPal', 6),
-('Criptomonedas', 7),
-('Pago Móvil', 8),
-('Pago en Tienda', 9),
-('Pago Contra Entrega', 10);
-
 -- Insertar EstadosFormaPago
 INSERT INTO EstadosFormaPago (descripcion) VALUES
 ('Activo'),
@@ -321,6 +308,19 @@ INSERT INTO EstadosFormaPago (descripcion) VALUES
 ('Reembolsado'),
 ('En espera'),
 ('Rechazado');
+
+-- Inserta FormaPago
+INSERT INTO FormaPago (descripcion, idEstadoFormaPago) VALUES
+('Tarjeta de Crédito', 1),
+('Tarjeta de Débito', 2),
+('Transferencia Bancaria', 3),
+('Pago en Efectivo', 4),
+('Cheque', 5),
+('PayPal', 6),
+('Criptomonedas', 7),
+('Pago Móvil', 8),
+('Pago en Tienda', 9),
+('Pago Contra Entrega', 10);
 
 -- Insertar TipoDespacho
 INSERT INTO TipoDespacho (nombreMetodo, descripcion) VALUES
@@ -513,3 +513,6 @@ VALUES
 (33, 'https://cdn.shopify.com/s/files/1/1745/8343/products/OrchidSoil.jpg'),  -- Sustrato para Orquídeas
 (34, 'https://www.bonsaiempire.com/img/sustrato-bonsai.jpg'),  -- Sustrato para Bonsáis
 (35, 'https://www.jardineriaon.com/wp-content/uploads/2020/09/sustrato-plantas-acidas.jpg');  -- Sustrato para Plantas Ácidas
+
+
+

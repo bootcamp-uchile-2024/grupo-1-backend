@@ -237,12 +237,11 @@ export class ProductosService {
     });
     return productos;
   }
-  // busca un producto por id
-  //  async porProducto(): Promise<Producto[]> {
+
+  // busca un producto por su id
+
   async porProducto(id: number): Promise<Producto> {
-    const productos = await this.productoRepository.find({
-      relations: ['categoria'],
-    });
-    return productos.find((producto) => producto.id === id);
+    const producto = await this.productoRepository.findOneBy({ id });
+    return producto;
   }
 }

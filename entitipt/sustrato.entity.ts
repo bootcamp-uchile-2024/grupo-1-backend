@@ -8,7 +8,7 @@ import {
 import { Planta } from './planta.entity';
 import { RetencionHumedad } from './retencion_humedad.entity';
 
-@Entity()
+@Entity({ name: 'Sustrato' })
 export class Sustrato {
   @PrimaryGeneratedColumn()
   id: number;

@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { Planta } from './planta.entity';
 import { TipoFertilizante } from './tipo_fertilizante.entity';
+import { Producto } from './producto.entity';
 
 @Entity()
 export class Fertilizante {
@@ -20,6 +21,10 @@ export class Fertilizante {
   @ManyToOne(() => TipoFertilizante, (tipo) => tipo.fertilizantes)
   @JoinColumn({ name: 'idTipoFertilizante' })
   tipoFertilizante: TipoFertilizante;
+
+  @ManyToOne(() => Producto, (producto) => producto.fertilizante)
+  @JoinColumn({ name: 'idProducto' })
+  producto: Producto;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   composicion: string;

@@ -1,8 +1,14 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Producto } from './producto.entity';
 import { Eficacia } from './eficacia.entity';
 
-@Entity({ name: 'ControlPlaga' })
+@Entity({ name: 'ControlPlagas' })
 export class ControlPlaga {
   @PrimaryGeneratedColumn()
   id: number;

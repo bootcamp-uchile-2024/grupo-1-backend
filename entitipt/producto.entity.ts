@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Categoria } from './categoria.entity';
 import { Planta } from './planta.entity';
+import { Fertilizante } from './fertilizante.entity';
 
 @Entity()
 export class Producto {
@@ -42,4 +43,8 @@ export class Producto {
   @OneToOne(() => Planta, (planta) => planta.producto)
   planta: Planta;
   detallesOrdenCompra: any;
+
+  @OneToOne(() => Fertilizante, (fertilizante) => fertilizante.producto)
+  @JoinColumn({ name: 'idFertilizante' })
+  fertilizante: Fertilizante;
 }
