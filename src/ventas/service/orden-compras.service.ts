@@ -44,51 +44,51 @@ export class OrdenComprasService {
   }
 
   create(createOrdenCompraDto: CreateOrdenCompraDto) {
-    const productosCarro = createOrdenCompraDto.detalle;
-    let detalleProductos: DetalleOrdenCompra[] = [];
-    for (let i = 0; i < productosCarro.length; i++) {
-      const producto = this.productoServices.findOneID(
-        productosCarro[i].idProducto,
-      );
-      const productOrden = producto.find(
-        (a) => a.stock >= productosCarro[i].cantidad,
-      );
-      if (!productOrden) {
-        throw new ErrorPlantopia(
-          'Stock insuficiente producto ' + productOrden.nombreProducto,
-          404,
-        );
-      }
-      const totalPrecio =
-        productosCarro[i].cantidad * productOrden.precioNormal;
-      const detalleOrden: DetalleOrdenCompra = new DetalleOrdenCompra(
-        productosCarro[i].idProducto,
-        productosCarro[i].cantidad,
-        productOrden.precioNormal,
-        totalPrecio,
-        productOrden.descuento,
-      );
-      detalleProductos.push(detalleOrden);
-      let detalleOrdenDto: CreateDetalleOrdenCompraDto =
-        new CreateDetalleOrdenCompraDto();
-      detalleOrdenDto.idProducto = productosCarro[i].idProducto;
-      detalleOrdenDto.cantidad = productosCarro[i].cantidad;
-      detalleOrdenDto.precio = productOrden.precioNormal;
-      detalleOrdenDto.descuento = productOrden.descuento;
-      this.detalleOrdenServices.create(detalleOrdenDto);
-    }
-    const idOC: number = this.ordenesCompras.length + 1;
-    const nuevaOrden: OrdenCompra = new OrdenCompra(
-      idOC,
-      new Date(this.fechaActual),
-      EstadosOC.CREADA,
-      createOrdenCompraDto.emailComprador,
-      createOrdenCompraDto.idCliente,
-      null,
-      detalleProductos,
-    );
-    this.ordenesCompras.push(nuevaOrden);
-    return 'IdOc: ' + idOC;
+//    const productosCarro = createOrdenCompraDto.detalle;
+//    let detalleProductos: DetalleOrdenCompra[] = [];
+//    for (let i = 0; i < productosCarro.length; i++) {
+//      const producto = this.productoServices.findOneID(
+//        productosCarro[i].idProducto,
+//      );
+//      const productOrden = producto.find(
+//        (a) => a.stock >= productosCarro[i].cantidad,
+//      );
+//      if (!productOrden) {
+//        throw new ErrorPlantopia(
+//          'Stock insuficiente producto ' + productOrden.nombreProducto,
+//          404,
+//        );
+//      }
+//      const totalPrecio =
+//        productosCarro[i].cantidad * productOrden.precioNormal;
+//      const detalleOrden: DetalleOrdenCompra = new DetalleOrdenCompra(
+//        productosCarro[i].idProducto,
+//        productosCarro[i].cantidad,
+//        productOrden.precioNormal,
+//        totalPrecio,
+//        productOrden.descuento,
+//      );
+//      detalleProductos.push(detalleOrden);
+//      let detalleOrdenDto: CreateDetalleOrdenCompraDto =
+//        new CreateDetalleOrdenCompraDto();
+//      detalleOrdenDto.idProducto = productosCarro[i].idProducto;
+//      detalleOrdenDto.cantidad = productosCarro[i].cantidad;
+//      detalleOrdenDto.precio = productOrden.precioNormal;
+//      detalleOrdenDto.descuento = productOrden.descuento;
+//      this.detalleOrdenServices.create(detalleOrdenDto);
+//    }
+//    const idOC: number = this.ordenesCompras.length + 1;
+//    const nuevaOrden: OrdenCompra = new OrdenCompra(
+//      idOC,
+//      new Date(this.fechaActual),
+//      EstadosOC.CREADA,
+//      createOrdenCompraDto.emailComprador,
+//      createOrdenCompraDto.idCliente,
+//      null,
+//      detalleProductos,
+//    );
+//    this.ordenesCompras.push(nuevaOrden);
+    return null;
   }
   findAll() {
     return this.ordenesCompras;

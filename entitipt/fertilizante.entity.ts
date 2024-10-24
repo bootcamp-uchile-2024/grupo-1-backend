@@ -1,29 +1,35 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { Producto } from './producto.entity';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
+import { Planta } from './planta.entity';
 import { TipoFertilizante } from './tipo_fertilizante.entity';
 
-@Entity({ name: 'Fertilizante' })
+@Entity()
 export class Fertilizante {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Producto)
-  @JoinColumn({ name: 'idProducto' })
-  producto: Producto;
+  @ManyToOne(() => Planta, (planta) => planta.fertilizantes)
+  @JoinColumn({ name: 'idPlanta' })
+  planta: Planta;
 
-  @ManyToOne(() => TipoFertilizante)
+  @ManyToOne(() => TipoFertilizante, (tipo) => tipo.fertilizantes)
   @JoinColumn({ name: 'idTipoFertilizante' })
   tipoFertilizante: TipoFertilizante;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 255, nullable: true })
   composicion: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 255, nullable: true })
   presentacion: string;
 
-  @Column({ type: 'varchar', length: 100 })
+  @Column({ type: 'varchar', length: 100, nullable: true })
   frecuenciaAplicacion: string;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', nullable: true })
   peso: number;
 }

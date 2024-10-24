@@ -1,15 +1,26 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
+} from 'typeorm';
 import { Region } from './region.entity';
+import { Usuario } from './usuario.entity';
 
-@Entity({ name: 'Comuna' })
+@Entity()
 export class Comuna {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Region)
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  nombre: string;
+
+  @ManyToOne(() => Region, (region) => region.comunas)
   @JoinColumn({ name: 'idRegion' })
   region: Region;
 
-  @Column({ type: 'varchar', length: 255 })
-  nombre: string;
+  @OneToMany(() => Usuario, (usuario) => usuario.comuna)
+  usuarios: Usuario[];
 }

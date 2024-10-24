@@ -1,13 +1,17 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Usuario } from './usuario.entity';
 
-@Entity({ name: 'Perfil' })
+@Entity()
 export class Perfil {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 255, nullable: true })
   descripcion: string;
 
-  @Column({ type: 'boolean' })
+  @Column({ type: 'boolean', nullable: true })
   accesoSistema: boolean;
+
+  @OneToMany(() => Usuario, (usuario) => usuario.perfil)
+  usuarios: Usuario[];
 }

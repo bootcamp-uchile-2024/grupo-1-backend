@@ -1,10 +1,14 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { OrdenCompra } from './orden-compra.entity';
 
 @Entity({ name: 'EstadosOC' })
 export class EstadosOC {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 255, nullable: true })
   descripcion: string;
+
+  @OneToMany(() => OrdenCompra, (orden) => orden.estado)
+  ordenesCompra: OrdenCompra[];
 }

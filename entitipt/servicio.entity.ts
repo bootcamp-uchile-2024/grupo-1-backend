@@ -1,18 +1,20 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { Producto } from './producto.entity';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { ServicioUsuario } from './servicio-usuario.entity';
 
-@Entity({ name: 'Servicio' })
+@Entity()
 export class Servicio {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Producto)
-  @JoinColumn({ name: 'idProducto' })
-  producto: Producto;
-
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 255, nullable: true })
   nombre: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 255, nullable: true })
   descripcion: string;
+
+  @OneToMany(
+    () => ServicioUsuario,
+    (servicioUsuario) => servicioUsuario.servicio,
+  )
+  servicioUsuarios: ServicioUsuario[];
 }

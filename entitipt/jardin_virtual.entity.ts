@@ -1,14 +1,22 @@
-/*
-import { Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  OneToOne,
+  JoinColumn,
+  OneToMany,
+} from 'typeorm';
 import { Usuario } from './usuario.entity';
+import { DetalleJardinVirtual } from './detalle_jardin_virtual.entity';
 
-@Entity({ name: 'JardinVirtual' })
+@Entity()
 export class JardinVirtual {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Usuario)
+  @OneToOne(() => Usuario, (usuario) => usuario.jardinVirtual)
   @JoinColumn({ name: 'idUsuario' })
   usuario: Usuario;
+
+  @OneToMany(() => DetalleJardinVirtual, (detalle) => detalle.jardin)
+  detalles: DetalleJardinVirtual[];
 }
-*/

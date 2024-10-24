@@ -7,4 +7,5 @@ export class TipoFertilizante {
 
   @Column({ type: 'varchar', length: 100, unique: true })
   descripcion: string;
+  fertilizantes: any;
 }
