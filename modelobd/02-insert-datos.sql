@@ -1,4 +1,5 @@
--- Active: 1729735444275@@127.0.0.2@3307@PlantopiaDB
+USE PlantopiaDB
+
 -- Insert a categoria
 INSERT INTO Categoria (nombreCategoria)
 VALUES
@@ -7,7 +8,7 @@ VALUES
 ('Maceteros'),
 ('Sustratos'),
 ('Fertilizantes'),
-('Herramientas'),
+('Servicio'),
 ('Decoración'),
 ('Accesorios'),
 ('Semillas'),
@@ -132,7 +133,7 @@ INSERT INTO Plaga (descripcion) VALUES
 ('Gorgojos');
 
 -- insert FormaAplicacion
-INSERT INTO FormaAplicacion (descripcion) VALUES
+INSERT INTO formaaplicacion (descripcion) VALUES
 ('Spray'),
 ('Polvo'),
 ('Granulado'),
@@ -379,6 +380,7 @@ VALUES
 (9, 'https://www.aprilplants.com/cdn/shop/products/Eucalipto_silver_dollar_copa_22o_cocoblanca_planta-de-exterior-aromatica_1024x.jpg?v=1679046875'),
 (10, 'https://d17jkdlzll9byv.cloudfront.net/wp-content/uploads/2024/02/philodendron-longifolio-00001.jpg');
 
+
 -- INYECCION DE CASOS PARA MACETEROS
 
 -- Insertar datos en la tabla Producto (Macetero)
@@ -515,4 +517,4 @@ VALUES
 (35, 'https://www.jardineriaon.com/wp-content/uploads/2020/09/sustrato-plantas-acidas.jpg');  -- Sustrato para Plantas Ácidas
 
 
-
+select * from producto ORDER BY id desc;
