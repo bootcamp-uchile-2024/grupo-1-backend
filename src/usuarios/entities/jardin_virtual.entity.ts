@@ -16,8 +16,9 @@ export class JardinVirtual {
   @OneToOne(() => Usuario, (usuario) => usuario.jardinVirtual)
   @JoinColumn({ name: 'idUsuario' })
   usuario: Usuario;
-  
+
 
   @OneToMany(() => DetalleJardinVirtual, (detalle) => detalle.jardin)
   detalles: DetalleJardinVirtual[];
+  detalle: any;
 }

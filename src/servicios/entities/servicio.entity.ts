@@ -17,16 +17,17 @@ export class Servicio {
   descripcion: string;
   @ManyToMany(() => Usuario)
   @JoinTable({
-      name: 'ServicioUsuario', 
+      name: 'ServicioUsuario',
       joinColumn: {
-          name: 'idServicio', 
+          name: 'idServicio',
           referencedColumnName: 'id',
       },
       inverseJoinColumn: {
-          name: 'idUsuario', 
-          referencedColumnName: 'id', 
+          name: 'idUsuario',
+          referencedColumnName: 'id',
       },
   })
   usuarios: Usuario[];
- 
+  servicioUsuarios: any;
+
 }

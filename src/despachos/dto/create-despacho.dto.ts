@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { EstadosDespacho } from '../entities/enum-despachos';
+import { EstadosDespacho } from '../entities/estados_despacho.entity';
 
 export class CreateDespachoDto {
   @ApiProperty({
@@ -10,7 +10,6 @@ export class CreateDespachoDto {
   @ApiProperty({
     name: 'Estado Despacho',
     enum: EstadosDespacho,
-    example: EstadosDespacho.EN_CAMINO,
   })
   public EstadosDespacho: EstadosDespacho;
   @ApiProperty({

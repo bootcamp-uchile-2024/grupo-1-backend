@@ -11,4 +11,5 @@ export class RetencionHumedad {
 
   @OneToMany(() => Sustrato, (sustrato) => sustrato.retencionHumedad)
   sustratos: Sustrato[];
+  sustrato: any;
 }

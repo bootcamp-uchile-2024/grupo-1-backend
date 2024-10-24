@@ -1,7 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn , ManyToMany} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany } from 'typeorm';
 import { ControlPlaga } from './control_plaga.entity';
 
-@Entity({ name: '' })
+@Entity({ name: 'FormaAplicacion' })
 export class FormaAplicacion {
   @PrimaryGeneratedColumn()
   id: number;

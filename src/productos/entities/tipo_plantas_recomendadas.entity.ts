@@ -20,4 +20,5 @@ export class TipoPlantasRecomendadas {
     },
 })
 suelos: TipoPlantasRecomendadas[];
+  fertilizantes: any;
 }

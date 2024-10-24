@@ -48,13 +48,11 @@ export class Usuario {
   @ManyToOne(() => Perfil, (perfil) => perfil.usuarios)
   @JoinColumn({ name: 'idPerfil' })
   perfil: Perfil;
- 
+
   @OneToOne(() => JardinVirtual, (jardin) => jardin.usuario)
   jardin: JardinVirtual;
 
   @ManyToMany(() => Servicio, (servicio) => servicio.usuarios)
   servicios: Servicio[];
+  jardinVirtual: any;
 }
-     
-
-    

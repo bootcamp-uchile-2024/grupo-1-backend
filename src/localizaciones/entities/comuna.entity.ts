@@ -7,8 +7,8 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { Region } from './region.entity';
-import { Usuario } from 'src/usuarios/entities/usuario.entity';  
-import { Despacho } from 'src/despachos/entities/despacho.entity(OJO)';
+import { Usuario } from 'src/usuarios/entities/usuario.entity';
+import { Despacho } from 'src/despachos/entities/despacho.entity';
 
 @Entity()
 export class Comuna {

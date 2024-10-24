@@ -16,11 +16,11 @@ import { TexturaSustrato } from './textura_sustrato.entity';
 export class Sustrato {
   @PrimaryGeneratedColumn()
   id: number;
- 
+
   @OneToOne(() => Producto, (producto) => producto.sustrato)
   @JoinColumn({ name: 'idProducto' })
   producto: Producto;
- 
+
   @ManyToOne(() => RetencionHumedad, (retencion) => retencion.sustrato)
   @JoinColumn({ name: 'idRetencionHumedad' })
   retencionHumedad: RetencionHumedad;
@@ -33,5 +33,4 @@ export class Sustrato {
 
   @ManyToMany(() => TexturaSustrato, (textura) => textura.sustratosText)
   texturas: TexturaSustrato[];
- 
 }

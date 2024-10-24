@@ -20,8 +20,8 @@ export class ControlPlaga {
   @OneToOne(() => Producto, (producto) => producto.controlplaga)
   @JoinColumn({ name: 'idProducto' })
   producto: Producto;
-  
-  @ManyToOne(() => Eficacia, (eficacia) => eficacia.controlplaga)
+
+  @ManyToOne(() => Eficacia, (eficacia) => eficacia.controlplagas)
   @JoinColumn({ name: 'idEficacia' })
   controlplaga: Eficacia;
 
@@ -34,30 +34,31 @@ export class ControlPlaga {
 
   @ManyToMany(() => FormaAplicacion)
   @JoinTable({
-      name: 'controlplaga_formas_aplicacion', 
-      joinColumn: {
-          name: 'controlPlagaId', 
-          referencedColumnName: 'id', 
-      },
-      inverseJoinColumn: {
-          name: 'formaAplicacionId', 
-          referencedColumnName: 'id', 
-      },
+    name: 'controlplaga_formas_aplicacion',
+    joinColumn: {
+      name: 'controlPlagaId',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'formaAplicacionId',
+      referencedColumnName: 'id',
+    },
   })
   formasAplicacion: FormaAplicacion[];
- 
 
   @ManyToMany(() => Plaga)
   @JoinTable({
-      name: 'PlagasControladas', 
-      joinColumn: {
-          name: 'idControlPlaga', 
-          referencedColumnName: 'id', 
-      },
-      inverseJoinColumn: {
-          name: 'idPlaga', 
-          referencedColumnName: 'id',  
-      },
+    name: 'PlagasControladas',
+    joinColumn: {
+      name: 'idControlPlaga',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'idPlaga',
+      referencedColumnName: 'id',
+    },
   })
   plagas: Plaga[];
+  Eficacia: any;
+  formaaplica: any;
 }

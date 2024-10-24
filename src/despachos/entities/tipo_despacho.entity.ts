@@ -1,5 +1,5 @@
-import { Entity, Column,OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Despacho } from './despacho.entity(OJO)';
+import { Entity, Column, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Despacho } from './despacho.entity';
 
 @Entity({ name: 'TipoDespacho' })
 export class TipoDespacho {

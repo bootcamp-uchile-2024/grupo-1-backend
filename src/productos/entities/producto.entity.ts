@@ -49,7 +49,7 @@ export class Producto {
 
   @OneToOne(() => Planta, (planta) => planta.producto)
   planta: Planta;
-  
+
   @OneToOne(() => Fertilizante, (fertilizante) => fertilizante.producto)
   fertilizante: Fertilizante;
 
@@ -70,6 +70,4 @@ export class Producto {
 
   @OneToOne(() => Servicio, (servicio) => servicio.producto)
   servicio: Servicio;
-}
-  
 }

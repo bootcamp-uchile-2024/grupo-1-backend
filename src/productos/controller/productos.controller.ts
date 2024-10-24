@@ -43,7 +43,6 @@ export class ProductosController {
   async findAllCatalogo() {
     return await this.productosService.findallcatalogo();
   }
-  
 
   @Get(':id')
   @ApiOperation({

@@ -1,4 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn,OneToOne } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+  OneToOne,
+} from 'typeorm';
 import { Producto } from './producto.entity';
 import { FormaMacetero } from './forma_macetero.entity';
 
@@ -10,8 +17,6 @@ export class Macetero {
   @OneToOne(() => Producto, (producto) => producto.macetero)
   @JoinColumn({ name: 'idProducto' })
   producto: Producto;
-
-  
 
   @Column({ type: 'varchar', length: 100 })
   material: string;
@@ -28,11 +33,8 @@ export class Macetero {
   @Column({ type: 'int' })
   peso: number;
 
-
   @ManyToOne(() => FormaMacetero, (formamacetero) => formamacetero.macetero)
   @JoinColumn({ name: 'idForma' })
   formamacetero: FormaMacetero;
-
- 
-
+  forma: any;
 }

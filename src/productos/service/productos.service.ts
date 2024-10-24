@@ -14,30 +14,21 @@ export class ProductosService {
   constructor(
     @InjectRepository(Producto)
     private productoRepository: Repository<Producto>,
-  ) {}
-  
+  ) { }
+
+  // CATALOGO de productos
+  // busca todos los productos
   async findallcatalogo(): Promise<Producto[]> {
     console.log('entro al servicio catalogo de producto ');
     const productos = await this.productoRepository.find({
-      relations: ['Categoria'],
+      relations: ['categoria'],
     });
     return productos;
   }
 
   // busca un producto por su id
-
   async porProducto(id: number): Promise<Producto> {
-   
-    const producto = await this.productoRepository.findOne({
-      where: { id },
-      relations: ['Categoria', 'Planta', 'Fertilizante', 'Sustrato', 'ControlPlagas', 'Macetero','Servicio'],
-      });
-    if (!producto) {
-        throw new Error('Producto no encontrado'); // Manejo de errores opcional
-    }
-
-  return producto;
-
-
+    const producto = await this.productoRepository.findOneBy({ id });
+    return producto;
   }
 }

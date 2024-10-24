@@ -1,9 +1,16 @@
-import { Entity, Column, PrimaryGeneratedColumn, 
-  ManyToOne, JoinColumn, OneToOne, } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+  OneToOne,
+} from 'typeorm';
 
 import { Comuna } from 'src/localizaciones/entities/comuna.entity';
 import { TipoDespacho } from './tipo_despacho.entity';
 import { Venta } from 'src/ventas/entities/venta.entity';
+import { EstadosDespacho } from './estados_despacho.entity';
 
 @Entity({ name: 'Despacho' })
 export class Despacho {
@@ -26,8 +33,12 @@ export class Despacho {
   @Column({ type: 'varchar', length: 255 })
   nombreReceptor: string;
 
-  @Column({ type: 'varchar', length: 50 })
-  estado: string;
+  @ManyToOne(
+    () => EstadosDespacho,
+    (estadoDespacho) => estadoDespacho.despachos,
+  )
+  @JoinColumn({ name: 'idEstadoDespacho' })
+  estadoDespacho: EstadosDespacho;
 
   @ManyToOne(() => TipoDespacho, (tipoDespacho) => tipoDespacho.despachos)
   @JoinColumn({ name: 'idTipoDespacho' })
@@ -36,7 +47,6 @@ export class Despacho {
   @Column({ type: 'varchar', length: 255 })
   direccion: string;
 
- 
   @ManyToOne(() => Comuna, (comuna) => comuna.despachos)
   @JoinColumn({ name: 'idComuna' })
   comuna: Comuna;
