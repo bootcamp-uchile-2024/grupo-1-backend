@@ -44,7 +44,7 @@ export class Planta {
   @JoinColumn({ name: 'idHumedad' })
   humedad: NivelDeHumedad;
 
-  @Column({ type: 'decimal', precision: 3, scale: 2, nullable: true })
+  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
   temperaturaIdeal: number;
 
   @Column({ type: 'int', nullable: true })

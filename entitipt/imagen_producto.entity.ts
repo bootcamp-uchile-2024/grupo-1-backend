@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Producto } from './producto.entity';
 
 @Entity({ name: 'ImagenProducto' })
@@ -10,6 +16,6 @@ export class ImagenProducto {
   @JoinColumn({ name: 'idProducto' })
   producto: Producto;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 500 })
   urlImagen: string;
 }

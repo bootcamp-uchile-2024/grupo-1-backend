@@ -1,3 +1,4 @@
+-- Active: 1729735444275@@127.0.0.2@3307@PlantopiaDB
 -- Insert a categoria
 INSERT INTO Categoria (nombreCategoria)
 VALUES
@@ -13,249 +14,261 @@ VALUES
 ('Otros');
 
 -- insert DificultadDeCuidado
-INSERT INTO DificultadDeCuidado (descripcion) VALUES ('Fácil');
-INSERT INTO DificultadDeCuidado (descripcion) VALUES ('Moderado');
-INSERT INTO DificultadDeCuidado (descripcion) VALUES ('Difícil');
-INSERT INTO DificultadDeCuidado (descripcion) VALUES ('Muy Difícil');
-INSERT INTO DificultadDeCuidado (descripcion) VALUES ('Experto');
-INSERT INTO DificultadDeCuidado (descripcion) VALUES ('Principiante');
-INSERT INTO DificultadDeCuidado (descripcion) VALUES ('Intermedio');
-INSERT INTO DificultadDeCuidado (descripcion) VALUES ('Avanzado');
-INSERT INTO DificultadDeCuidado (descripcion) VALUES ('Profesional');
-INSERT INTO DificultadDeCuidado (descripcion) VALUES ('Maestro');
+INSERT INTO DificultadDeCuidado (descripcion) VALUES
+('Fácil'),
+('Moderado'),
+('Difícil'),
+('Muy Difícil'),
+('Experto'),
+('Principiante'),
+('Intermedio'),
+('Avanzado'),
+('Profesional'),
+('Maestro');
+
 
 -- insert Estacion
-INSERT INTO Estacion (nombre) VALUES ('Primavera');
-INSERT INTO Estacion (nombre) VALUES ('Verano');
-INSERT INTO Estacion (nombre) VALUES ('Otoño');
-INSERT INTO Estacion (nombre) VALUES ('Invierno');
-INSERT INTO Estacion (nombre) VALUES ('Todo el año');
-INSERT INTO Estacion (nombre) VALUES ('Estación lluviosa');
-INSERT INTO Estacion (nombre) VALUES ('Estación seca');
-INSERT INTO Estacion (nombre) VALUES ('Estación de crecimiento');
-INSERT INTO Estacion (nombre) VALUES ('Estación de floración');
-INSERT INTO Estacion (nombre) VALUES ('Estación de cosecha');
+INSERT INTO Estacion (nombre) VALUES
+('Primavera'),
+('Verano'),
+('Otoño'),
+('Invierno'),
+('Todo el año'),
+('Estación lluviosa'),
+('Estación seca'),
+('Estación de crecimiento'),
+('Estación de floración'),
+('Estación de cosecha');
 
 -- insert FrecuenciaDeRiego
-INSERT INTO FrecuenciaDeRiego (descripcion) VALUES ('Diario');
-INSERT INTO FrecuenciaDeRiego (descripcion) VALUES ('Semanal');
-INSERT INTO FrecuenciaDeRiego (descripcion) VALUES ('Quincenal');
-INSERT INTO FrecuenciaDeRiego (descripcion) VALUES ('Mensual');
-INSERT INTO FrecuenciaDeRiego (descripcion) VALUES ('Cada dos días');
-INSERT INTO FrecuenciaDeRiego (descripcion) VALUES ('Cada tres días');
-INSERT INTO FrecuenciaDeRiego (descripcion) VALUES ('Cada cuatro días');
-INSERT INTO FrecuenciaDeRiego (descripcion) VALUES ('Cada cinco días');
-INSERT INTO FrecuenciaDeRiego (descripcion) VALUES ('Cada seis días');
-INSERT INTO FrecuenciaDeRiego (descripcion) VALUES ('Cada siete días');
+INSERT INTO FrecuenciaDeRiego (descripcion) VALUES
+('Diario'),
+('Semanal'),
+('Quincenal'),
+('Mensual'),
+('Cada dos días'),
+('Cada tres días'),
+('Cada cuatro días'),
+('Cada cinco días'),
+('Cada seis días'),
+('Cada siete días');
 
 -- insert Habitat
-INSERT INTO Habitat (descripcion) VALUES ('Interior');
-INSERT INTO Habitat (descripcion) VALUES ('Exterior');
-INSERT INTO Habitat (descripcion) VALUES ('Todo Habitat');
-INSERT INTO Habitat (descripcion) VALUES ('Bosque');
-INSERT INTO Habitat (descripcion) VALUES ('Pradera');
-INSERT INTO Habitat (descripcion) VALUES ('Pantano');
-INSERT INTO Habitat (descripcion) VALUES ('Tundra');
-INSERT INTO Habitat (descripcion) VALUES ('Sabana');
-INSERT INTO Habitat (descripcion) VALUES ('Manglar');
-INSERT INTO Habitat (descripcion) VALUES ('Río');
+INSERT INTO Habitat (descripcion) VALUES
+('Interior'),
+('Exterior'),
+('Todo Habitat'),
+('Bosque'),
+('Pradera'),
+('Pantano'),
+('Tundra'),
+('Sabana'),
+('Manglar'),
+('Río');
 
---  insert LuzRequerida
-INSERT INTO LuzRequerida (descripcion) VALUES ('Pleno sol');
-INSERT INTO LuzRequerida (descripcion) VALUES ('Sombra parcial');
-INSERT INTO LuzRequerida (descripcion) VALUES ('Sombra completa');
-INSERT INTO LuzRequerida (descripcion) VALUES ('Luz indirecta');
-INSERT INTO LuzRequerida (descripcion) VALUES ('Luz filtrada');
-INSERT INTO LuzRequerida (descripcion) VALUES ('Luz brillante');
-INSERT INTO LuzRequerida (descripcion) VALUES ('Luz moderada');
-INSERT INTO LuzRequerida (descripcion) VALUES ('Luz baja');
-INSERT INTO LuzRequerida (descripcion) VALUES ('Luz artificial');
-INSERT INTO LuzRequerida (descripcion) VALUES ('Luz natural');
+-- insert LuzRequerida
+INSERT INTO LuzRequerida (descripcion) VALUES
+('Pleno sol'),
+('Sombra parcial'),
+('Sombra completa'),
+('Luz indirecta'),
+('Luz filtrada'),
+('Luz brillante'),
+('Luz moderada'),
+('Luz baja'),
+('Luz artificial'),
+('Luz natural');
 
 -- insert NivelDeHumedad
-INSERT INTO NivelDeHumedad (descripcion) VALUES ('Alta');
-INSERT INTO NivelDeHumedad (descripcion) VALUES ('Media');
-INSERT INTO NivelDeHumedad (descripcion) VALUES ('Baja');
-INSERT INTO NivelDeHumedad (descripcion) VALUES ('Muy alta');
-INSERT INTO NivelDeHumedad (descripcion) VALUES ('Muy baja');
-INSERT INTO NivelDeHumedad (descripcion) VALUES ('Moderada');
-INSERT INTO NivelDeHumedad (descripcion) VALUES ('Seca');
-INSERT INTO NivelDeHumedad (descripcion) VALUES ('Húmeda');
-INSERT INTO NivelDeHumedad (descripcion) VALUES ('Mojada');
-INSERT INTO NivelDeHumedad (descripcion) VALUES ('Empapada');
+INSERT INTO NivelDeHumedad (descripcion) VALUES
+('Alta'),
+('Media'),
+('Baja'),
+('Muy alta'),
+('Muy baja'),
+('Moderada'),
+('Seca'),
+('Húmeda'),
+('Mojada'),
+('Empapada');
 
--- insert tiposuelo
-INSERT INTO TipoDeSuelo (descripcion) VALUES ('Arenoso');
-INSERT INTO TipoDeSuelo (descripcion) VALUES ('Arcilloso');
-INSERT INTO TipoDeSuelo (descripcion) VALUES ('Limoso');
-INSERT INTO TipoDeSuelo (descripcion) VALUES ('Pedregoso');
-INSERT INTO TipoDeSuelo (descripcion) VALUES ('Franco');
-INSERT INTO TipoDeSuelo (descripcion) VALUES ('Turboso');
-INSERT INTO TipoDeSuelo (descripcion) VALUES ('Calcáreo');
-INSERT INTO TipoDeSuelo (descripcion) VALUES ('Salino');
-INSERT INTO TipoDeSuelo (descripcion) VALUES ('Volcánico');
-INSERT INTO TipoDeSuelo (descripcion) VALUES ('Orgánico');
+-- insert TipoDeSuelo
+INSERT INTO TipoDeSuelo (descripcion) VALUES
+('Arenoso'),
+('Arcilloso'),
+('Limoso'),
+('Pedregoso'),
+('Franco'),
+('Turboso'),
+('Calcáreo'),
+('Salino'),
+('Volcánico'),
+('Orgánico');
 
 -- insert Eficacia
-
-INSERT INTO Eficacia (descripcion) VALUES ('Alta');
-INSERT INTO Eficacia (descripcion) VALUES ('Media');
-INSERT INTO Eficacia (descripcion) VALUES ('Baja');
-INSERT INTO Eficacia (descripcion) VALUES ('Muy alta');
-INSERT INTO Eficacia (descripcion) VALUES ('Muy baja');
-INSERT INTO Eficacia (descripcion) VALUES ('Moderada');
-INSERT INTO Eficacia (descripcion) VALUES ('Eficaz');
-INSERT INTO Eficacia (descripcion) VALUES ('Ineficaz');
-INSERT INTO Eficacia (descripcion) VALUES ('Parcialmente eficaz');
-INSERT INTO Eficacia (descripcion) VALUES ('Totalmente eficaz');
+INSERT INTO Eficacia (descripcion) VALUES
+('Alta'),
+('Media'),
+('Baja'),
+('Muy alta'),
+('Muy baja'),
+('Moderada'),
+('Eficaz'),
+('Ineficaz'),
+('Parcialmente eficaz'),
+('Totalmente eficaz');
 
 -- insert Plaga
-INSERT INTO Plaga (descripcion) VALUES ('Pulgones');
-INSERT INTO Plaga (descripcion) VALUES ('Cochinillas');
-INSERT INTO Plaga (descripcion) VALUES ('Ácaros');
-INSERT INTO Plaga (descripcion) VALUES ('Mosca blanca');
-INSERT INTO Plaga (descripcion) VALUES ('Trips');
-INSERT INTO Plaga (descripcion) VALUES ('Babosas');
-INSERT INTO Plaga (descripcion) VALUES ('Caracoles');
-INSERT INTO Plaga (descripcion) VALUES ('Orugas');
-INSERT INTO Plaga (descripcion) VALUES ('Nematodos');
-INSERT INTO Plaga (descripcion) VALUES ('Gorgojos');
+INSERT INTO Plaga (descripcion) VALUES
+('Pulgones'),
+('Cochinillas'),
+('Ácaros'),
+('Mosca blanca'),
+('Trips'),
+('Babosas'),
+('Caracoles'),
+('Orugas'),
+('Nematodos'),
+('Gorgojos');
 
 -- insert FormaAplicacion
-INSERT INTO FormaAplicacion (descripcion) VALUES ('Spray');
-INSERT INTO FormaAplicacion (descripcion) VALUES ('Polvo');
-INSERT INTO FormaAplicacion (descripcion) VALUES ('Granulado');
-INSERT INTO FormaAplicacion (descripcion) VALUES ('Líquido');
-INSERT INTO FormaAplicacion (descripcion) VALUES ('Gel');
-INSERT INTO FormaAplicacion (descripcion) VALUES ('Pasta');
-INSERT INTO FormaAplicacion (descripcion) VALUES ('Tableta');
-INSERT INTO FormaAplicacion (descripcion) VALUES ('Inyección');
-INSERT INTO FormaAplicacion (descripcion) VALUES ('Difusión');
-INSERT INTO FormaAplicacion (descripcion) VALUES ('Aplicación directa');
+INSERT INTO FormaAplicacion (descripcion) VALUES
+('Spray'),
+('Polvo'),
+('Granulado'),
+('Líquido'),
+('Gel'),
+('Pasta'),
+('Tableta'),
+('Inyección'),
+('Difusión'),
+('Aplicación directa');
 
 -- insert RetencionHumedad
-INSERT INTO RetencionHumedad (descripcion) VALUES ('Alta');
-INSERT INTO RetencionHumedad (descripcion) VALUES ('Media');
-INSERT INTO RetencionHumedad (descripcion) VALUES ('Baja');
-INSERT INTO RetencionHumedad (descripcion) VALUES ('Muy alta');
-INSERT INTO RetencionHumedad (descripcion) VALUES ('Muy baja');
-INSERT INTO RetencionHumedad (descripcion) VALUES ('Moderada');
-INSERT INTO RetencionHumedad (descripcion) VALUES ('Seca');
-INSERT INTO RetencionHumedad (descripcion) VALUES ('Húmeda');
-INSERT INTO RetencionHumedad (descripcion) VALUES ('Mojada');
-INSERT INTO RetencionHumedad (descripcion) VALUES ('Empapada');
+INSERT INTO RetencionHumedad (descripcion) VALUES
+('Alta'),
+('Media'),
+('Baja'),
+('Muy alta'),
+('Muy baja'),
+('Moderada'),
+('Seca'),
+('Húmeda'),
+('Mojada'),
+('Empapada');
 
 -- insert ComposicionSustrato
-INSERT INTO ComposicionSustrato (descripcion) VALUES ('Turba');
-INSERT INTO ComposicionSustrato (descripcion) VALUES ('Arena');
-INSERT INTO ComposicionSustrato (descripcion) VALUES ('Arcilla');
-INSERT INTO ComposicionSustrato (descripcion) VALUES ('Humus');
-INSERT INTO ComposicionSustrato (descripcion) VALUES ('Perlita');
-INSERT INTO ComposicionSustrato (descripcion) VALUES ('Vermiculita');
-INSERT INTO ComposicionSustrato (descripcion) VALUES ('Fibra de coco');
-INSERT INTO ComposicionSustrato (descripcion) VALUES ('Compost');
-INSERT INTO ComposicionSustrato (descripcion) VALUES ('Grava');
-INSERT INTO ComposicionSustrato (descripcion) VALUES ('Musgo');
+INSERT INTO ComposicionSustrato (descripcion) VALUES
+('Turba'),
+('Arena'),
+('Arcilla'),
+('Humus'),
+('Perlita'),
+('Vermiculita'),
+('Fibra de coco'),
+('Compost'),
+('Grava'),
+('Musgo');
 
 -- insert TexturaSustrato
-INSERT INTO TexturaSustrato (descripcion) VALUES ('Fina');
-INSERT INTO TexturaSustrato (descripcion) VALUES ('Media');
-INSERT INTO TexturaSustrato (descripcion) VALUES ('Gruesa');
-INSERT INTO TexturaSustrato (descripcion) VALUES ('Muy fina');
-INSERT INTO TexturaSustrato (descripcion) VALUES ('Muy gruesa');
-INSERT INTO TexturaSustrato (descripcion) VALUES ('Arenosa');
-INSERT INTO TexturaSustrato (descripcion) VALUES ('Arcillosa');
-INSERT INTO TexturaSustrato (descripcion) VALUES ('Limoso');
-INSERT INTO TexturaSustrato (descripcion) VALUES ('Pedregoso');
-INSERT INTO TexturaSustrato (descripcion) VALUES ('Orgánica');
+INSERT INTO TexturaSustrato (descripcion) VALUES
+('Fina'),
+('Media'),
+('Gruesa'),
+('Muy fina'),
+('Muy gruesa'),
+('Arenosa'),
+('Arcillosa'),
+('Limoso'),
+('Pedregoso'),
+('Orgánica');
 
 -- insert TipoFertilizante
-INSERT INTO TipoFertilizante (descripcion) VALUES ('Orgánico');
-INSERT INTO TipoFertilizante (descripcion) VALUES ('Inorgánico');
-INSERT INTO TipoFertilizante (descripcion) VALUES ('Líquido');
-INSERT INTO TipoFertilizante (descripcion) VALUES ('Granulado');
-INSERT INTO TipoFertilizante (descripcion) VALUES ('Soluble');
-INSERT INTO TipoFertilizante (descripcion) VALUES ('Lento liberación');
-INSERT INTO TipoFertilizante (descripcion) VALUES ('Rápido liberación');
-INSERT INTO TipoFertilizante (descripcion) VALUES ('Foliar');
-INSERT INTO TipoFertilizante (descripcion) VALUES ('Raíz');
-INSERT INTO TipoFertilizante (descripcion) VALUES ('Compost');
+INSERT INTO TipoFertilizante (descripcion) VALUES
+('Orgánico'),
+('Inorgánico'),
+('Líquido'),
+('Granulado'),
+('Soluble'),
+('Lento liberación'),
+('Rápido liberación'),
+('Foliar'),
+('Raíz'),
+('Compost');
 
--- insert plantasrecomendadas
-INSERT INTO TipoPlantasRecomendadas (descripcion) VALUES ('Interior');
-INSERT INTO TipoPlantasRecomendadas (descripcion) VALUES ('Exterior');
-INSERT INTO TipoPlantasRecomendadas (descripcion) VALUES ('Frutales');
-INSERT INTO TipoPlantasRecomendadas (descripcion) VALUES ('Ornamentales');
-INSERT INTO TipoPlantasRecomendadas (descripcion) VALUES ('Medicinales');
-INSERT INTO TipoPlantasRecomendadas (descripcion) VALUES ('Aromáticas');
-INSERT INTO TipoPlantasRecomendadas (descripcion) VALUES ('Cactus');
-INSERT INTO TipoPlantasRecomendadas (descripcion) VALUES ('Suculentas');
-INSERT INTO TipoPlantasRecomendadas (descripcion) VALUES ('Trepadoras');
-INSERT INTO TipoPlantasRecomendadas (descripcion) VALUES ('Acuáticas');
+-- insert TipoPlantasRecomendadas
+INSERT INTO TipoPlantasRecomendadas (descripcion) VALUES
+('Interior'),
+('Exterior'),
+('Frutales'),
+('Ornamentales'),
+('Medicinales'),
+('Aromáticas'),
+('Cactus'),
+('Suculentas'),
+('Trepadoras'),
+('Acuáticas');
 
 -- insert EstadosOC
-
-INSERT INTO EstadosOC (descripcion) VALUES ('Pendiente');
-INSERT INTO EstadosOC (descripcion) VALUES ('Procesando');
-INSERT INTO EstadosOC (descripcion) VALUES ('Enviado');
-INSERT INTO EstadosOC (descripcion) VALUES ('Entregado');
-INSERT INTO EstadosOC (descripcion) VALUES ('Cancelado');
-INSERT INTO EstadosOC (descripcion) VALUES ('Devuelto');
-INSERT INTO EstadosOC (descripcion) VALUES ('Reembolsado');
-INSERT INTO EstadosOC (descripcion) VALUES ('En espera');
-INSERT INTO EstadosOC (descripcion) VALUES ('Completado');
-INSERT INTO EstadosOC (descripcion) VALUES ('Fallido');
+INSERT INTO EstadosOC (descripcion) VALUES
+('Pendiente'),
+('Procesando'),
+('Enviado'),
+('Entregado'),
+('Cancelado'),
+('Devuelto'),
+('Reembolsado'),
+('En espera'),
+('Completado'),
+('Fallido');
 
 -- insert FormaMacetero
-INSERT INTO FormaMacetero (descripcion) VALUES ('Redondo');
-INSERT INTO FormaMacetero (descripcion) VALUES ('Cuadrado');
-INSERT INTO FormaMacetero (descripcion) VALUES ('Rectangular');
-INSERT INTO FormaMacetero (descripcion) VALUES ('Ovalado');
-INSERT INTO FormaMacetero (descripcion) VALUES ('Triangular');
-INSERT INTO FormaMacetero (descripcion) VALUES ('Hexagonal');
-INSERT INTO FormaMacetero (descripcion) VALUES ('Octagonal');
-INSERT INTO FormaMacetero (descripcion) VALUES ('Cónico');
-INSERT INTO FormaMacetero (descripcion) VALUES ('Pirámide');
-INSERT INTO FormaMacetero (descripcion) VALUES ('Irregular');
-
+INSERT INTO FormaMacetero (descripcion) VALUES
+('Redondo'),
+('Cuadrado'),
+('Rectangular'),
+('Ovalado'),
+('Triangular'),
+('Hexagonal'),
+('Octagonal'),
+('Cónico'),
+('Pirámide'),
+('Irregular');
 
 -- insert usuario
 INSERT INTO Usuario (idPerfil, rutUsuario, nombres, apellidos, email, clave, telefono, direccion, idComuna, codigoPostal) VALUES
-(1, '12345678-9', 'Cliente1', 'Prueba', 'cliente1@emaildeprueba.cl', 'clave123', '12345678', 'Direccion de Prueba 1', 1, '1234567'),
-(2, '98765432-1', 'Cliente2', 'Prueba', 'cliente2@emaildeprueba.cl', 'clave456', '12345679', 'Direccion de Prueba 2', 2, '7654321'),
-(3, '11223344-5', 'Cliente3', 'Prueba', 'cliente3@emaildeprueba.cl', 'clave789', '12345680', 'Direccion de Prueba 3', 3, '2345678'),
-(4, '55667788-9', 'Cliente4', 'Prueba', 'cliente4@emaildeprueba.cl', 'clave012', '12345681', 'Direccion de Prueba 4', 4, '8765432'),
-(5, '99887766-5', 'Cliente5', 'Prueba', 'cliente5@emaildeprueba.cl', 'clave345', '12345682', 'Direccion de Prueba 5', 5, '3456789'),
-(6, '22334455-6', 'Cliente6', 'Prueba', 'cliente6@emaildeprueba.cl', 'clave678', '12345683', 'Direccion de Prueba 6', 6, '9876543'),
-(7, '66778899-0', 'Cliente7', 'Prueba', 'cliente7@emaildeprueba.cl', 'clave901', '12345684', 'Direccion de Prueba 7', 7, '4567890'),
-(8, '33445566-7', 'Cliente8', 'Prueba', 'cliente8@emaildeprueba.cl', 'clave234', '12345685', 'Direccion de Prueba 8', 8, '0987654'),
-(9, '77889900-1', 'Cliente9', 'Prueba', 'cliente9@emaildeprueba.cl', 'clave567', '12345686', 'Direccion de Prueba 9', 9, '5678901'),
-(10, '44556677-8', 'Cliente10', 'Prueba', 'cliente10@emaildeprueba.cl', 'clave890', '12345687', 'Direccion de Prueba 10', 10, '6789012');
+(1, '12345678-9', 'Cliente1', 'Prueba', 'cliente1@emaildeprueba.cl', 'clave123', 12345678, 'Direccion de Prueba 1', 1, '1234567'),
+(2, '98765432-1', 'Cliente2', 'Prueba', 'cliente2@emaildeprueba.cl', 'clave456', 12345679, 'Direccion de Prueba 2', 2, '7654321'),
+(3, '11223344-5', 'Cliente3', 'Prueba', 'cliente3@emaildeprueba.cl', 'clave789', 12345680, 'Direccion de Prueba 3', 3, '2345678'),
+(4, '55667788-9', 'Cliente4', 'Prueba', 'cliente4@emaildeprueba.cl', 'clave012', 12345681, 'Direccion de Prueba 4', 4, '8765432'),
+(5, '99887766-5', 'Cliente5', 'Prueba', 'cliente5@emaildeprueba.cl', 'clave345', 12345682, 'Direccion de Prueba 5', 5, '3456789'),
+(6, '22334455-6', 'Cliente6', 'Prueba', 'cliente6@emaildeprueba.cl', 'clave678', 12345683, 'Direccion de Prueba 6', 6, '9876543'),
+(7, '66778899-0', 'Cliente7', 'Prueba', 'cliente7@emaildeprueba.cl', 'clave901', 12345684, 'Direccion de Prueba 7', 7, '4567890'),
+(8, '33445566-7', 'Cliente8', 'Prueba', 'cliente8@emaildeprueba.cl', 'clave234', 12345685, 'Direccion de Prueba 8', 8, '0987654'),
+(9, '77889900-1', 'Cliente9', 'Prueba', 'cliente9@emaildeprueba.cl', 'clave567', 12345686, 'Direccion de Prueba 9', 9, '5678901'),
+(10, '44556677-8', 'Cliente10', 'Prueba', 'cliente10@emaildeprueba.cl', 'clave890', 12345687, 'Direccion de Prueba 10', 10, '6789012');
 
 -- insert perfil
 
-INSERT INTO Perfil (descripcion, accesoSistema) VALUES ('Administrador', TRUE);
-INSERT INTO Perfil (descripcion, accesoSistema) VALUES ('Usuario', TRUE);
-INSERT INTO Perfil (descripcion, accesoSistema) VALUES ('Invitado', FALSE);
-INSERT INTO Perfil (descripcion, accesoSistema) VALUES ('Moderador', TRUE);
-INSERT INTO Perfil (descripcion, accesoSistema) VALUES ('Editor', TRUE);
-INSERT INTO Perfil (descripcion, accesoSistema) VALUES ('Supervisor', TRUE);
-INSERT INTO Perfil (descripcion, accesoSistema) VALUES ('Gerente', TRUE);
-INSERT INTO Perfil (descripcion, accesoSistema) VALUES ('Analista', TRUE);
-INSERT INTO Perfil (descripcion, accesoSistema) VALUES ('Desarrollador', TRUE);
-INSERT INTO Perfil (descripcion, accesoSistema) VALUES ('Tester', TRUE);
+INSERT INTO Perfil (descripcion, accesoSistema) VALUES
+('Administrador', TRUE),
+('Usuario', TRUE),
+('Invitado', FALSE),
+('Moderador', TRUE),
+('Editor', TRUE),
+('Supervisor', TRUE),
+('Gerente', TRUE),
+('Analista', TRUE),
+('Desarrollador', TRUE),
+('Tester', TRUE);
 
---  insert region
-INSERT INTO Region (nombre) VALUES ('Región Metropolitana');
-INSERT INTO Region (nombre) VALUES ('Región de Valparaíso');
-INSERT INTO Region (nombre) VALUES ('Región del Biobío');
-INSERT INTO Region (nombre) VALUES ('Región de La Araucanía');
-INSERT INTO Region (nombre) VALUES ('Región de Los Lagos');
-INSERT INTO Region (nombre) VALUES ('Región Metropolitana');
-INSERT INTO Region (nombre) VALUES ('Región de Valparaíso');
-INSERT INTO Region (nombre) VALUES ('Región del Biobío');
-INSERT INTO Region (nombre) VALUES ('Región de La Araucanía');
-INSERT INTO Region (nombre) VALUES ('Región de Los Lagos');
+-- insert region
+INSERT INTO Region (nombre) VALUES
+('Región Metropolitana'),
+('Región de Valparaíso'),
+('Región del Biobío'),
+('Región de La Araucanía'),
+('Región de Los Lagos');
 
 -- Insert Comuna
 INSERT INTO Comuna (idRegion, nombre) VALUES
@@ -323,11 +336,6 @@ INSERT INTO TipoDespacho (nombreMetodo, descripcion) VALUES
 ('Envío en Fin de Semana', 'Entrega durante el fin de semana');
 
 -- INYECCION DE CASOS DEL CATALOGO DE PRODUCTOS (PLANTAS)
-
--- INYECCION DE CASOS DEL CATALOGO DE PRODUCTOS (PLANTAS)
-
--- Ajustar la columna temperaturaIdeal si es necesario
-ALTER TABLE Planta MODIFY COLUMN temperaturaIdeal DECIMAL(5,2);
 
 -- Insertar datos en la tabla Producto (Planta)
 INSERT INTO Producto (nombreProducto, descuento, precioNormal, stock, descripcionProducto, valoracion, cantidadVentas, idCategoria)
@@ -436,8 +444,6 @@ VALUES
 (24, 'Fertilizante orgánico a base de compost.', 1, '1 KG', 'Cada 15 días', 1000),
 (25, 'Fertilizante específico para cactáceas y suculentas.', 2, '200 GR', 'Cada mes', 200);
 
--- Ajustar la columna urlImagen si es necesario
-ALTER TABLE ImagenProducto MODIFY COLUMN urlImagen VARCHAR(500);
 
 -- Insertar datos en la tabla ImagenProducto
 INSERT INTO ImagenProducto (idProducto, urlImagen)
