@@ -9,8 +9,7 @@ import { VentasModule } from './ventas/ventas.module';
 import { EquipoModule } from './equipo/equipo.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { GlobalMiddlewareMiddleware } from './comunes/middleware/global.middleware.middleware'
-
+import { GlobalMiddlewareMiddleware } from './comunes/middleware/global.middleware.middleware';
 
 @Module({
   imports: [
@@ -23,37 +22,31 @@ import { GlobalMiddlewareMiddleware } from './comunes/middleware/global.middlewa
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath:
-        process.env.AMBIENTE === 'produccion'
+        process.env.AMBIENTE === 'desarrollo'
           ? '.env.productivo'
           : '.env.develop',
     }),
     // Conexión a la base de datos
-   
-    
+
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: '127.0.0.2' ,
-      port: parseInt(process.env.DB_PORT ||'3307', 10),
-      username: process.env.DB_USERNAME || 'user_prod',
-      password: process.env.DB_PASSWORD || 'password_prod',
-      database: process.env.DB_DATABASE || 'PlantopiaDB',
-      autoLoadEntities: true,
-      entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-      synchronize: true,
-      logging: true, 
+      host: 'localhost',
+      port: 3306,
+      username: 'root',
+      password: 'asdf1016',
+      database: 'plantopiadb',
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      synchronize: false, // Sincroniza el esquema de la base de datos
+      logging: true, // Habilita el registro de consultas SQL
     }),
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-
-
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(GlobalMiddlewareMiddleware) // Middleware global
       .forRoutes('*'); // Aplica a todas las rutas
   }
- 
- 
 }
