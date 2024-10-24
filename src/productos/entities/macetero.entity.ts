@@ -1,63 +1,40 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Producto } from 'src/productos/entities/producto.entity';
-import { FormaMacetero } from 'src/productos/enum/maceteros/formaMacetero';
-import { TipoProductos } from 'src/productos/enum/tipo-productos';
-export class Macetero extends Producto {
-  @ApiProperty()
-  public alto: number;
-  @ApiProperty()
-  public ancho: number;
-  @ApiProperty()
-  public peso: number;
-  @ApiProperty()
-  public capacidad: number;
-  @ApiProperty()
-  public material: string;
-  @ApiProperty()
-  public color: string;
-  @ApiProperty()
-  public forma: FormaMacetero;
-  constructor(
-    idProducto: number,
-    nombreProducto: string,
-    imagenProducto: string[],
-    descuento: number,
-    precioNormal: number,
-    coberturaDeDespacho: string[],
-    stock: number,
-    descripcionProducto: string,
-    idCategoria: TipoProductos,
-    valoracion: number,
-    cantidadVentas: number,
-    codigoProducto: string,
-    alto: number,
-    ancho: number,
-    peso: number,
-    capacidad: number,
-    material: string,
-    color: string,
-    forma: FormaMacetero,
-  ) {
-    super(
-      idProducto,
-      nombreProducto,
-      imagenProducto,
-      descuento,
-      precioNormal,
-      coberturaDeDespacho,
-      stock,
-      descripcionProducto,
-      idCategoria,
-      valoracion,
-      cantidadVentas,
-      codigoProducto,
-    );
-    this.alto = alto;
-    this.ancho = ancho;
-    this.peso = peso;
-    this.capacidad = capacidad;
-    this.material = material;
-    this.color = color;
-    this.forma = forma;
-  }
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+  OneToOne,
+} from 'typeorm';
+import { Producto } from './producto.entity';
+import { FormaMacetero } from './forma_macetero.entity';
+
+@Entity({ name: 'Macetero' })
+export class Macetero {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @OneToOne(() => Producto, (producto) => producto.macetero)
+  @JoinColumn({ name: 'idProducto' })
+  producto: Producto;
+
+  @Column({ type: 'varchar', length: 100 })
+  material: string;
+
+  @Column({ type: 'int' })
+  altura: number;
+
+  @Column({ type: 'int' })
+  ancho: number;
+
+  @Column({ type: 'varchar', length: 50 })
+  color: string;
+
+  @Column({ type: 'int' })
+  peso: number;
+
+  @ManyToOne(() => FormaMacetero, (formamacetero) => formamacetero.macetero)
+  @JoinColumn({ name: 'idForma' })
+  formamacetero: FormaMacetero;
+  forma: any;
 }

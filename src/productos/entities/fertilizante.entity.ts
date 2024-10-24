@@ -1,60 +1,50 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Producto } from 'src/productos/entities/producto.entity';
-import { TipoFertizante } from 'src/productos/enum/fertilizantes/tipoFertizante';
-import { TipoPlantasRecomendadas } from '../enum/fertilizantes/tipoPlantasRecomendadas';
-import { TipoProductos } from 'src/productos/enum/tipo-productos';
-export class Fertilizante extends Producto {
-  @ApiProperty()
-  public composición: string;
-  @ApiProperty()
-  public tipo: TipoFertizante;
-  @ApiProperty()
-  public frecuenciaAplicacion: string;
-  @ApiProperty()
-  public presentacion: string;
-  @ApiProperty()
-  public observaciones: string;
-  @ApiProperty()
-  public tiposPlantasRecomendadas: TipoPlantasRecomendadas;
-  constructor(
-    idProducto: number,
-    nombreProducto: string,
-    imagenProducto: string[],
-    descuento: number,
-    precioNormal: number,
-    coberturaDeDespacho: string[],
-    stock: number,
-    descripcionProducto: string,
-    idCategoria: TipoProductos,
-    valoracion: number,
-    cantidadVentas: number,
-    codigoProducto: string,
-    composición: string,
-    tipo: TipoFertizante,
-    frecuenciaAplicacion: string,
-    presentacion: string,
-    observaciones: string,
-    tiposPlantasRecomendadas: TipoPlantasRecomendadas,
-  ) {
-    super(
-      idProducto,
-      nombreProducto,
-      imagenProducto,
-      descuento,
-      precioNormal,
-      coberturaDeDespacho,
-      stock,
-      descripcionProducto,
-      idCategoria,
-      valoracion,
-      cantidadVentas,
-      codigoProducto,
-    );
-    this.composición = composición;
-    this.tipo = tipo;
-    this.frecuenciaAplicacion = frecuenciaAplicacion;
-    this.presentacion = presentacion;
-    this.observaciones = observaciones;
-    this.tiposPlantasRecomendadas = tiposPlantasRecomendadas;
-  }
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  OneToOne,
+  ManyToMany,
+  JoinTable,
+} from 'typeorm';
+import { Producto } from './producto.entity';
+import { TipoFertilizante } from './tipo_fertilizante.entity';
+import { TipoPlantasRecomendadas } from './tipo_plantas_recomendadas.entity';
+
+@Entity()
+export class Fertilizante {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @OneToOne(() => Producto, (producto) => producto.fertilizante)
+  @JoinColumn({ name: 'idProducto' })
+  producto: Producto;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  composicion: string;
+
+  @ManyToOne(() => TipoFertilizante, (tipo) => tipo.fertilizantes)
+  @JoinColumn({ name: 'idTipoFertilizante' })
+  tipo: TipoFertilizante;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  presentacion: string;
+
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  frecuenciaAplicacion: string;
+
+  @Column({ type: 'int', nullable: true })
+  peso: number;
+
+  @ManyToMany(
+    () => TipoPlantasRecomendadas,
+    (tipoPlanta) => tipoPlanta.fertilizantes,
+  )
+  @JoinTable({
+    name: 'FertilizanteTipoPlantas',
+    joinColumn: { name: 'idFertilizante', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'idTipoPlanta', referencedColumnName: 'id' },
+  })
+  tipoPlantas: TipoPlantasRecomendadas[];
 }

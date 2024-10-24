@@ -1,33 +1,53 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { EstadosDespacho } from "./enum-despachos";
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+  OneToOne,
+} from 'typeorm';
 
+import { Comuna } from 'src/localizaciones/entities/comuna.entity';
+import { TipoDespacho } from './tipo_despacho.entity';
+import { Venta } from 'src/ventas/entities/venta.entity';
+import { EstadosDespacho } from './estados_despacho.entity';
+
+@Entity({ name: 'Despacho' })
 export class Despacho {
-    @ApiProperty({
-        name: 'id',
-        example: 1,
-      })
-      public id: number;
-      @ApiProperty({
-        description: 'fecha Estimada Entrega',
-        example: '30/08/2024',
-      })
-      public fechaEstimada: Date;
-      @ApiProperty({
-        name: 'Estado Despacho',
-        enum: EstadosDespacho, example: EstadosDespacho.EN_CAMINO,
-    })
-    public EstadosDespacho: EstadosDespacho;
-    @ApiProperty({
-        name: 'Nro Seguimiento',
-        example: 152525,
-        default: 0 
-      })
-    public nroSeguimiento: number;      
-    @ApiProperty({
-      name: 'Proveedor Despacho',
-      example: 'Blue-Express'
-      
-    })
-  public proveedorDespacho: string;     /*se deberia crear entidaad proveedor */
+  @PrimaryGeneratedColumn()
+  id: number;
 
+  @OneToOne(() => Venta, (idVenta) => idVenta.despacho)
+  @JoinColumn({ name: 'idVenta' })
+  venta: Venta;
+
+  @Column({ type: 'date' })
+  fechaDespacho: Date;
+
+  @Column({ type: 'date' })
+  fechaLlegada: Date;
+
+  @Column({ type: 'varchar', length: 10 })
+  rutReceptor: string;
+
+  @Column({ type: 'varchar', length: 255 })
+  nombreReceptor: string;
+
+  @ManyToOne(
+    () => EstadosDespacho,
+    (estadoDespacho) => estadoDespacho.despachos,
+  )
+  @JoinColumn({ name: 'idEstadoDespacho' })
+  estadoDespacho: EstadosDespacho;
+
+  @ManyToOne(() => TipoDespacho, (tipoDespacho) => tipoDespacho.despachos)
+  @JoinColumn({ name: 'idTipoDespacho' })
+  tipoDespacho: TipoDespacho;
+
+  @Column({ type: 'varchar', length: 255 })
+  direccion: string;
+
+  @ManyToOne(() => Comuna, (comuna) => comuna.despachos)
+  @JoinColumn({ name: 'idComuna' })
+  comuna: Comuna;
 }

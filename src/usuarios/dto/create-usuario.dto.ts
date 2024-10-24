@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Planta } from 'src/productos/entities/planta.entity';
 import {
   IsEmail,
   IsString,
@@ -14,6 +13,7 @@ import {
   Max,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { Planta } from '../../productos/entities/planta.entity';
 export class CreateUsuarioDto {
   @ApiProperty({
     name: 'rut',

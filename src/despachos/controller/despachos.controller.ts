@@ -27,9 +27,7 @@ export class DespachosController {
     status: 200,
     description: 'Retorna Despacho',
   })
-  findOne(@Param('id') id: string, @Res() res: Response) {
-    const idBusqueda: number = 1;
-    const resultado = this.despachosService.findOne(idBusqueda);
-    res.status(200).send(resultado);
+  findOne(@Param('id') id: string, @Res() @Res() res: Response) {
+    res.status(501).send('No implementado');
   }
 }
