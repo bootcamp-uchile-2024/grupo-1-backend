@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm'; // Importa TypeOrmModule
 import { ProductosController } from './controller/productos.controller';
 import { ProductosService } from './service/productos.service';
-import { Producto } from 'entitipt/producto.entity';
+import { Producto } from 'src/productos/entities/producto.entity';
 
 // Si estos servicios son necesarios, puedes descomentarlos cuando sea necesario
 // import { SustratosService } from './service/sustratos.service';

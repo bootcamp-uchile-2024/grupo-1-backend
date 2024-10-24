@@ -21,7 +21,7 @@ import {
 } from '@nestjs/swagger';
 import { Response } from 'express';
 import { CodigoProductoPipe } from 'src/comunes/pipes/codigo-producto.pipe';
-import { Producto } from 'entitipt/producto.entity';
+import { Producto } from 'src/productos/entities/producto.entity';
 import { ProductosService } from '../service/productos.service';
 
 @ApiTags('productos')
@@ -43,6 +43,7 @@ export class ProductosController {
   async findAllCatalogo() {
     return await this.productosService.findallcatalogo();
   }
+  
 
   @Get(':id')
   @ApiOperation({

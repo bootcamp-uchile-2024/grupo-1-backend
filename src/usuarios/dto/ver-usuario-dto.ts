@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Planta } from 'entitipt/planta.entity';
+import { Planta } from 'src/productos/entities/planta.entity';
 export class VerUsuarioDto {
   @ApiProperty()
   public nombre: string;

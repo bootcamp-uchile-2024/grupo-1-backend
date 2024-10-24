@@ -1,55 +1,60 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Planta } from 'entitipt/planta.entity';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  JoinColumn,
+  ManyToMany,
+} from 'typeorm';
+import { Perfil } from './perfil.entity';
+import { Comuna } from 'src/localizaciones/entities/comuna.entity';
+import { JardinVirtual } from './jardin_virtual.entity';
+import { Servicio } from 'src/servicios/entities/servicio.entity';
+
+@Entity({ name: 'Usuario' })
 export class Usuario {
-  @ApiProperty()
-  public id: number;
-  @ApiProperty()
-  public rut: string;
-  @ApiProperty()
-  public nombre: string;
-  @ApiProperty()
-  public email: string;
-  @ApiProperty()
-  public password: string;
-  @ApiProperty()
-  public telefono: number;
-  @ApiProperty()
-  public direccion: string;
-  @ApiProperty()
-  public ciudad: string;
-  @ApiProperty()
-  public region: string;
-  @ApiProperty()
-  public comuna: string;
-  @ApiProperty()
-  public codigoPostal: number;
-  @ApiProperty()
-  public plantas: Planta[];
-  constructor(
-    id: number,
-    rut: string,
-    nombre: string,
-    email: string,
-    password: string,
-    telefono: number,
-    direccion: string,
-    ciudad: string,
-    region: string,
-    comuna: string,
-    codigoPostal: number,
-    plantas: Planta[],
-  ) {
-    this.id = id;
-    this.rut = rut;
-    this.nombre = nombre;
-    this.email = email;
-    this.password = password;
-    this.telefono = telefono;
-    this.direccion = direccion;
-    this.ciudad = ciudad;
-    this.region = region;
-    this.comuna = comuna;
-    this.codigoPostal = codigoPostal;
-    this.plantas = plantas;
-  }
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column({ type: 'varchar', length: 10, nullable: true })
+  rutUsuario: string;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  nombres: string;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  apellidos: string;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  email: string;
+
+  @Column({ type: 'varchar', length: 10, nullable: true })
+  clave: string;
+
+  @Column({ type: 'int', nullable: true })
+  telefono: number;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  direccion: string;
+  @ManyToOne(() => Comuna, (comuna) => comuna.usuarios)
+  @JoinColumn({ name: 'idComuna' })
+  comuna: Comuna;
+
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  codigoPostal: string;
+  @ManyToOne(() => Perfil, (perfil) => perfil.usuarios)
+  @JoinColumn({ name: 'idPerfil' })
+  perfil: Perfil;
+ 
+  @OneToOne(() => JardinVirtual, (jardin) => jardin.usuario)
+  jardin: JardinVirtual;
+
+  @ManyToMany(() => Servicio, (servicio) => servicio.usuarios)
+  servicios: Servicio[];
 }
+     
+
+    

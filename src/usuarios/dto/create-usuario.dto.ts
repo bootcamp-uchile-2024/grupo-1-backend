@@ -13,7 +13,7 @@ import {
   Max,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { Planta } from '../../../entitipt/planta.entity';
+import { Planta } from '../../productos/entities/planta.entity';
 export class CreateUsuarioDto {
   @ApiProperty({
     name: 'rut',

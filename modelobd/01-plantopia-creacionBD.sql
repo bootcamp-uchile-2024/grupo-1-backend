@@ -95,7 +95,6 @@ CREATE TABLE FormaMacetero (
 
 CREATE TABLE Usuario (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  idPerfil INT NOT NULL,
   rutUsuario VARCHAR(10),
   nombres VARCHAR(255),
   apellidos VARCHAR(255),
@@ -105,6 +104,8 @@ CREATE TABLE Usuario (
   direccion VARCHAR(255),
   idComuna INT NOT NULL,
   codigoPostal VARCHAR(255)
+  idPerfil INT NOT NULL,
+  FOREIGN KEY (idPerfil) REFERENCES Perfil(id)
 );
 
 CREATE TABLE Perfil (

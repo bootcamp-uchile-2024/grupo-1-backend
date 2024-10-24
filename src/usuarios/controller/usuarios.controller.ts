@@ -37,8 +37,8 @@ export class UsuariosController {
   create(
     @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
     createUserDto: CreateUsuarioDto,
-  ) {
-    return this.usuariosService.create(createUserDto);
+    @Res() res: Response) {
+      res.status(501).send('No implementado');
   }
   @Get()
   @ApiOperation({ summary: 'Obtener todos los usuarios' })
@@ -46,8 +46,8 @@ export class UsuariosController {
     status: 200,
     description: 'Lista de usuarios obtenida con éxito.',
   })
-  findAll() {
-    return this.usuariosService.findAll();
+  findAll(@Res() res: Response) {
+    res.status(501).send('No implementado');
   }
   @Get(':id')
   @ApiParam({
@@ -59,8 +59,8 @@ export class UsuariosController {
   @ApiOperation({ summary: 'Obtener un usuario por ID' })
   @ApiResponse({ status: 200, description: 'Usuario obtenido con éxito.' })
   @ApiResponse({ status: 404, description: 'Usuario no encontrado.' })
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.usuariosService.findOne(id);
+  findOne(@Param('id', ParseIntPipe) id: number, @Res() res: Response) {
+    res.status(501).send('No implementado');
   }
  
   @Delete(':id')

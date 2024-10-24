@@ -39,17 +39,11 @@ export class VentasController {
   @UsePipes(ValidaOrdenPipePipe)
   create(
     @Body() CreateOrdenCompraDto: CreateOrdenCompraDto,
-    @Res() res: Response,
-  ) {
-    try {
-      const resultado = this.ordenComprasService.create(CreateOrdenCompraDto);
-      res.status(200).send(resultado);
-    } catch (error) {
-      res.status(error.statusCode).send({ message: error.message });
-    }
+    @Res() res: Response) {
+      res.status(501).send('No implementado');
   }
   @Get()
-  findAll() {
-    return this.ordenComprasService.findAll();
+  findAll(@Res() res: Response) {
+    res.status(501).send('No implementado');
   }
 }
