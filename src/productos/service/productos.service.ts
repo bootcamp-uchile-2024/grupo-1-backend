@@ -27,8 +27,25 @@ export class ProductosService {
   }
 
   // busca un producto por su id
-  async porProducto(id: number): Promise<Producto> {
-    const producto = await this.productoRepository.findOneBy({ id });
+  async porProducto(id: number): Promise<Producto[]> {
+    const tipoProducto = await this.productoRepository.find({where: {id},relations:['categoria']});
+    let categoriax=tipoProducto[0].categoria.id;
+    let producto;
+
+    if(categoriax == 1){
+       producto = await this.productoRepository.find({ where:{id},relations:['categoria','planta','imagenes','planta.estaciones'] });
+    }else if(categoriax == 2){
+       producto = await this.productoRepository.find({ where:{id},relations:['categoria','controlplaga','imagenes'] });
+    }else if(categoriax == 3){
+     producto = await this.productoRepository.find({ where:{id},relations:['categoria','macetero','imagenes'] });
+    }else if(categoriax == 4){
+       producto = await this.productoRepository.find({ where:{id},relations:['categoria','sustrato','imagenes'] });
+    }else if(categoriax == 5){
+        producto = await this.productoRepository.find({ where:{id},relations:['categoria','fertilizante','imagenes'] });
+    }
+   
     return producto;
   }
 }
+
+

@@ -16,6 +16,6 @@ export class ImagenProducto {
   @JoinColumn({ name: 'idProducto' })
   producto: Producto;
 
-  @Column({ type: 'varchar', length: 500 })
+  @Column({ type: 'longtext'})
   urlImagen: string;
 }
