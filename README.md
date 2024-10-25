@@ -74,8 +74,10 @@ Ejecuta el siguiente comando
 
 ```bash
 
-docker pull orellanasolec/plantopia:$tag
-docker run -p 7000:7000 -e AMBIENTE=produccion orellanasolec/plantopia:$tag
+docker run --name mysql-prod -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=PlantopiaDB -p 3306:3306 -d mysql:8.0
+docker pull roancamo/plantopia:1.2.0
+docker run -p 7000:7000 -e AMBIENTE=produccion roancamo/plantopia:1.2.0
+
 ```
 
 ## 💻 Instalacion del proyecto
@@ -124,9 +126,9 @@ PUERTO=7000
 AMBIENTE=produccion
 VERSION=1.1.0
 DB_HOST=mysql-prod
-DB_PORT=3307
-DB_USERNAME=user_prod
-DB_PASSWORD=password_prod
+DB_PORT=3306
+DB_USERNAME=user_dev
+DB_PASSWORD=password_dev
 DB_DATABASE=PlantopiaDB
 ```
 

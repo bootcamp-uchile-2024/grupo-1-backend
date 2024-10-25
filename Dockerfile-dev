@@ -19,7 +19,18 @@ COPY ./test /app/test
 COPY ./.env.develop /app/.env.develop
 
 RUN npm install
-
+RUN npm install --save @nestjs/common
+RUN npm install --save @nestjs/core
+RUN npm install --save @nestjs/typeorm typeorm mysql2
+RUN npm install --save @nestjs/config
+RUN npm install --save @nestjs/swagger
+RUN npm install --save class-validator class-transformer
+RUN npm install --save rxjs
+RUN npm install --save express
+RUN npm install --save @nestjs/mapped-types
+RUN npm install --save @nestjs/mapped-types @nestjs/swagger
+RUN npm install --save @nestjs/config @nestjs/core
+RUN npm install --save-dev @types/node
 
 
 CMD ["npm", "run", "start:dev"]
