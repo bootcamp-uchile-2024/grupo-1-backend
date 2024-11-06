@@ -10,6 +10,7 @@ import { EquipoModule } from './equipo/equipo.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { GlobalMiddlewareMiddleware } from './comunes/middleware/global.middleware.middleware';
+import { GlobalMiddlewareMiddleware } from './comunes/middleware/global.middleware.middleware';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { GlobalMiddlewareMiddleware } from './comunes/middleware/global.middlewa
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath:
-        process.env.AMBIENTE === 'produccion'
+        process.env.AMBIENTE === 'production'
           ? '.env.productivo'
           : '.env.develop',
     }),

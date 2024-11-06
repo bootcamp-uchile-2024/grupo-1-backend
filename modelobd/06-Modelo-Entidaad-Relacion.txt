@@ -1,0 +1,341 @@
+  Table Categoria {
+    id int [pk, increment]
+    nombreCategoria varchar(255)
+  }
+  Table Producto {
+    id int [pk, increment]
+    nombreProducto varchar(255)
+    descuento int
+    precioNormal int
+    stock int
+    descripcionProducto varchar(255)
+    valoracion int
+    cantidadVentas int  
+    id_categoria int [not null]
+  }
+  Table CoberturaDespachoProducto{
+    id_producto int [pk]
+    id_comuna int [pk]
+  }
+  Table ImagenProducto {
+    id int [pk, increment]
+    id_producto int
+    urlImagen varchar(255)
+  }
+  Table Planta {
+    id int [pk, increment]
+    id_producto int [unique, not null]
+    nombrePlanta varchar(255)
+    nombreCientifico varchar(255)
+    id_habitat int [not null]
+    id_luz int [not null]
+    id_humedad int [not null]
+    temperaturaIdeal decimal(3,2)
+    toxicidadMascotas int
+    tamanoMaximo int
+    peso int
+    id_dificultad int [not null]
+    id_frecuencia int [not null]
+  }
+  Table PlantaEstacion {
+    id_planta int [ pk,not null]
+    id_estacion int [pk, not null]
+  }
+  Table PlantaTipoSuelo {
+    id_planta int [pk, not null]
+    id_suelo int [pk, not null]
+  }
+  Table DificultadDeCuidado {
+    id int [pk, increment]
+    descripcion varchar(50) [unique, not null]
+  }
+  Table Estacion {
+    id int [pk, increment]
+    nombre varchar(50) [unique, not null]
+  }
+  Table FrecuenciaDeRiego {
+    id int [pk, increment]
+    descripcion varchar(50) [unique, not null]
+  }
+  Table Habitat {
+    id int [pk, increment]
+    descripcion varchar(50) [unique, not null]
+  }
+  Table LuzRequerida {
+    id int [pk, increment]
+    descripcion varchar(50) [unique, not null]
+  }
+  Table NivelDeHumedad {
+    id int [pk, increment]
+    descripcion varchar(50) [unique, not null]
+  }
+  Table TipoDeSuelo {
+    id int [pk, increment]
+    descripcion varchar(50) [unique, not null]
+  }
+  Table ControlPlagas {
+    id int [pk, increment]
+    id_producto int  [unique, not null]
+    id_eficacia int [not null]
+    composicion varchar(255)
+    duracionProteccion varchar(100)
+    peso int
+  }
+  Table Eficacia {
+    id int  [pk, increment]
+    descripcion varchar[255]
+  }
+  Table Plaga{
+    id int  [pk, increment]
+    descripcion varchar[255]
+  }
+  Table PlagasControladas{
+    id_controlPlaga int [pk, not null]
+    id_Plaga int [pk, not null]
+  }
+  Table FormaAplicacion {
+    id int  [pk, increment]
+    descripcion varchar[255]
+  }
+  Table FormaAplicaControlPlaga{
+    id_controlPlaga int [pk]
+    id_formaAplica int [pk]
+  }
+  Table Sustrato {
+    id int [pk, increment]
+    id_producto int [unique, not null]
+    id_retencion_humedad int [not null]
+    peso varchar(255)
+  }
+  Table ComposicionSustrato {
+    id int [pk, increment]
+    descripcion varchar(50) [unique, not null]
+  }
+  Table TexturaSustrato {
+    id int [pk, increment]
+    descripcion varchar(50) [unique, not null]
+  }
+  Table RetencionHumedad {
+    id int [pk, increment]
+    descripcion varchar(50) [unique, not null]
+  }
+  Table SustratoComposicion {
+    id_sustrato int [pk,not null]
+    id_composicion int [not null]
+  }
+  Table SustratoTextura {
+    id_sustrato int [pk,not null]
+    id_textura int [pk,not null]
+  }
+  Table Fertilizante {
+    id int [pk, increment]
+    id_producto int [unique, not null]
+    composicion varchar(255)
+    id_tipoFertilizante int [not null]
+    presentacion string
+    frecuenciaAplicacion varchar(100)
+    peso int
+  }
+  Table TipoFertilizante {
+    id int [pk, increment]
+    descripcion varchar(100) [unique, not null]
+  }
+  Table TipoPlantasRecomendadas {
+    id int [pk, increment]
+    descripcion varchar(100) [unique, not null]
+  }
+  Table FertilizanteTipoPlantas {
+    id_fertilizante int [PK, not null]
+    id_tipo_planta int [PK,not null]
+  }
+  Table Macetero {
+    id int [pk, increment]
+    id_producto int  [unique, not null]
+    material varchar(100)
+    altura int
+    ancho int
+    color varchar(50)
+    peso int
+    id_forma int [not null]
+  }
+  Table FormaMacetero{
+    id int [pk]
+    descripcion varchar[255]
+  }
+  Table SustratosSugeridos {
+    idPlanta int [pk]
+    idSustrato int [pk]
+  }
+  Table FertilizantesSugeridos {
+    idPlanta int [pk]
+    idFertilizante int [pk]
+  }
+  Table Servicio {
+    id int [pk, increment]
+    id_producto int [unique]
+    nombre varchar(255)
+    descripcion varchar(255)
+  }
+  Table ServicioUsuario{
+    id_servicio int [pk]
+    id_usuario int [pk,not null]
+  }
+
+  Table Ciudad {
+    id  int [pk, increment]
+    id_comuna int [not null]
+    nombre varchar(255)
+  }
+  Table Region {
+    id  int [pk, increment]
+    nombre varchar(255)
+  }
+  Table Comuna {
+    id  int [pk, increment]
+    id_region int [not null]
+    nombre varchar(255)
+  }
+  Table OrdenCompra{
+    id  int [pk, increment]
+    fecha_Orden date
+    id_estadoOC  int [not null]
+  }
+  Table EstadosOC{
+    id  int [pk, increment]
+    descripcion varchar[255]
+  }
+  Table DetalleOrdenCompra{
+    id_OrdenCompra  int [pk, not null]
+    id_producto int [pk, not null]
+    cantidad int
+    precio int
+    descuento int
+    total_producto int
+
+  }
+  Table Venta{
+    id  int [pk, increment]
+    id_OrdenCompra int  [unique, not null]
+    rut_usuario varchar(10)
+    forma_identificacion status
+    total_bruto int
+    total_descuento int
+    iva int
+    total_pago int
+    id_forma_pago int
+    nro_comprontate_pago varchar(255)
+    id_estadoVenta  int [not null]
+  }
+  Table EstadosVenta{
+    id  int [pk, increment]
+    descripcion varchar[255]
+  }
+  Table FormaPago{
+    id  int [pk, increment]
+    descripcion varchar(255)
+    id_estadoFormaPago  int [not null]
+  }
+  Table EstadosFormaPago{
+    id  int [pk, increment]
+    descripcion varchar[255]
+  }
+  Table Despacho {
+    id  int [pk, increment]
+    id_Venta int [unique, not null]
+    fechaDespacho date
+    fechallegada date
+    rut_receptor varchar(10)
+    nombre_receptor varchar(255)
+    estado varchar(50)
+    id_tipo_despacho int
+    direccion varchar(255)
+    id_comuna int [not null]
+  }
+  Table TipoDespacho {
+    id int [pk, increment]
+    nombreMetodo varchar(255)
+    descripcion varchar(255)
+  }
+  Table Perfil {
+    id int [pk, increment]
+    descripcion varchar(255) 
+    accesoSistema boolean
+  }
+  Table Usuario {
+    id int [pk, increment]
+    id_perfil int [not null]
+    rut_usuario varchar(10)
+    nombres varchar(255)
+    apellidos varchar(255)
+    email varchar(255)
+    clave varchar(10)
+    telefono int
+    direccion varchar(255)
+    id_comuna  int [not null]
+    codigo_postal varchar(255)
+  }
+  Table Jardin_Virtual{
+    id  int [pk, increment]
+    id_usuario int [unique, not null]
+  }
+  Table Detalle_Jardin_Virtual{
+    id_jardin  int [pk, increment]
+    id_planta int [ not null]
+    fechaIngreso date
+  }
+  Ref: Categoria.id > Producto.id_categoria
+  Ref: Producto.id > ImagenProducto.id_producto
+  Ref: Planta.id_producto - Producto.id
+  Ref: Planta.id_dificultad > DificultadDeCuidado.id
+  Ref: Planta.id_frecuencia > FrecuenciaDeRiego.id
+  Ref: Planta.id_habitat > Habitat.id
+  Ref: Planta.id_luz > LuzRequerida.id
+  Ref: Planta.id_humedad > NivelDeHumedad.id
+  Ref: PlantaEstacion.id_planta > Planta.id
+  Ref: PlantaEstacion.id_estacion > Estacion.id
+  Ref: PlantaTipoSuelo.id_planta > Planta.id
+  Ref: PlantaTipoSuelo.id_suelo > TipoDeSuelo.id
+  Ref: Servicio.id_producto - Producto.id
+  Ref: Usuario.id - Jardin_Virtual.id_usuario
+  Ref: Jardin_Virtual.id > Detalle_Jardin_Virtual.id_jardin
+  Ref: Planta.id > Detalle_Jardin_Virtual.id_planta
+  Ref: Usuario.id > ServicioUsuario.id_usuario
+  Ref: Servicio.id > ServicioUsuario.id_servicio 
+  Ref: Perfil.id > Usuario.id_perfil
+  Ref:Comuna.id> Usuario.id_comuna
+  Ref: Comuna.id_region  > Region.id
+  Ref: Ciudad.id_comuna > Comuna.id
+  Ref: Producto.id > CoberturaDespachoProducto.id_producto
+  Ref: Comuna.id > CoberturaDespachoProducto.id_comuna
+  Ref: Producto.id > DetalleOrdenCompra.id_producto
+  Ref: OrdenCompra.id > DetalleOrdenCompra.id_OrdenCompra 
+  Ref: Venta.id_OrdenCompra - OrdenCompra.id
+  Ref: FormaPago.id > Venta.id_forma_pago
+  Ref: Venta.id - Despacho.id_Venta
+  Ref: EstadosFormaPago.id > FormaPago.id_estadoFormaPago
+  Ref: EstadosVenta.id > Venta.id_estadoVenta
+  Ref: EstadosOC.id > OrdenCompra.id_estadoOC
+  Ref: Comuna.id > Despacho.id_comuna
+  Ref: TipoDespacho.id > Despacho.id_tipo_despacho
+  Ref: Macetero.id_producto - Producto.id
+  Ref: Macetero.id_forma - FormaMacetero.id
+  Ref: ControlPlagas.id_producto - Producto.id
+  Ref: ControlPlagas.id_eficacia - Eficacia.id 
+  Ref: FormaAplicacion.id > FormaAplicaControlPlaga.id_formaAplica
+  Ref: ControlPlagas.id > FormaAplicaControlPlaga.id_controlPlaga
+  Ref: Plaga.id > PlagasControladas.id_Plaga
+  Ref: ControlPlagas.id > PlagasControladas.id_controlPlaga
+  Ref: Sustrato.id_producto - Producto.id
+  Ref: Sustrato.id > SustratosSugeridos.idSustrato
+  Ref: Planta.id > SustratosSugeridos.idPlanta
+  Ref: Sustrato.id_retencion_humedad > RetencionHumedad.id
+  Ref: SustratoComposicion.id_sustrato > Sustrato.id
+  Ref: SustratoComposicion.id_composicion > ComposicionSustrato.id
+  Ref: SustratoTextura.id_sustrato > Sustrato.id
+  Ref: SustratoTextura.id_textura > TexturaSustrato.id
+  Ref: Fertilizante.id_producto - Producto.id
+  Ref: Planta.id > FertilizantesSugeridos.idPlanta
+  Ref: Fertilizante.id > FertilizantesSugeridos.idFertilizante
+  Ref: TipoFertilizante.id > Fertilizante.id_tipoFertilizante
+  Ref: FertilizanteTipoPlantas.id_fertilizante > Fertilizante.id
+  Ref: FertilizanteTipoPlantas.id_tipo_planta > TipoPlantasRecomendadas.id

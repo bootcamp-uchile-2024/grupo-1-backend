@@ -16,6 +16,7 @@ COPY ./README.md /app/README.md
 
 # Instalar dependencias de producción
 RUN npm install --production
+ENV NODE_ENV=production
 
 # Comando para iniciar la aplicación en modo producción
 CMD ["npm", "run", "start:prod"]
