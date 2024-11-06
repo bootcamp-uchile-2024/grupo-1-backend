@@ -1,13 +1,17 @@
+version: '3.8'
 
 services:
   plantopia:
-    image: roancamo/plantopia:1.1.0
+    image: cnicolas86/plantopia:1.0.0
+    container_name: plantopia-prod
     ports:
-      - "7000:7000"
+      - "4000:4000"
     env_file:
       - ../.env.productivo  # Carga las variables de entorno desde el archivo .env.productivo
     depends_on:
       - mysql  # Asegúrate de que MySQL esté listo antes de levantar la app
+    networks:
+      - plantopia-network
 
   mysql:
     image: mysql:8.0
@@ -21,3 +25,9 @@ services:
       MYSQL_PASSWORD: password_prod
     volumes:
       - ./db:/var/lib/mysql
+    networks:
+      - plantopia-network
+
+networks:
+  plantopia-network:
+    driver: bridge

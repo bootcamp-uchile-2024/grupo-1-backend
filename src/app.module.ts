@@ -1,6 +1,6 @@
 import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { ProductosModule } from './productos/productos.module';
@@ -9,8 +9,7 @@ import { VentasModule } from './ventas/ventas.module';
 import { EquipoModule } from './equipo/equipo.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { GlobalMiddlewareMiddleware } from './comunes/middleware/global.middleware.middleware'
-
+import { GlobalMiddlewareMiddleware } from './comunes/middleware/global.middleware.middleware';
 
 @Module({
   imports: [
@@ -28,32 +27,31 @@ import { GlobalMiddlewareMiddleware } from './comunes/middleware/global.middlewa
           : '.env.develop',
     }),
     // Conexión a la base de datos
-   
-    
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: '127.0.0.2' ,
-      port: parseInt(process.env.DB_PORT ||'3307', 10),
-      username: process.env.DB_USERNAME || 'user_prod',
-      password: process.env.DB_PASSWORD || 'password_prod',
-      database: process.env.DB_DATABASE || 'PlantopiaDB',
-      autoLoadEntities: true,
-      entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-      synchronize: true,
-      logging: true, 
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        type: 'mysql',
+        host: configService.get<string>('DB_HOST'),
+        port: configService.get<number>('DB_PORT'),
+        username: configService.get<string>('DB_USERNAME'),
+        password: configService.get<string>('DB_PASSWORD'),
+        database: configService.get<string>('DB_DATABASE'),
+        autoLoadEntities: true,
+        entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+        //       synchronize: process.env.AMBIENTE !== 'produccion', // No sincronizar en producción
+        synchronize: false, // No sincronizar en producción
+        logging: true,
+      }),
+      inject: [ConfigService],
     }),
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-
-
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(GlobalMiddlewareMiddleware) // Middleware global
       .forRoutes('*'); // Aplica a todas las rutas
   }
- 
- 
 }

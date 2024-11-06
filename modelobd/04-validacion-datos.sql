@@ -1,4 +1,4 @@
--- Active: 1729640652284@@127.0.0.1@3306@plantopiadb
+-- Active: 1729829201905@@127.0.0.1@3307@PlantopiaDB
 -- trae los maceteros junto a sus imagenes guardadas
 SELECT
   p.id AS idProducto,
@@ -59,3 +59,6 @@ WHERE
     ImagenProducto ip ON p.id = ip.idProducto
   WHERE
     p.idCategoria = 2;
+
+
+s

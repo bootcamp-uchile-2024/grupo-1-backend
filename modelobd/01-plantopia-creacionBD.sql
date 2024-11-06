@@ -1,7 +1,3 @@
--- Active: 1729640652284@@127.0.0.1@3306@plantopiadb
-CREATE DATABASE PlantopiaDB;
-USE PlantopiaDB;
-
 
 CREATE TABLE Categoria (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -93,21 +89,6 @@ CREATE TABLE FormaMacetero (
   descripcion VARCHAR(255) UNIQUE NOT NULL
 );
 
-CREATE TABLE Usuario (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  rutUsuario VARCHAR(10),
-  nombres VARCHAR(255),
-  apellidos VARCHAR(255),
-  email VARCHAR(255),
-  clave VARCHAR(10),
-  telefono INT,
-  direccion VARCHAR(255),
-  idComuna INT NOT NULL,
-  codigoPostal VARCHAR(255)
-  idPerfil INT NOT NULL,
-  FOREIGN KEY (idPerfil) REFERENCES Perfil(id)
-);
-
 CREATE TABLE Perfil (
   id INT AUTO_INCREMENT PRIMARY KEY,
   descripcion VARCHAR(255),
@@ -178,7 +159,7 @@ CREATE TABLE Planta (
   idHabitat INT NOT NULL,
   idLuz INT NOT NULL,
   idHumedad INT NOT NULL,
-  temperaturaIdeal DECIMAL(3,2),
+  temperaturaIdeal DECIMAL(5,2),
   toxicidadMascotas INT,
   tamanoMaximo INT,
   peso INT,
@@ -244,7 +225,20 @@ CREATE TABLE Servicio (
   descripcion VARCHAR(255),
   FOREIGN KEY (idProducto) REFERENCES Producto(id)
 );
-
+CREATE TABLE Usuario (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  rutUsuario VARCHAR(10),
+  nombres VARCHAR(255),
+  apellidos VARCHAR(255),
+  email VARCHAR(255),
+  clave VARCHAR(10),
+  telefono INT,
+  direccion VARCHAR(255),
+  idComuna INT NOT NULL,
+  codigoPostal VARCHAR(255),
+  idPerfil INT NOT NULL,
+  FOREIGN KEY (idPerfil) REFERENCES Perfil(id)
+);
 CREATE TABLE OrdenCompra (
   id INT AUTO_INCREMENT PRIMARY KEY,
   fechaOrden DATE,
@@ -311,7 +305,7 @@ CREATE TABLE CoberturaDespachoProducto (
 CREATE TABLE ImagenProducto (
   id INT AUTO_INCREMENT PRIMARY KEY,
   idProducto INT,
-  urlImagen VARCHAR(255),
+  urlImagen VARCHAR(500),
   FOREIGN KEY (idProducto) REFERENCES Producto(id)
 );
 
@@ -406,4 +400,3 @@ CREATE TABLE DetalleOrdenCompra (
   FOREIGN KEY (idOrdenCompra) REFERENCES OrdenCompra(id),
   FOREIGN KEY (idProducto) REFERENCES Producto(id)
 );
-

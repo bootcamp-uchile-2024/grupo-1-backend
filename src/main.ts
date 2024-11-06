@@ -38,12 +38,7 @@ async function bootstrap() {
     app,
     createSwaggerConfig('App'),
     {
-      include: [
-        ProductosModule,
-        UsuariosModule,
-        VentasModule,
-        DespachosModule,
-      ],
+      include: [ProductosModule, UsuariosModule, VentasModule, DespachosModule],
     },
   );
   const productos = SwaggerModule.createDocument(
@@ -103,7 +98,10 @@ async function bootstrap() {
       version,
   );
 
- console.log(process.env.DB_PORT)
- console.log(process.env.DB_HOST)
+  console.log(process.env.DB_PORT);
+  console.log(process.env.DB_HOST);
+  console.log(process.env.DB_USERNAME);
+  console.log(process.env.DB_PASSWORD);
+  console.log(process.env.DB_DATABASE);
 }
 bootstrap();

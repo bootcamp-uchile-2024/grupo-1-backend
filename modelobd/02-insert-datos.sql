@@ -1,4 +1,5 @@
-USE PlantopiaDB
+-- Active: 1729829201905@@127.0.0.1@3307@PlantopiaDB
+
 
 -- Insert a categoria
 INSERT INTO Categoria (nombreCategoria)
@@ -516,5 +517,26 @@ VALUES
 (34, 'https://www.bonsaiempire.com/img/sustrato-bonsai.jpg'),  -- Sustrato para Bonsáis
 (35, 'https://www.jardineriaon.com/wp-content/uploads/2020/09/sustrato-plantas-acidas.jpg');  -- Sustrato para Plantas Ácidas
 
+-- Insertar datos en la tabla Estacion
+INSERT INTO PlantaEstacion (idPlanta,idEstacion) VALUES
+(1,1),
+(1,2),
+(2,1),
+(2,2),
+(3,3),
+(4,4),
+(5,1),
+(6,3),
+(7,3),
+(8,3),
+(8,1),
+(9,1),
+(10,1);
 
 select * from producto ORDER BY id desc;
+
+select * from estacion order by id ;
+
+select * from planta;
+
+
