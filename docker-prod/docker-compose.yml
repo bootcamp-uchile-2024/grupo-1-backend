@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   plantopia:
-    image: cnicolas86/plantopia:1.0.0
+    image: cnicolas86/plantopia:1.2.0
     container_name: plantopia-prod
     ports:
       - "4000:4000"
@@ -21,8 +21,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: PlantopiaDB
-      MYSQL_USER: user_dev
-      MYSQL_PASSWORD: password_dev
+      MYSQL_USER: user_prod
+      MYSQL_PASSWORD: password_prod
     volumes:
       - ./db:/var/lib/mysql
     networks:

@@ -60,10 +60,6 @@ export class Planta {
   @Column({ type: 'int', nullable: true })
   peso: number;
 
- 
-
-
-
   @ManyToOne(() => DificultadDeCuidado, (dificultad) => dificultad.plantas)
   @JoinColumn({ name: 'idDificultad' })
   dificultad: DificultadDeCuidado;
@@ -75,63 +71,59 @@ export class Planta {
   @OneToMany(() => DetalleJardinVirtual, (detalle) => detalle.planta)
   detallesJardin: DetalleJardinVirtual[];
 
-
-
   @ManyToMany(() => Fertilizante)
   @JoinTable({
-      name: 'FertilizantesSugeridos', 
-      joinColumn: {
-          name: 'idPlanta', 
-          referencedColumnName: 'id', 
-      },
-      inverseJoinColumn: {
-          name: 'idFertilizante', 
-          referencedColumnName: 'id',
-      },
+    name: 'FertilizantesSugeridos',
+    joinColumn: {
+      name: 'idPlanta',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'idFertilizante',
+      referencedColumnName: 'id',
+    },
   })
   fertilizantes: Fertilizante[];
- 
 
   @ManyToMany(() => Sustrato)
   @JoinTable({
-      name: 'SustratosSugeridos', 
-      joinColumn: {
-          name: 'idPlanta', 
-          referencedColumnName: 'id', 
-      },
-      inverseJoinColumn: {
-          name: 'idSustrato', 
-          referencedColumnName: 'id',  
-      },
+    name: 'SustratosSugeridos',
+    joinColumn: {
+      name: 'idPlanta',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'idSustrato',
+      referencedColumnName: 'id',
+    },
   })
   sustratos: Sustrato[];
 
   @ManyToMany(() => Estacion)
   @JoinTable({
-      name: 'PlantaEstacion', 
-      joinColumn: {
-          name: 'idPlanta', 
-          referencedColumnName: 'id', 
-      },
-      inverseJoinColumn: {
-          name: 'idEstacion', 
-          referencedColumnName: 'id', 
-      },
+    name: 'PlantaEstacion',
+    joinColumn: {
+      name: 'idPlanta',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'idEstacion',
+      referencedColumnName: 'id',
+    },
   })
   estaciones: Estacion[];
 
-
   @ManyToMany(() => TipoDeSuelo)
   @JoinTable({
-      name: 'PlantaTipoSuelo', 
-      joinColumn: {
-          name: 'idPlanta', 
-          referencedColumnName: 'id', 
-      },
-      inverseJoinColumn: {
-          name: 'idSuelo', 
-          referencedColumnName: 'id', 
-      },
+    name: 'PlantaTipoSuelo',
+    joinColumn: {
+      name: 'idPlanta',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'idSuelo',
+      referencedColumnName: 'id',
+    },
   })
   suelos: TipoDeSuelo[];
 }
