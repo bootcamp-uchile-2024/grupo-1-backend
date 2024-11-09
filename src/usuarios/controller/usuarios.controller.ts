@@ -27,7 +27,7 @@ import { Response } from 'express';
 @Controller('usuarios')
 @UsePipes(new ValidationPipe({ transform: true }))
 export class UsuariosController {
-  constructor(private readonly usuariosService: UsuariosService) { }
+  constructor(private readonly usuariosService: UsuariosService) {}
 
   @Post()
   @ApiOperation({

@@ -1,196 +1,97 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsEmail,
   IsString,
-  IsEnum,
-  IsArray,
-  ValidateNested,
   IsNotEmpty,
-  MinLength,
   MaxLength,
-  IsNumber,
-  Min,
-  Max,
+  IsEmail,
+  IsInt,
+  IsOptional,
 } from 'class-validator';
-import { Type } from 'class-transformer';
-import { Planta } from '../../productos/entities/planta.entity';
+
 export class CreateUsuarioDto {
   @ApiProperty({
-    name: 'rut',
-    description: 'Rut Usuario con digito y guion ',
-    example: '12345678-k',
-    required: true,
-    type: 'string',
-    minLength: 3,
-    maxLength: 10,
-    nullable: false,
+    description: 'RUT del usuario',
+    example: '12345678-9',
   })
-  @IsString({ message: 'El rut debe contener guion y digito' })
-  @IsNotEmpty({ message: 'El rut es campo obligatorio' })
-  @MinLength(3, {
-    message: 'El largo del rut debe ser mayor igual a 3 caracteres',
-  })
-  @MaxLength(10, {
-    message: 'El largo del rut debe ser menor igual a 10 caracteres',
-  })
-  public rut: string;
+  @IsString()
+  @IsOptional()
+  @MaxLength(10)
+  rutUsuario: string;
+
   @ApiProperty({
-    name: 'nombre',
-    description: 'Nombre completo Usuario',
-    example: 'Juan Andres Perez Cotapo',
-    required: true,
-    type: 'string',
-    minLength: 10,
-    maxLength: 100,
-    nullable: false,
+    description: 'Nombres del usuario',
+    example: 'Juan',
   })
-  @IsString({ message: 'El nombre debe contener solo texto' })
-  @IsNotEmpty({ message: 'El nombre es campo obligatorio' })
-  @MinLength(10, {
-    message: 'El largo del nombre debe ser mayor igual a 10 caracteres',
-  })
-  @MaxLength(100, {
-    message: 'El largo del nombre debe ser menor igual a 100 caracteres',
-  })
-  public nombre: string;
+  @IsString()
+  @IsOptional()
+  @MaxLength(255)
+  nombres: string;
+
   @ApiProperty({
-    name: 'email',
-    example: 'mail@emaildeprueba.cl',
-    description:
-      'El correo electrónico del usuario. Debe estar en formato válido de email.',
-    minLength: 10,
-    maxLength: 200,
-    type: String,
+    description: 'Apellidos del usuario',
+    example: 'Pérez',
   })
-  @IsEmail({}, { message: 'El email debe tener un formato válido.' })
-  @IsNotEmpty({ message: 'El email es campo obligatorio' })
-  @MinLength(10, {
-    message: 'El largo del email debe ser mayor igual a 10 caracteres',
-  })
-  @MaxLength(200, {
-    message: 'El largo del email debe ser menor igual a 100 caracteres',
-  })
-  public email: string;
+  @IsString()
+  @IsOptional()
+  @MaxLength(255)
+  apellidos: string;
+
   @ApiProperty({
-    name: 'password',
-    example: 'ABCD1234',
-    description: 'Clave Usuario',
-    minLength: 8,
-    maxLength: 10,
-    type: String,
+    description: 'Correo electrónico del usuario',
+    example: 'juan.perez@example.com',
   })
-  @IsNotEmpty({ message: 'El password es campo obligatorio' })
-  @MinLength(8, {
-    message: 'El largo del password debe ser mayor igual a 8 caracteres',
-  })
-  @MaxLength(10, {
-    message: 'El largo del password debe ser menor igual a 10 caracteres',
-  })
-  public password: string;
+  @IsEmail()
+  @IsOptional()
+  @MaxLength(255)
+  email: string;
+
   @ApiProperty({
-    name: 'telefono',
-    type: Number,
-    description: 'telefono contacto',
-    example: 959995226,
-    required: true,
-    minimum: 100000,
-    maximum: 5699999999,
+    description: 'Clave del usuario',
+    example: 'clave123',
   })
-  @IsNumber({}, { message: 'El telefono debe ser un número' })
-  @Min(100000, { message: 'El telefono  debe ser al mayor igual a 100000' })
-  @Max(5699999999, { message: 'El telefono debe ser menor igual a 5699999999' })
-  public telefono: number;
+  @IsString()
+  @IsOptional()
+  @MaxLength(10)
+  clave: string;
+
   @ApiProperty({
-    name: 'direccion',
-    example: 'moilina 455',
-    description: 'direccion Usuario',
-    minLength: 5,
-    maxLength: 300,
-    type: String,
+    description: 'Teléfono del usuario',
+    example: '987654321',
   })
-  @IsNotEmpty({ message: 'La direccion es campo obligatorio' })
-  @MinLength(5, {
-    message: 'El largo de la direccion debe ser mayor igual a 5 caracteres',
-  })
-  @MaxLength(300, {
-    message: 'El largo de la direccion debe ser menor igual a 300 caracteres',
-  })
-  public direccion: string;
+  @IsInt()
+  @IsOptional()
+  telefono: number;
+
   @ApiProperty({
-    name: 'ciudad',
-    example: 'Santiago',
-    description: 'direccion Usuario',
-    minLength: 4,
-    maxLength: 100,
-    type: String,
+    description: 'Dirección del usuario',
+    example: 'Calle Falsa 123',
   })
-  @IsNotEmpty({ message: 'La ciudad es campo obligatorio' })
-  @MinLength(4, {
-    message: 'El largo de la ciudad debe ser mayor igual a 4 caracteres',
-  })
-  @MaxLength(100, {
-    message: 'El largo de la ciudad debe ser menor igual a 100 caracteres',
-  })
-  public ciudad: string;
+  @IsString()
+  @IsOptional()
+  @MaxLength(255)
+  direccion: string;
+
   @ApiProperty({
-    name: 'region',
-    example: 'Metropolitana',
-    description: 'region de la direccion del Usuario',
-    minLength: 5,
-    maxLength: 100,
-    type: String,
+    description: 'ID de la comuna del usuario',
+    example: 1,
   })
-  @IsNotEmpty({ message: 'La region es campo obligatorio' })
-  @MinLength(5, {
-    message: 'El largo de la region debe ser mayor igual a 5 caracteres',
-  })
-  @MaxLength(100, {
-    message: 'El largo de la region debe ser menor igual a 100 caracteres',
-  })
-  public region: string;
+  @IsInt()
+  idComuna: number;
+  @IsNotEmpty()
   @ApiProperty({
-    name: 'comuna',
-    example: 'Santiago',
-    description: 'comuna de la direccion del Usuario',
-    minLength: 5,
-    maxLength: 100,
-    type: String,
+    description: 'Código postal del usuario',
+    example: '1234567',
   })
-  @IsNotEmpty({ message: 'La comuna es campo obligatorio' })
-  @MinLength(5, {
-    message: 'El largo de la comuna debe ser mayor igual a 5 caracteres',
-  })
-  @MaxLength(100, {
-    message: 'El largo de la comuna debe ser menor igual a 100 caracteres',
-  })
-  public comuna: string;
+  @IsString()
+  @IsOptional()
+  @MaxLength(255)
+  codigoPostal: string;
+
   @ApiProperty({
-    name: 'codigoPostal',
-    type: Number,
-    description: 'codigo postal ',
-    example: 21000001,
-    required: true,
-    minimum: 100000,
-    maximum: 999999999,
+    description: 'ID del perfil del usuario',
+    example: 2,
   })
-  @IsNumber({}, { message: 'El codigo postal debe ser un número' })
-  @Min(100000, {
-    message: 'El codigo postal  debe ser al mayor igual a 100000',
-  })
-  @Max(999999999, {
-    message: 'El codigo postal debe ser menor igual a 999999999',
-  })
-  public codigoPostal: number;
-  @ApiProperty({
-    description: 'Lista de Codigo de Plantas adquiridas por el usaurio',
-    type: [String],
-    example: ['Pl01, PL02'],
-    default: [],
-  })
-  @IsArray({ message: 'Plantas debe un array' })
-  @IsString({
-    each: true,
-    message: 'Cada codigo de plante debe ser una cadena de texto.',
-  })
-  public plantas: Planta[];
+  @IsInt()
+  @IsOptional()
+  idPerfil: number;
 }

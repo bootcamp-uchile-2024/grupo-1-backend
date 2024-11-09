@@ -427,6 +427,36 @@ export class ProductosController {
       );
     }
   }
+  @Get('maceteros/paginados')
+  @ApiOperation({
+    summary: 'Obtener maceteros paginados',
+    description: 'Obtiene una lista de maceteros paginados',
+  })
+  @ApiQuery({ name: 'page', required: true, type: Number })
+  @ApiQuery({ name: 'size', required: true, type: Number })
+  @ApiResponse({ status: 200, description: 'Maceteros obtenidos con éxito.' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
+  async getMaceterosPaginados(
+    @Query('page') page: number,
+    @Query('size') size: number,
+    @Res() res: Response,
+  ) {
+    try {
+      const maceteros = await this.productosService.getMaceterosPaginados(
+        page,
+        size,
+      );
+      res.status(HttpStatus.OK).json(maceteros);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Datos inválidos.',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
   @Post('crear/fertilizante')
   @ApiOperation({
     summary: 'Crear un nuevo fertilizante',
@@ -445,6 +475,37 @@ export class ProductosController {
         createFertilizanteDto,
       );
       res.status(HttpStatus.CREATED).json(fertilizante);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Datos inválidos.',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+  @Get('fertilizantes/paginados')
+  @ApiOperation({
+    summary: 'Obtener fertilizantes paginados',
+    description: 'Obtiene una lista de fertilizantes paginados',
+  })
+  @ApiQuery({ name: 'page', required: true, type: Number })
+  @ApiQuery({ name: 'size', required: true, type: Number })
+  @ApiResponse({
+    status: 200,
+    description: 'Fertilizantes obtenidos con éxito.',
+  })
+  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
+  async getFertilizantesPaginados(
+    @Query('page') page: number,
+    @Query('size') size: number,
+    @Res() res: Response,
+  ) {
+    try {
+      const fertilizantes =
+        await this.productosService.getFertilizantesPaginados(page, size);
+      res.status(HttpStatus.OK).json(fertilizantes);
     } catch (error) {
       throw new HttpException(
         {

@@ -3,16 +3,46 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Usuario } from '../entities/usuario.entity';
 import { CreateUsuarioDto } from '../dto/create-usuario.dto';
+import { Comuna } from 'src/localizaciones/entities/comuna.entity';
+import { Perfil } from '../entities/perfil.entity';
 
 @Injectable()
 export class UsuariosService {
   constructor(
     @InjectRepository(Usuario)
     private readonly usuarioRepository: Repository<Usuario>,
+    @InjectRepository(Comuna)
+    private readonly comunaRepository: Repository<Comuna>,
+    @InjectRepository(Perfil)
+    private readonly perfilRepository: Repository<Perfil>,
   ) {}
 
   async create(createUsuarioDto: CreateUsuarioDto): Promise<Usuario> {
-    return null;
+    const comuna = await this.comunaRepository.findOneBy({
+      id: createUsuarioDto.idComuna,
+    });
+    if (!comuna) {
+      throw new NotFoundException(
+        `Comuna con ID ${createUsuarioDto.idComuna} no encontrada`,
+      );
+    }
+
+    const perfil = await this.perfilRepository.findOneBy({
+      id: createUsuarioDto.idPerfil,
+    });
+    if (!perfil) {
+      throw new NotFoundException(
+        `Perfil con ID ${createUsuarioDto.idPerfil} no encontrado`,
+      );
+    }
+
+    const nuevoUsuario = this.usuarioRepository.create({
+      ...createUsuarioDto,
+      comuna,
+      perfil,
+    });
+
+    return await this.usuarioRepository.save(nuevoUsuario);
   }
 
   async findAll(): Promise<Usuario[]> {
