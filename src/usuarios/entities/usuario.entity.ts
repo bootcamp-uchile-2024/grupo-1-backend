@@ -42,7 +42,6 @@ export class Usuario {
   @JoinColumn({ name: 'idComuna' })
   comuna: Comuna;
 
-
   @Column({ type: 'varchar', length: 255, nullable: true })
   codigoPostal: string;
   @ManyToOne(() => Perfil, (perfil) => perfil.usuarios)

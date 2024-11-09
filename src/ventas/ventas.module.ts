@@ -1,12 +1,18 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { VentasController } from './controller/ventas.controller';
-import { OrdenComprasService } from './service/orden-compras.service';
+import { OrdenCompra } from './entities/orden_compra.entity';
+import { DetalleOrdenCompra } from './entities/detalle_orden_compra.entity';
+import { ProductosModule } from '../productos/productos.module'; // Importa el ProductosModule
 import { DetalleOrdenComprasService } from './service/detalle-orden-compras.service';
-import { ProductosModule } from 'src/productos/productos.module';
+import { OrdenComprasService } from './service/orden-compras.service';
+
 @Module({
+  imports: [
+    TypeOrmModule.forFeature([OrdenCompra, DetalleOrdenCompra]),
+    ProductosModule, // Asegúrate de importar el ProductosModule
+  ],
   controllers: [VentasController],
   providers: [OrdenComprasService, DetalleOrdenComprasService],
-  exports: [OrdenComprasService, DetalleOrdenComprasService],
-  imports: [ProductosModule],
 })
 export class VentasModule {}

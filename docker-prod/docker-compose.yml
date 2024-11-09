@@ -21,8 +21,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: PlantopiaDB
-      MYSQL_USER: user_dev
-      MYSQL_PASSWORD: password_dev
+      MYSQL_USER: user_prod
+      MYSQL_PASSWORD: password_prod
     volumes:
       - ./db:/var/lib/mysql
     networks:
