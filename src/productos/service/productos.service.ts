@@ -404,7 +404,7 @@ export class ProductosService {
   ): Promise<Fertilizante> {
     const createProductoDto: CreateProductoDto = {
       ...createFertilizanteDto,
-      idCategoria: 5, // Asigna la categoría de fertilizante (ID número 5)
+      idCategoria: 5,
     };
 
     const producto = await this.createProducto(createProductoDto);

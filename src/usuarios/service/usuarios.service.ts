@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ConflictException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Usuario } from '../entities/usuario.entity';
@@ -18,6 +23,27 @@ export class UsuariosService {
   ) {}
 
   async create(createUsuarioDto: CreateUsuarioDto): Promise<Usuario> {
+    // Verificar si el RUT ya existe
+    const usuarioExistentePorRut = await this.usuarioRepository.findOneBy({
+      rutUsuario: createUsuarioDto.rutUsuario,
+    });
+    if (usuarioExistentePorRut) {
+      throw new ConflictException(
+        `El RUT ${createUsuarioDto.rutUsuario} ya está registrado`,
+      );
+    }
+
+    // Verificar si el correo electrónico ya existe
+    const usuarioExistentePorEmail = await this.usuarioRepository.findOneBy({
+      email: createUsuarioDto.email,
+    });
+    if (usuarioExistentePorEmail) {
+      throw new ConflictException(
+        `El correo electrónico ${createUsuarioDto.email} ya está registrado`,
+      );
+    }
+
+    // Verificar si la comuna existe
     const comuna = await this.comunaRepository.findOneBy({
       id: createUsuarioDto.idComuna,
     });
@@ -27,6 +53,7 @@ export class UsuariosService {
       );
     }
 
+    // Verificar si el perfil existe
     const perfil = await this.perfilRepository.findOneBy({
       id: createUsuarioDto.idPerfil,
     });
@@ -42,11 +69,19 @@ export class UsuariosService {
       perfil,
     });
 
-    return await this.usuarioRepository.save(nuevoUsuario);
+    try {
+      return await this.usuarioRepository.save(nuevoUsuario);
+    } catch (error) {
+      throw new BadRequestException('Error al crear el usuario');
+    }
   }
 
   async findAll(): Promise<Usuario[]> {
-    return await this.usuarioRepository.find();
+    try {
+      return await this.usuarioRepository.find();
+    } catch (error) {
+      throw new BadRequestException('Error al obtener los usuarios');
+    }
   }
 
   async findOne(id: number): Promise<Usuario> {

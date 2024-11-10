@@ -6,6 +6,7 @@ import {
   IsEmail,
   IsInt,
   IsOptional,
+  MinLength,
 } from 'class-validator';
 
 export class CreateUsuarioDto {
@@ -14,8 +15,10 @@ export class CreateUsuarioDto {
     example: '12345678-9',
   })
   @IsString()
-  @IsOptional()
-  @MaxLength(10)
+  @IsNotEmpty({ message: 'El RUT del usuario es obligatorio' })
+  @MaxLength(10, {
+    message: 'El RUT del usuario no puede exceder los 10 caracteres',
+  })
   rutUsuario: string;
 
   @ApiProperty({
@@ -23,8 +26,10 @@ export class CreateUsuarioDto {
     example: 'Juan',
   })
   @IsString()
-  @IsOptional()
-  @MaxLength(255)
+  @IsNotEmpty({ message: 'Los nombres del usuario son obligatorios' })
+  @MaxLength(255, {
+    message: 'Los nombres del usuario no pueden exceder los 255 caracteres',
+  })
   nombres: string;
 
   @ApiProperty({
@@ -32,17 +37,22 @@ export class CreateUsuarioDto {
     example: 'Pérez',
   })
   @IsString()
-  @IsOptional()
-  @MaxLength(255)
+  @IsNotEmpty({ message: 'Los apellidos del usuario son obligatorios' })
+  @MaxLength(255, {
+    message: 'Los apellidos del usuario no pueden exceder los 255 caracteres',
+  })
   apellidos: string;
 
   @ApiProperty({
     description: 'Correo electrónico del usuario',
     example: 'juan.perez@example.com',
   })
-  @IsEmail()
-  @IsOptional()
-  @MaxLength(255)
+  @IsEmail({}, { message: 'El correo electrónico debe ser válido' })
+  @IsNotEmpty({ message: 'El correo electrónico del usuario es obligatorio' })
+  @MaxLength(255, {
+    message:
+      'El correo electrónico del usuario no puede exceder los 255 caracteres',
+  })
   email: string;
 
   @ApiProperty({
@@ -50,16 +60,21 @@ export class CreateUsuarioDto {
     example: 'clave123',
   })
   @IsString()
-  @IsOptional()
-  @MaxLength(10)
+  @IsNotEmpty({ message: 'La clave del usuario es obligatoria' })
+  @MinLength(6, {
+    message: 'La clave del usuario debe tener al menos 6 caracteres',
+  })
+  @MaxLength(10, {
+    message: 'La clave del usuario no puede exceder los 10 caracteres',
+  })
   clave: string;
 
   @ApiProperty({
     description: 'Teléfono del usuario',
     example: '987654321',
   })
-  @IsInt()
-  @IsOptional()
+  @IsInt({ message: 'El teléfono del usuario debe ser un número entero' })
+  @IsNotEmpty({ message: 'El teléfono del usuario es obligatorio' })
   telefono: number;
 
   @ApiProperty({
@@ -67,31 +82,36 @@ export class CreateUsuarioDto {
     example: 'Calle Falsa 123',
   })
   @IsString()
-  @IsOptional()
-  @MaxLength(255)
+  @IsNotEmpty({ message: 'La dirección del usuario es obligatoria' })
+  @MaxLength(255, {
+    message: 'La dirección del usuario no puede exceder los 255 caracteres',
+  })
   direccion: string;
 
   @ApiProperty({
     description: 'ID de la comuna del usuario',
     example: 1,
   })
-  @IsInt()
+  @IsInt({ message: 'El ID de la comuna debe ser un número entero' })
+  @IsNotEmpty({ message: 'El ID de la comuna es obligatorio' })
   idComuna: number;
-  @IsNotEmpty()
+
   @ApiProperty({
     description: 'Código postal del usuario',
     example: '1234567',
   })
   @IsString()
   @IsOptional()
-  @MaxLength(255)
+  @MaxLength(255, {
+    message: 'El código postal del usuario no puede exceder los 255 caracteres',
+  })
   codigoPostal: string;
 
   @ApiProperty({
     description: 'ID del perfil del usuario',
     example: 2,
   })
-  @IsInt()
+  @IsInt({ message: 'El ID del perfil debe ser un número entero' })
   @IsOptional()
   idPerfil: number;
 }
