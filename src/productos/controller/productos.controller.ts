@@ -8,7 +8,6 @@ import {
   Query,
   UsePipes,
   ValidationPipe,
-  ParseEnumPipe,
   HttpException,
   HttpStatus,
   Delete,
@@ -20,28 +19,26 @@ import {
   ApiTags,
   ApiOperation,
   ApiResponse,
-  ApiProperty,
   ApiBody,
   ApiQuery,
   ApiParam,
 } from '@nestjs/swagger';
 import { Response } from 'express';
-import { CodigoProductoPipe } from 'src/comunes/pipes/codigo-producto.pipe';
-import { Producto } from 'src/productos/entities/producto.entity';
 import { ProductosService } from '../service/productos.service';
 import { CreatePlantaDto } from '../dto/create-planta.dto';
 import { CreateCategoriaDto } from '../dto/create-categoria.dto';
 import { UpdateCategoriaDto } from '../dto/update-categoria.dto';
-import { Categoria } from '../entities/categoria.entity';
 import { CreateProductoDto } from '../dto/create-producto.dto';
 import { CreateMaceteroDto } from '../dto/create-macetero.dto';
 import { CreateFertilizanteDto } from '../dto/create-fertilizante.dto';
+import { Producto } from '../entities/producto.entity';
+import { Categoria } from '../entities/categoria.entity';
 
 @ApiTags('productos')
 @Controller('productos')
 export class ProductosController {
   constructor(private readonly productosService: ProductosService) {}
-
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   @Get('catalogo')
   @ApiOperation({
     summary: 'Historia Usuario H004: Listado de Productos Plantopia',
@@ -53,14 +50,25 @@ export class ProductosController {
     description: 'Listado de todos los productos',
     type: [Producto],
   })
-  async findAllCatalogo() {
-    return await this.productosService.findallcatalogo();
+  async findAllCatalogo(@Res() res: Response) {
+    try {
+      const productos = await this.productosService.findallcatalogo();
+      res.status(HttpStatus.OK).json(productos);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Error al obtener los productos.',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Get(':id')
   @ApiOperation({
     summary: 'Obtener un producto por ID',
-    description: 'Devuelve los detalles de un producto espec�fico por su ID',
+    description: 'Devuelve los detalles de un producto específico por su ID',
   })
   @ApiResponse({
     status: 200,
@@ -71,14 +79,31 @@ export class ProductosController {
     status: 404,
     description: 'Producto no encontrado',
   })
-  async findOne(@Param('id') id: number, @Res() res: Response) {
-    const producto = await this.productosService.porProducto(+id);
-
-    if (!producto) {
-      return res.status(404).send({ message: 'Producto no encontrado' });
+  @ApiParam({
+    name: 'id',
+    description: 'id del producto',
+    required: true,
+  })
+  async findOne(@Param('id', ParseIntPipe) id: number, @Res() res: Response) {
+    try {
+      const producto = await this.productosService.porProducto(id);
+      if (!producto) {
+        return res
+          .status(HttpStatus.NOT_FOUND)
+          .json({ message: 'Producto no encontrado' });
+      }
+      res.status(HttpStatus.OK).json(producto);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Error al obtener el producto.',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
-    res.status(200).send(producto);
   }
+
   @Post('planta')
   @ApiOperation({
     summary: 'Crear una nueva planta',
@@ -105,6 +130,7 @@ export class ProductosController {
       );
     }
   }
+
   @Post('categoria')
   @ApiOperation({
     summary: 'Crear una nueva categoría',
@@ -141,6 +167,7 @@ export class ProductosController {
   @ApiResponse({ status: 200, description: 'Categoría actualizada con éxito.' })
   @ApiResponse({ status: 404, description: 'Categoría no encontrada.' })
   @ApiBody({ type: UpdateCategoriaDto })
+  @ApiParam({ name: 'id', description: 'ID de la categoría', required: true })
   async updateCategoria(
     @Param('id', ParseIntPipe) id: number,
     @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
@@ -175,6 +202,7 @@ export class ProductosController {
   })
   @ApiResponse({ status: 200, description: 'Categoría eliminada con éxito.' })
   @ApiResponse({ status: 404, description: 'Categoría no encontrada.' })
+  @ApiParam({ name: 'id', description: 'ID de la categoría', required: true })
   async deleteCategoria(
     @Param('id', ParseIntPipe) id: number,
     @Res() res: Response,
@@ -209,12 +237,11 @@ export class ProductosController {
     description: 'Lista de categorías obtenida con éxito.',
     type: [Categoria],
   })
+  @ApiResponse({ status: 500, description: 'Error al obtener las categorías.' })
   async findAllCategorias(@Res() res: Response) {
     try {
-      console.log('Metodo findAllCategorias');
       const categorias = await this.productosService.findAllCategorias();
-      console.log('listado de categorias', categorias);
-      res.status(200).send(categorias);
+      res.status(HttpStatus.OK).json(categorias);
     } catch (error) {
       throw new HttpException(
         {
@@ -225,6 +252,7 @@ export class ProductosController {
       );
     }
   }
+
   @Get('categoria/:id')
   @ApiOperation({
     summary: 'Obtener una categoría por ID',
@@ -239,17 +267,19 @@ export class ProductosController {
     status: 404,
     description: 'Categoría no encontrada',
   })
+  @ApiParam({ name: 'id', description: 'ID de la categoría', required: true })
   async findCategoriaById(
     @Param('id', ParseIntPipe) id: number,
     @Res() res: Response,
   ) {
     try {
       const categoria = await this.productosService.findCategoriaById(id);
-
       if (!categoria) {
-        return res.status(404).send({ message: 'Categoría no encontrada' });
+        return res
+          .status(HttpStatus.NOT_FOUND)
+          .json({ message: 'Categoría no encontrada' });
       }
-      res.status(200).send(categoria);
+      res.status(HttpStatus.OK).json(categoria);
     } catch (error) {
       throw new HttpException(
         {
@@ -260,6 +290,7 @@ export class ProductosController {
       );
     }
   }
+
   @Get('categoria/nombre/:nombrecategoria')
   @ApiOperation({
     summary: 'Obtener una categoría por nombre',
@@ -275,6 +306,11 @@ export class ProductosController {
     status: 404,
     description: 'Categoría no encontrada',
   })
+  @ApiParam({
+    name: 'nombrecategoria',
+    description: 'Nombre de la categoría',
+    required: true,
+  })
   async findCategoriaByNombre(
     @Param('nombrecategoria') nombrecategoria: string,
     @Res() res: Response,
@@ -282,11 +318,12 @@ export class ProductosController {
     try {
       const categoria =
         await this.productosService.findCategoriaIdByName(nombrecategoria);
-
       if (!categoria) {
-        return res.status(404).send({ message: 'Categoría no encontrada' });
+        return res
+          .status(HttpStatus.NOT_FOUND)
+          .json({ message: 'Categoría no encontrada' });
       }
-      res.status(200).send(categoria);
+      res.status(HttpStatus.OK).json(categoria);
     } catch (error) {
       throw new HttpException(
         {
@@ -298,80 +335,6 @@ export class ProductosController {
     }
   }
 
-  @Get('catalogo2')
-  @ApiOperation({
-    summary: 'Historia Usuario H004: Listado de Productos Plantopia',
-    description:
-      'Lista todos los productos del catalogo de plantopia sin filtros',
-  })
-  @ApiQuery({
-    name: 'categoria',
-    description: 'Nombre de la categoría para filtrar los productos',
-    required: false,
-    type: String,
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Listado de todos los productos',
-    type: [Producto],
-  })
-  async findAllCatalogo222(
-    @Query('categoria') categoria: string,
-    @Res() res: Response,
-  ) {
-    try {
-      const productos =
-        await this.productosService.findallcatalogo222(categoria);
-      res.status(HttpStatus.OK).json(productos);
-    } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'Error al obtener los productos.',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-  @Get('categoria/:id/productos')
-  @ApiOperation({
-    summary: 'Obtener todos los productos por ID de categoría',
-    description:
-      'Devuelve una lista de todos los productos asociados a una categoría específica por su ID',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Lista de productos obtenida con éxito.',
-    type: [Producto],
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Categoría no encontrada',
-  })
-  async findProductosByCategoriaId(
-    @Param('id', ParseIntPipe) id: number,
-    @Res() res: Response,
-  ) {
-    try {
-      const productos =
-        await this.productosService.findProductosByCategoriaId(id);
-
-      if (!productos.length) {
-        return res.status(404).send({
-          message: 'No se encontraron productos para la categoría especificada',
-        });
-      }
-      res.status(200).send(productos);
-    } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'Error al obtener los productos.',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
   @Post('crear/producto')
   @ApiOperation({
     summary: 'Crear un nuevo producto',
@@ -399,6 +362,7 @@ export class ProductosController {
       );
     }
   }
+
   @Post('crear/macetero')
   @ApiOperation({
     summary: 'Crear un nuevo macetero',
@@ -417,7 +381,6 @@ export class ProductosController {
         await this.productosService.createMacetero(createMaceteroDto);
       res.status(HttpStatus.CREATED).json(macetero);
     } catch (error) {
-      console.log('error al crear macetero', error);
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
@@ -427,6 +390,38 @@ export class ProductosController {
       );
     }
   }
+
+  @Get('maceteros/paginados')
+  @ApiOperation({
+    summary: 'Obtener maceteros paginados',
+    description: 'Obtiene una lista de maceteros paginados',
+  })
+  @ApiQuery({ name: 'page', required: true, type: Number })
+  @ApiQuery({ name: 'size', required: true, type: Number })
+  @ApiResponse({ status: 200, description: 'Maceteros obtenidos con éxito.' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
+  async getMaceterosPaginados(
+    @Query('page') page: number,
+    @Query('size') size: number,
+    @Res() res: Response,
+  ) {
+    try {
+      const maceteros = await this.productosService.getMaceterosPaginados(
+        page,
+        size,
+      );
+      res.status(HttpStatus.OK).json(maceteros);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Datos inválidos.',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
   @Post('crear/fertilizante')
   @ApiOperation({
     summary: 'Crear un nuevo fertilizante',
@@ -445,6 +440,38 @@ export class ProductosController {
         createFertilizanteDto,
       );
       res.status(HttpStatus.CREATED).json(fertilizante);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Datos inválidos.',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @Get('fertilizantes/paginados')
+  @ApiOperation({
+    summary: 'Obtener fertilizantes paginados',
+    description: 'Obtiene una lista de fertilizantes paginados',
+  })
+  @ApiQuery({ name: 'page', required: true, type: Number })
+  @ApiQuery({ name: 'size', required: true, type: Number })
+  @ApiResponse({
+    status: 200,
+    description: 'Fertilizantes obtenidos con éxito.',
+  })
+  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
+  async getFertilizantesPaginados(
+    @Query('page') page: number,
+    @Query('size') size: number,
+    @Res() res: Response,
+  ) {
+    try {
+      const fertilizantes =
+        await this.productosService.getFertilizantesPaginados(page, size);
+      res.status(HttpStatus.OK).json(fertilizantes);
     } catch (error) {
       throw new HttpException(
         {

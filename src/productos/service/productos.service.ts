@@ -384,12 +384,27 @@ export class ProductosService {
 
     return await this.maceteroRepository.save(nuevoMacetero);
   }
+  async getMaceterosPaginados(
+    page: number,
+    size: number,
+  ): Promise<{ data: Macetero[]; total: number }> {
+    const [result, total] = await this.maceteroRepository.findAndCount({
+      relations: ['producto', 'producto.categoria', 'producto.imagenes'],
+      skip: (page - 1) * size,
+      take: size,
+    });
+
+    return {
+      data: result,
+      total,
+    };
+  }
   async createFertilizante(
     createFertilizanteDto: CreateFertilizanteDto,
   ): Promise<Fertilizante> {
     const createProductoDto: CreateProductoDto = {
       ...createFertilizanteDto,
-      idCategoria: 5, // Asigna la categoría de fertilizante (ID número 5)
+      idCategoria: 5,
     };
 
     const producto = await this.createProducto(createProductoDto);
@@ -412,12 +427,12 @@ export class ProductosService {
 
     return await this.fertilizanteRepository.save(nuevoFertilizante);
   }
-  // METODO DE PAGINACION DE PRODUCTOS
-  async getProductosPaginados(
+  async getFertilizantesPaginados(
     page: number,
     size: number,
-  ): Promise<{ data: Producto[]; total: number }> {
-    const [result, total] = await this.productoRepository.findAndCount({
+  ): Promise<{ data: Fertilizante[]; total: number }> {
+    const [result, total] = await this.fertilizanteRepository.findAndCount({
+      relations: ['producto', 'producto.categoria', 'producto.imagenes'],
       skip: (page - 1) * size,
       take: size,
     });
