@@ -17,7 +17,7 @@ import { ImagenProducto } from './imagen_producto.entity';
 import { DetalleOrdenCompra } from 'src/ventas/entities/detalle_orden_compra.entity';
 import { Servicio } from 'src/servicios/entities/servicio.entity';
 
-@Entity()
+@Entity('Producto')
 export class Producto {
   @PrimaryGeneratedColumn()
   id: number;

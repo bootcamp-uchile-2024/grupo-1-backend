@@ -12,7 +12,7 @@ import { Producto } from './producto.entity';
 import { TipoFertilizante } from './tipo_fertilizante.entity';
 import { TipoPlantasRecomendadas } from './tipo_plantas_recomendadas.entity';
 
-@Entity()
+@Entity('Fertilizante')
 export class Fertilizante {
   @PrimaryGeneratedColumn()
   id: number;

@@ -1,4 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn,OneToMany,JoinTable,ManyToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  JoinTable,
+  ManyToMany,
+} from 'typeorm';
 import { Sustrato } from './sustrato.entity';
 @Entity({ name: 'TexturaSustrato' })
 export class TexturaSustrato {
@@ -13,15 +20,15 @@ export class TexturaSustrato {
 
   @ManyToMany(() => Sustrato)
   @JoinTable({
-      name: 'SustratoTextura', 
-      joinColumn: {
-          name: 'idSustrato', 
-          referencedColumnName: 'id',
-      },
-      inverseJoinColumn: {
-          name: 'idTextura', 
-          referencedColumnName: 'id', 
-      },
+    name: 'SustratoTextura',
+    joinColumn: {
+      name: 'idSustrato',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'idTextura',
+      referencedColumnName: 'id',
+    },
   })
   sustratosText: Sustrato[];
 }

@@ -134,7 +134,7 @@ INSERT INTO Plaga (descripcion) VALUES
 ('Gorgojos');
 
 -- insert FormaAplicacion
-INSERT INTO formaaplicacion (descripcion) VALUES
+INSERT INTO FormaAplicacion (descripcion) VALUES
 ('Spray'),
 ('Polvo'),
 ('Granulado'),
@@ -533,10 +533,8 @@ INSERT INTO PlantaEstacion (idPlanta,idEstacion) VALUES
 (9,1),
 (10,1);
 
-select * from producto ORDER BY id desc;
+select * from Producto ORDER BY id desc;
 
-select * from estacion order by id ;
+select * from Estacion order by id ;
 
-select * from planta;
-
-
+select * from Planta;
