@@ -1,20 +1,21 @@
 services:
   plantopia:
-    image: cnicolas86/plantopia:1.2.0
+    build:
+      context: ..
+      dockerfile: Dockerfile-dev
     container_name: plantopia-dev
     ports:
       - "3000:3000"
     volumes:
-      - ./src:/app/src
+      - ../src:/app/src
     env_file:
       - ../.env.develop
     environment:
       - AMBIENTE=desarrollo
-    command: sh -c "npm install && npm run start:dev"
-
+      - PATH=/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin
+    command: sh -c "/wait-for-it.sh mysql:3307 -- npm run start:dev"
     networks:
-      - app-network
-
+      - plantopiadev-network
     depends_on:
       - mysql
 
@@ -22,16 +23,15 @@ services:
     image: mysql:8.0
     container_name: mysql-dev
     ports:
-      - "3307:3306"
+      - "3307:3306"  # 3307 es el puerto local, 3306 es el puerto dentro del contenedor
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: PlantopiaDB
+      MYSQL_DATABASE: plantopiadb
       MYSQL_USER: user_dev
       MYSQL_PASSWORD: password_dev
-    volumes:
-      -  ./db:/var/lib/mysql
     networks:
-      - app-network
+      - plantopiadev-network
+
 networks:
- app-network:
-  driver: bridge
+  plantopiadev-network:
+    driver: bridge
