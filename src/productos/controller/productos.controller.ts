@@ -30,9 +30,13 @@ import { CreateCategoriaDto } from '../dto/create-categoria.dto';
 import { UpdateCategoriaDto } from '../dto/update-categoria.dto';
 import { CreateProductoDto } from '../dto/create-producto.dto';
 import { CreateMaceteroDto } from '../dto/create-macetero.dto';
+import { UpdateMaceteroDto } from '../dto/update-macetero.dto';
 import { CreateFertilizanteDto } from '../dto/create-fertilizante.dto';
 import { Producto } from '../entities/producto.entity';
 import { Categoria } from '../entities/categoria.entity';
+import { UpdateFertilizanteDto } from '../dto/update-fertilizante.dto';
+import { Fertilizante } from '../entities/fertilizante.entity';
+import { Macetero } from '../entities/macetero.entity';
 
 @ApiTags('productos')
 @Controller('productos')
@@ -363,7 +367,7 @@ export class ProductosController {
     }
   }
 
-  @Post('crear/macetero')
+  @Post('maceteros/create')
   @ApiOperation({
     summary: 'Crear un nuevo macetero',
     description: 'Crea un nuevo macetero en el sistema',
@@ -391,7 +395,7 @@ export class ProductosController {
     }
   }
 
-  @Get('maceteros/paginados')
+  @Get('maceteros/get')
   @ApiOperation({
     summary: 'Obtener maceteros paginados',
     description: 'Obtiene una lista de maceteros paginados',
@@ -421,8 +425,114 @@ export class ProductosController {
       );
     }
   }
-
-  @Post('crear/fertilizante')
+  @Get('maceteros/getbyid/:id')
+  @ApiOperation({
+    summary: 'Obtener un macetero por ID',
+    description: 'Devuelve los detalles de un macetero específico por su ID',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Detalles del macetero encontrado',
+    type: Macetero,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Macetero no encontrado',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID del macetero',
+    required: true,
+  })
+  async findOneMacetero(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: Response,
+  ) {
+    try {
+      const macetero = await this.productosService.findMaceteroById(id);
+      if (!macetero) {
+        return res
+          .status(HttpStatus.NOT_FOUND)
+          .json({ message: 'Macetero no encontrado' });
+      }
+      res.status(HttpStatus.OK).json(macetero);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Error al obtener el macetero.',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+  @Delete('maceteros/delete/:id')
+  @ApiOperation({
+    summary: 'Eliminar un macetero',
+    description: 'Elimina un macetero existente por su ID',
+  })
+  @ApiResponse({ status: 200, description: 'Macetero eliminado con éxito.' })
+  @ApiResponse({ status: 404, description: 'Macetero no encontrado.' })
+  @ApiParam({ name: 'id', description: 'ID del macetero', required: true })
+  async deleteMacetero(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: Response,
+  ) {
+    try {
+      await this.productosService.deleteMacetero(id);
+      res
+        .status(HttpStatus.OK)
+        .json({ message: 'Macetero eliminado con éxito.' });
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'Datos inválidos.',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
+  }
+  @Put('maceteros/update/:id')
+  @ApiOperation({
+    summary: 'Actualizar un macetero',
+    description: 'Actualiza los detalles de un macetero existente',
+  })
+  @ApiResponse({ status: 200, description: 'Macetero actualizado con éxito.' })
+  @ApiResponse({ status: 404, description: 'Macetero no encontrado.' })
+  @ApiBody({ type: UpdateMaceteroDto })
+  @ApiParam({ name: 'id', description: 'ID del macetero', required: true })
+  async updateMacetero(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    updateMaceteroDto: UpdateMaceteroDto,
+    @Res() res: Response,
+  ) {
+    try {
+      const macetero = await this.productosService.updateMacetero(
+        id,
+        updateMaceteroDto,
+      );
+      res.status(HttpStatus.OK).json(macetero);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'Datos inválidos.',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
+  }
+  @Post('fertilizantes/create')
   @ApiOperation({
     summary: 'Crear un nuevo fertilizante',
     description: 'Crea un nuevo fertilizante en el sistema',
@@ -451,7 +561,7 @@ export class ProductosController {
     }
   }
 
-  @Get('fertilizantes/paginados')
+  @Get('fertilizantes/get')
   @ApiOperation({
     summary: 'Obtener fertilizantes paginados',
     description: 'Obtiene una lista de fertilizantes paginados',
@@ -480,6 +590,122 @@ export class ProductosController {
         },
         HttpStatus.BAD_REQUEST,
       );
+    }
+  }
+  @Get('fertilizantes/getbyid/:id')
+  @ApiOperation({
+    summary: 'Obtener un fertilizante por ID',
+    description:
+      'Devuelve los detalles de un fertilizante específico por su ID',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Detalles del fertilizante encontrado',
+    type: Fertilizante,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Fertilizante no encontrado',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID del fertilizante',
+    required: true,
+  })
+  async findOneFertilizante(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: Response,
+  ) {
+    try {
+      const fertilizante = await this.productosService.findFertilizanteById(id);
+      if (!fertilizante) {
+        return res
+          .status(HttpStatus.NOT_FOUND)
+          .json({ message: 'Fertilizante no encontrado' });
+      }
+      res.status(HttpStatus.OK).json(fertilizante);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Error al obtener el fertilizante.',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Put('fertilizantes/update/:id')
+  @ApiOperation({
+    summary: 'Actualizar un fertilizante',
+    description: 'Actualiza los detalles de un fertilizante existente',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Fertilizante actualizado con éxito.',
+  })
+  @ApiResponse({ status: 404, description: 'Fertilizante no encontrado.' })
+  @ApiBody({ type: UpdateFertilizanteDto })
+  @ApiParam({ name: 'id', description: 'ID del fertilizante', required: true })
+  async updateFertilizante(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    updateFertilizanteDto: UpdateFertilizanteDto,
+    @Res() res: Response,
+  ) {
+    try {
+      const fertilizante = await this.productosService.updateFertilizante(
+        id,
+        updateFertilizanteDto,
+      );
+      res.status(HttpStatus.OK).json(fertilizante);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'Datos inválidos.',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
+  }
+
+  @Delete('fertilizantes/delete/:id')
+  @ApiOperation({
+    summary: 'Eliminar un fertilizante',
+    description: 'Elimina un fertilizante existente por su ID',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Fertilizante eliminado con éxito.',
+  })
+  @ApiResponse({ status: 404, description: 'Fertilizante no encontrado.' })
+  @ApiParam({ name: 'id', description: 'ID del fertilizante', required: true })
+  async deleteFertilizante(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: Response,
+  ) {
+    try {
+      await this.productosService.deleteFertilizante(id);
+      res
+        .status(HttpStatus.OK)
+        .json({ message: 'Fertilizante eliminado con éxito.' });
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'Datos inválidos.',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
     }
   }
 }

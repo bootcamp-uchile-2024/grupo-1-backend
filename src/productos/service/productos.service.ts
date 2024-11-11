@@ -6,11 +6,8 @@ import {
 } from '@nestjs/common';
 import { CreateMaceteroDto } from '../dto/create-macetero.dto';
 import { CreatePlantaDto } from '../dto/create-planta.dto';
-import { CreateControlPlagasDto } from '../dto/create-control-plagas.dto';
-import { ErrorPlantopia } from 'src/comunes/error-plantopia/error-plantopia';
 import { Producto } from 'src/productos/entities/producto.entity';
 import { CreateFertilizanteDto } from '../dto/create-fertilizante.dto';
-import { CreateSustratoDto } from '../dto/create-sustrato.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DificultadDeCuidado } from '../entities/dificultad_de_cuidado.entity';
@@ -24,12 +21,13 @@ import { Planta } from '../entities/planta.entity';
 import { Sustrato } from '../entities/sustrato.entity';
 import { TipoDeSuelo } from '../entities/tipo_de_suelo.entity';
 import { CreateProductoDto } from '../dto/create-producto.dto';
-import { TipoProductos } from '../enum/tipo-productos';
 import { CreateCategoriaDto } from '../dto/create-categoria.dto';
 import { UpdateCategoriaDto } from '../dto/update-categoria.dto';
 import { Categoria } from '../entities/categoria.entity';
 import { ImagenProducto } from '../entities/imagen_producto.entity';
 import { Macetero } from '../entities/macetero.entity';
+import { UpdateFertilizanteDto } from '../dto/update-fertilizante.dto';
+import { UpdateMaceteroDto } from '../dto/update-macetero.dto';
 @Injectable()
 export class ProductosService {
   productos: Producto[] = [];
@@ -399,6 +397,51 @@ export class ProductosService {
       total,
     };
   }
+  async findMaceteroById(id: number): Promise<Macetero> {
+    const macetero = await this.maceteroRepository.findOne({
+      where: { id },
+      relations: ['producto', 'producto.categoria', 'producto.imagenes'],
+    });
+
+    if (!macetero) {
+      throw new NotFoundException(`Macetero con ID ${id} no encontrado`);
+    }
+
+    return macetero;
+  }
+  async updateMacetero(
+    id: number,
+    updateMaceteroDto: UpdateMaceteroDto,
+  ): Promise<Macetero> {
+    const macetero = await this.maceteroRepository.findOneBy({ id });
+    if (!macetero) {
+      throw new NotFoundException(`Macetero con ID ${id} no encontrado`);
+    }
+
+    const producto = await this.productoRepository.findOneBy({
+      id: macetero.producto.id,
+    });
+    if (!producto) {
+      throw new NotFoundException(
+        `Producto asociado con ID ${macetero.producto.id} no encontrado`,
+      );
+    }
+
+    // Actualizar el producto asociado
+    Object.assign(producto, updateMaceteroDto);
+    await this.productoRepository.save(producto);
+
+    // Actualizar el macetero
+    Object.assign(macetero, updateMaceteroDto);
+    return await this.maceteroRepository.save(macetero);
+  }
+
+  async deleteMacetero(id: number): Promise<void> {
+    const result = await this.maceteroRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Macetero con ID ${id} no encontrado`);
+    }
+  }
   async createFertilizante(
     createFertilizanteDto: CreateFertilizanteDto,
   ): Promise<Fertilizante> {
@@ -441,5 +484,37 @@ export class ProductosService {
       data: result,
       total,
     };
+  }
+
+  async findFertilizanteById(id: number): Promise<Fertilizante> {
+    const fertilizante = await this.fertilizanteRepository.findOne({
+      where: { id },
+      relations: ['producto', 'producto.categoria', 'producto.imagenes'],
+    });
+
+    if (!fertilizante) {
+      throw new NotFoundException(`Fertilizante con ID ${id} no encontrado`);
+    }
+
+    return fertilizante;
+  }
+
+  async updateFertilizante(
+    id: number,
+    updateFertilizanteDto: UpdateFertilizanteDto,
+  ): Promise<Fertilizante> {
+    const fertilizante = await this.fertilizanteRepository.findOneBy({ id });
+    if (!fertilizante) {
+      throw new NotFoundException(`Fertilizante con ID ${id} no encontrado`);
+    }
+    Object.assign(fertilizante, updateFertilizanteDto);
+    return await this.fertilizanteRepository.save(fertilizante);
+  }
+
+  async deleteFertilizante(id: number): Promise<void> {
+    const result = await this.fertilizanteRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Fertilizante con ID ${id} no encontrado`);
+    }
   }
 }
