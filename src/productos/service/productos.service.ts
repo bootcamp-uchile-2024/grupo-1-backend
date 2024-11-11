@@ -94,19 +94,17 @@ export class ProductosService {
     page: number,
     size: number,
   ): Promise<{ data: Producto[]; total: number }> {
-    const [result, total] = await this.productoRepository.findAndCount({
-      relations: ['categoria', 'imagenes'],
-      skip: (page - 1) * size,
-      take: size,
-    });
-
-    return {
-      data: result,
-      total,
-    };
+    return this.gestionPaginacion(this.productoRepository, page, size, [
+      'categoria',
+      'imagenes',
+    ]);
   }
-  async findAllCategorias(): Promise<Categoria[]> {
-    return await this.categoriaRepository.find();
+
+  async findAllCategorias(
+    page: number,
+    size: number,
+  ): Promise<{ data: Categoria[]; total: number }> {
+    return this.gestionPaginacion(this.categoriaRepository, page, size);
   }
 
   async findCategoriaById(id: number): Promise<Categoria> {
@@ -465,9 +463,15 @@ export class ProductosService {
   async createMacetero(
     createMaceteroDto: CreateMaceteroDto,
   ): Promise<Macetero> {
+    const categoriaMacetero = await this.categoriaRepository.findOne({
+      where: { nombreCategoria: 'Maceteros' },
+    });
+    if (!categoriaMacetero) {
+      throw new NotFoundException('Categoría de maceteros no encontrada');
+    }
     const createProductoDto: CreateProductoDto = {
       ...createMaceteroDto,
-      idCategoria: 3, // Asigna la categoría de macetero (ID número 3)
+      idCategoria: categoriaMacetero.id,
     };
 
     const producto = await this.createProducto(createProductoDto);
@@ -484,17 +488,13 @@ export class ProductosService {
     page: number,
     size: number,
   ): Promise<{ data: Macetero[]; total: number }> {
-    const [result, total] = await this.maceteroRepository.findAndCount({
-      relations: ['producto', 'producto.categoria', 'producto.imagenes'],
-      skip: (page - 1) * size,
-      take: size,
-    });
-
-    return {
-      data: result,
-      total,
-    };
+    return this.gestionPaginacion(this.maceteroRepository, page, size, [
+      'producto',
+      'producto.categoria',
+      'producto.imagenes',
+    ]);
   }
+
   async findMaceteroById(id: number): Promise<Macetero> {
     const macetero = await this.maceteroRepository.findOne({
       where: { id },

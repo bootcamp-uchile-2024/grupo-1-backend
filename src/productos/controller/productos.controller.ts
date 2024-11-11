@@ -252,9 +252,18 @@ export class ProductosController {
     type: [Categoria],
   })
   @ApiResponse({ status: 500, description: 'Error al obtener las categorías.' })
-  async findAllCategorias(@Res() res: Response) {
+  @ApiQuery({ name: 'page', required: true, type: Number })
+  @ApiQuery({ name: 'size', required: true, type: Number })
+  async findAllCategorias(
+    @Query('page', ParseIntPipe) page: number,
+    @Query('size', ParseIntPipe) size: number,
+    @Res() res: Response,
+  ) {
     try {
-      const categorias = await this.productosService.findAllCategorias();
+      const categorias = await this.productosService.findAllCategorias(
+        page,
+        size,
+      );
       res.status(HttpStatus.OK).json(categorias);
     } catch (error) {
       throw new HttpException(

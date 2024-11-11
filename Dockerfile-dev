@@ -1,5 +1,8 @@
 FROM node:20.15.1-slim
 
+# Instalar procps para que el comando ps esté disponible
+RUN apt-get update && apt-get install -y procps
+
 # Agrega esta línea al principio del Dockerfile para descargar el script
 ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh /wait-for-it.sh
 RUN chmod +x /wait-for-it.sh
