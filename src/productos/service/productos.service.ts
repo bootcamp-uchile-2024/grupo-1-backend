@@ -29,6 +29,8 @@ import { Macetero } from '../entities/macetero.entity';
 import { UpdateFertilizanteDto } from '../dto/update-fertilizante.dto';
 import { UpdateMaceteroDto } from '../dto/update-macetero.dto';
 import { UpdatePlantaDto } from '../dto/update-planta.dto';
+import { CreateSustratoDto } from '../dto/create-sustrato.dto';
+import { UpdateSustratoDto } from '../dto/update-sustrato.dto';
 @Injectable()
 export class ProductosService {
   productos: Producto[] = [];
@@ -608,6 +610,75 @@ export class ProductosService {
     const result = await this.fertilizanteRepository.delete(id);
     if (result.affected === 0) {
       throw new NotFoundException(`Fertilizante con ID ${id} no encontrado`);
+    }
+  }
+
+  async createSustrato(
+    createSustratoDto: CreateSustratoDto,
+  ): Promise<Sustrato> {
+    const createProductoDto: CreateProductoDto = {
+      nombreProducto: createSustratoDto.nombre,
+      descripcionProducto: createSustratoDto.descripcion,
+      idCategoria: 4, // Asigna la categoría de sustrato (ID número 4)
+      imagenProducto: createSustratoDto.imagenProducto,
+      precioNormal: createSustratoDto.precioNormal,
+      stock: createSustratoDto.stock,
+    };
+
+    const producto = await this.createProducto(createProductoDto);
+
+    const nuevoSustrato = this.sustratoRepository.create({
+      ...createSustratoDto,
+      producto,
+    });
+
+    return await this.sustratoRepository.save(nuevoSustrato);
+  }
+
+  async findAllSustratos(
+    page: number,
+    size: number,
+  ): Promise<{ data: Sustrato[]; total: number }> {
+    const [result, total] = await this.sustratoRepository.findAndCount({
+      relations: ['producto', 'producto.categoria', 'producto.imagenes'],
+      skip: (page - 1) * size,
+      take: size,
+    });
+
+    return {
+      data: result,
+      total,
+    };
+  }
+
+  async findSustratoById(id: number): Promise<Sustrato> {
+    const sustrato = await this.sustratoRepository.findOne({
+      where: { id },
+      relations: ['producto', 'producto.categoria', 'producto.imagenes'],
+    });
+    if (!sustrato) {
+      throw new NotFoundException(`Sustrato con ID ${id} no encontrado`);
+    }
+    return sustrato;
+  }
+
+  async updateSustrato(
+    id: number,
+    updateSustratoDto: UpdateSustratoDto,
+  ): Promise<Sustrato> {
+    const sustrato = await this.sustratoRepository.findOneBy({ id });
+    if (!sustrato) {
+      throw new NotFoundException(`Sustrato con ID ${id} no encontrado`);
+    }
+
+    Object.assign(sustrato, updateSustratoDto);
+    return await this.sustratoRepository.save(sustrato);
+  }
+
+  async deleteSustrato(id: number): Promise<void> {
+    const result = await this.sustratoRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Sustrato con ID ${id} no encontrado`);
     }
   }
 }

@@ -39,6 +39,9 @@ import { Fertilizante } from '../entities/fertilizante.entity';
 import { Macetero } from '../entities/macetero.entity';
 import { UpdatePlantaDto } from '../dto/update-planta.dto';
 import { Planta } from '../entities/planta.entity';
+import { UpdateSustratoDto } from '../dto/update-sustrato.dto';
+import { Sustrato } from '../entities/sustrato.entity';
+import { CreateSustratoDto } from '../dto/create-sustrato.dto';
 
 @ApiTags('productos')
 @Controller('productos')
@@ -903,6 +906,177 @@ export class ProductosController {
       res
         .status(HttpStatus.OK)
         .json({ message: 'Fertilizante eliminado con éxito.' });
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'Datos inválidos.',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
+  }
+  @Post('sustratos/create')
+  @ApiOperation({
+    summary: 'Crear un nuevo sustrato',
+    description: 'Crea un nuevo sustrato en el sistema',
+  })
+  @ApiResponse({ status: 201, description: 'Sustrato creado con éxito.' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
+  @ApiBody({ type: CreateSustratoDto })
+  async createSustrato(
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    createSustratoDto: CreateSustratoDto,
+    @Res() res: Response,
+  ) {
+    try {
+      const sustrato =
+        await this.productosService.createSustrato(createSustratoDto);
+      res.status(HttpStatus.CREATED).json(sustrato);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Datos inválidos.',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @Get('sustratos/get')
+  @ApiOperation({
+    summary: 'Obtener sustratos paginados',
+    description: 'Devuelve una lista de sustratos paginados',
+  })
+  @ApiQuery({ name: 'page', required: true, type: Number })
+  @ApiQuery({ name: 'size', required: true, type: Number })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de sustratos obtenida con éxito.',
+    type: [Sustrato],
+  })
+  async findAllSustratos(
+    @Query('page', ParseIntPipe) page: number,
+    @Query('size', ParseIntPipe) size: number,
+    @Res() res: Response,
+  ) {
+    try {
+      const sustratos = await this.productosService.findAllSustratos(
+        page,
+        size,
+      );
+      res.status(HttpStatus.OK).json(sustratos);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Error al obtener los sustratos.',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Get('sustratos/getbyid/:id')
+  @ApiOperation({
+    summary: 'Obtener un sustrato por ID',
+    description: 'Devuelve los detalles de un sustrato específico por su ID',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Detalles del sustrato encontrado',
+    type: Sustrato,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Sustrato no encontrado',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID del sustrato',
+    required: true,
+  })
+  async findSustratoById(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: Response,
+  ) {
+    try {
+      const sustrato = await this.productosService.findSustratoById(id);
+      if (!sustrato) {
+        return res
+          .status(HttpStatus.NOT_FOUND)
+          .json({ message: 'Sustrato no encontrado' });
+      }
+      res.status(HttpStatus.OK).json(sustrato);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Error al obtener el sustrato.',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Put('sustratos/update/:id')
+  @ApiOperation({
+    summary: 'Actualizar un sustrato',
+    description: 'Actualiza los detalles de un sustrato existente',
+  })
+  @ApiResponse({ status: 200, description: 'Sustrato actualizado con éxito.' })
+  @ApiResponse({ status: 404, description: 'Sustrato no encontrado.' })
+  @ApiBody({ type: UpdateSustratoDto })
+  @ApiParam({ name: 'id', description: 'ID del sustrato', required: true })
+  async updateSustrato(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    updateSustratoDto: UpdateSustratoDto,
+    @Res() res: Response,
+  ) {
+    try {
+      const sustrato = await this.productosService.updateSustrato(
+        id,
+        updateSustratoDto,
+      );
+      res.status(HttpStatus.OK).json(sustrato);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'Datos inválidos.',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
+  }
+
+  @Delete('sustratos/delete/:id')
+  @ApiOperation({
+    summary: 'Eliminar un sustrato',
+    description: 'Elimina un sustrato existente por su ID',
+  })
+  @ApiResponse({ status: 200, description: 'Sustrato eliminado con éxito.' })
+  @ApiResponse({ status: 404, description: 'Sustrato no encontrado.' })
+  @ApiParam({ name: 'id', description: 'ID del sustrato', required: true })
+  async deleteSustrato(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: Response,
+  ) {
+    try {
+      await this.productosService.deleteSustrato(id);
+      res
+        .status(HttpStatus.OK)
+        .json({ message: 'Sustrato eliminado con éxito.' });
     } catch (error) {
       if (error instanceof NotFoundException) {
         res.status(HttpStatus.NOT_FOUND).json({ message: error.message });

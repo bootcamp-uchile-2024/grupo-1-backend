@@ -1,106 +1,54 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { TipoPlantasRecomendadas } from 'src/productos/enum/fertilizantes/tipoPlantasRecomendadas';
-import { CreateProductoDto } from 'src/productos/dto/create-producto.dto';
-import { RetencionHumedad } from 'src/productos/enum/sustratos/retencionHumedad';
-import { TexturaSustrato } from 'src/productos/enum/sustratos/texturaSustratos';
 import {
   IsString,
   IsNotEmpty,
-  IsEnum,
-  IsArray,
-  IsOptional,
   MaxLength,
-  ArrayNotEmpty,
+  IsOptional,
+  IsNumber,
+  IsArray,
 } from 'class-validator';
-import { TipoProductos } from 'src/productos/enum/tipo-productos';
-import { ComposicionSustrato } from 'src/productos/enum/sustratos/composicionSustrato';
+import { CreateProductoDto } from './create-producto.dto';
 
 export class CreateSustratoDto extends CreateProductoDto {
   @ApiProperty({
-    description: 'Categoría del producto',
-    example: TipoProductos.Sustratos,
-    enum: TipoProductos,
+    description: 'Nombre del sustrato',
+    example: 'Sustrato universal',
   })
-  @IsEnum(TipoProductos)
+  @IsString()
   @IsNotEmpty()
-  public categoria: TipoProductos.Sustratos;
+  @MaxLength(255)
+  nombre: string;
+
   @ApiProperty({
-    name: 'composicion',
-    enum: ComposicionSustrato,
-    example: [ComposicionSustrato.CARBON_VEGETAL],
+    description: 'Descripción del sustrato',
+    example: 'Sustrato adecuado para todo tipo de plantas',
   })
-  @IsArray({
-    message: 'El valor debe ser un array de composicion de sustratos',
-  })
-  @ArrayNotEmpty({
-    message: 'La lista composicion de sustratos no puede estar vacía',
-  })
-  @IsEnum(ComposicionSustrato, {
-    each: true,
-    message: 'El valor debe ser una composicion sustrato valida',
-  })
-  public composicion: ComposicionSustrato[];
-  @ApiProperty({
-    name: 'textura',
-    enum: TexturaSustrato,
-    example: [TexturaSustrato.DENSO],
-  })
-  @IsArray({ message: 'El valor debe ser un array de texturas de sustratos' })
-  @ArrayNotEmpty({
-    message: 'La lista composicion de texturas no puede estar vacía',
-  })
-  @IsEnum(TexturaSustrato, {
-    each: true,
-    message: 'El valor debe ser una textura sustrato valida',
-  })
-  public textura: TexturaSustrato[];
-  @ApiProperty({
-    name: 'retencionDeHumedad',
-    enum: RetencionHumedad,
-    example: RetencionHumedad.ALTA,
-    description: 'Retención de humedad del sustrato',
-  })
-  @IsEnum(RetencionHumedad, {
-    each: true,
-    message: 'El valor debe ser una retencion válido',
-  })
-  public retencionDeHumedad: RetencionHumedad;
-  @ApiProperty({
-    name: 'drenaje',
-    example: 'Bueno',
-    description: 'Drenaje del sustrato',
-    required: true,
-    type: 'string',
-    maxLength: 100,
-    nullable: false,
-  })
-  @IsString({ message: 'El drenaje debe ser texto' })
-  @IsNotEmpty({ message: 'El drenaje es campo obligatorio' })
-  @MaxLength(100, {
-    message: 'Largo del drenaje debe ser menor igual a 100 caracteres',
-  })
-  public drenaje: string;
-  @ApiProperty({
-    name: 'plantasRecomendadas',
-    enum: TipoPlantasRecomendadas,
-    example: TipoPlantasRecomendadas.PLANTAS_INTERIOR,
-    description: 'Tipo de plantas recomendadas',
-  })
-  @IsEnum(TipoPlantasRecomendadas, {
-    message: 'El valor debe ser una tipo planta recomendada válida',
-  })
-  public plantasRecomendadas: TipoPlantasRecomendadas;
-  @ApiProperty({
-    name: 'observaciones',
-    example:
-      'Ideal para plantas de interior que necesitan un buen equilibrio entre retención de humedad y drenaje.',
-    description: 'Observaciones del sustrato',
-    maxLength: 500,
-  })
+  @IsString()
   @IsOptional()
-  @IsString({ message: 'El color del macetero debe ser texto' })
-  @MaxLength(500, {
-    message: 'Largo del color del macetero de ser menor igual a 500 caracteres',
+  @MaxLength(500)
+  descripcion?: string;
+
+  @ApiProperty({
+    description: 'Precio del sustrato',
+    example: 10.99,
   })
-  public observaciones: string;
+  @IsNumber()
+  @IsNotEmpty()
+  precioNormal: number;
+
+  @ApiProperty({
+    description: 'Stock del sustrato',
+    example: 100,
+  })
+  @IsNumber()
+  @IsNotEmpty()
+  stock: number;
+
+  @ApiProperty({
+    description: 'URL de la imagen del sustrato',
+    example: 'https://example.com/sustrato.jpg',
+  })
+  @IsArray()
+  @MaxLength(255)
+  imagenProducto: string[];
 }
