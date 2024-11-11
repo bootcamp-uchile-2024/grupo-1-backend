@@ -29,9 +29,14 @@ services:
       MYSQL_DATABASE: plantopiadb
       MYSQL_USER: user_dev
       MYSQL_PASSWORD: password_dev
+    volumes:
+      - mysql-data:/var/lib/mysql
     networks:
       - plantopiadev-network
 
 networks:
   plantopiadev-network:
     driver: bridge
+
+volumes:
+  mysql-data:

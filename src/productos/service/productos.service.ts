@@ -263,11 +263,19 @@ export class ProductosService {
       ...productoData
     } = createPlantaDto;
 
+    const categoriaPlanta = await this.categoriaRepository.findOne({
+      where: { nombreCategoria: 'Plantas' },
+    });
+
+    if (!categoriaPlanta) {
+      throw new NotFoundException('Categoría de plantas no encontrada');
+    }
+
     const createProductoDto: CreateProductoDto = {
       ...productoData,
       nombreProducto: nombrePlanta,
       descripcionProducto: `Planta: ${nombrePlanta}`,
-      idCategoria: 1, // Asigna la categoría de planta (ID número 1)
+      idCategoria: categoriaPlanta.id, // Asigna la categoría de planta (ID número 1)
       imagenProducto,
     };
 
@@ -353,16 +361,11 @@ export class ProductosService {
     page: number,
     size: number,
   ): Promise<{ data: Planta[]; total: number }> {
-    const [result, total] = await this.plantaRepository.findAndCount({
-      relations: ['producto', 'producto.categoria', 'producto.imagenes'],
-      skip: (page - 1) * size,
-      take: size,
-    });
-
-    return {
-      data: result,
-      total,
-    };
+    return this.gestionPaginacion(this.plantaRepository, page, size, [
+      'producto',
+      'producto.categoria',
+      'producto.imagenes',
+    ]);
   }
   async findPlantaById(id: number): Promise<Planta> {
     const planta = await this.plantaRepository.findOne({
@@ -616,15 +619,20 @@ export class ProductosService {
   async createSustrato(
     createSustratoDto: CreateSustratoDto,
   ): Promise<Sustrato> {
+    const categoriaSustrato = await this.categoriaRepository.findOne({
+      where: { nombreCategoria: 'Sustratos' },
+    });
+    if (!categoriaSustrato) {
+      throw new NotFoundException('Categoría de sustratos no encontrada');
+    }
     const createProductoDto: CreateProductoDto = {
       nombreProducto: createSustratoDto.nombre,
       descripcionProducto: createSustratoDto.descripcion,
-      idCategoria: 4, // Asigna la categoría de sustrato (ID número 4)
+      idCategoria: categoriaSustrato.id,
       imagenProducto: createSustratoDto.imagenProducto,
       precioNormal: createSustratoDto.precioNormal,
       stock: createSustratoDto.stock,
     };
-
     const producto = await this.createProducto(createProductoDto);
 
     const nuevoSustrato = this.sustratoRepository.create({
@@ -680,5 +688,23 @@ export class ProductosService {
     if (result.affected === 0) {
       throw new NotFoundException(`Sustrato con ID ${id} no encontrado`);
     }
+  }
+  //METODO UNICO PARA EL CONTROL DE PAGINACION
+  async gestionPaginacion<T>(
+    repository: Repository<T>,
+    page: number,
+    size: number,
+    relations: string[] = [],
+  ): Promise<{ data: T[]; total: number }> {
+    const [result, total] = await repository.findAndCount({
+      relations,
+      skip: (page - 1) * size,
+      take: size,
+    });
+
+    return {
+      data: result,
+      total,
+    };
   }
 }
