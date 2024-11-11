@@ -211,170 +211,6 @@ export class ProductosController {
     }
   }
 
-  @Post('plantas/create')
-  @ApiOperation({
-    summary: 'Crear una nueva planta',
-    description: 'Crea una nueva planta en el sistema',
-  })
-  @ApiResponse({ status: 201, description: 'Planta creada con éxito.' })
-  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
-  @ApiBody({ type: CreatePlantaDto })
-  async createPlanta(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-    createPlantaDto: CreatePlantaDto,
-    @Res() res: Response,
-  ) {
-    try {
-      const planta = await this.productosService.createPlanta(createPlantaDto);
-      res.status(HttpStatus.CREATED).json(planta);
-    } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: 'Datos inválidos.',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-  }
-  @Get('plantas/get')
-  @ApiOperation({
-    summary: 'Obtener plantas paginadas',
-    description: 'Obtiene una lista de plantas',
-  })
-  @ApiQuery({ name: 'page', required: true, type: Number })
-  @ApiQuery({ name: 'size', required: true, type: Number })
-  @ApiResponse({ status: 200, description: 'Plantas obtenidas con éxito.' })
-  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
-  async getPlantasPaginadas(
-    @Query('page', ParseIntPipe) page: number,
-    @Query('size', ParseIntPipe) size: number,
-    @Res() res: Response,
-  ) {
-    try {
-      const plantas = await this.productosService.getPlantasPaginadas(
-        page,
-        size,
-      );
-      res.status(HttpStatus.OK).json(plantas);
-    } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: 'Datos inválidos.',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-  }
-  @Get('plantas/getbyid/:id')
-  @ApiOperation({
-    summary: 'Obtener una planta por ID',
-    description: 'Devuelve los detalles de una planta específica por su ID',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Detalles de la planta encontrada',
-    type: Planta,
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Planta no encontrada',
-  })
-  @ApiParam({
-    name: 'id',
-    description: 'ID de la planta',
-    required: true,
-  })
-  async findPlantaById(
-    @Param('id', ParseIntPipe) id: number,
-    @Res() res: Response,
-  ) {
-    try {
-      const planta = await this.productosService.findPlantaById(id);
-      if (!planta) {
-        return res
-          .status(HttpStatus.NOT_FOUND)
-          .json({ message: 'Planta no encontrada' });
-      }
-      res.status(HttpStatus.OK).json(planta);
-    } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'Error al obtener la planta.',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-  @Put('plantas/update/:id')
-  @ApiOperation({
-    summary: 'Actualizar una planta',
-    description: 'Actualiza los detalles de una planta existente',
-  })
-  @ApiResponse({ status: 200, description: 'Planta actualizada con éxito.' })
-  @ApiResponse({ status: 404, description: 'Planta no encontrada.' })
-  @ApiBody({ type: UpdatePlantaDto })
-  @ApiParam({ name: 'id', description: 'ID de la planta', required: true })
-  async updatePlanta(
-    @Param('id', ParseIntPipe) id: number,
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-    updatePlantaDto: UpdatePlantaDto,
-    @Res() res: Response,
-  ) {
-    try {
-      const planta = await this.productosService.updatePlanta(
-        id,
-        updatePlantaDto,
-      );
-      res.status(HttpStatus.OK).json(planta);
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
-      } else {
-        throw new HttpException(
-          {
-            status: HttpStatus.BAD_REQUEST,
-            error: 'Datos inválidos.',
-          },
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-    }
-  }
-  @Delete('plantas/delete/:id')
-  @ApiOperation({
-    summary: 'Eliminar una planta',
-    description: 'Elimina una planta existente por su ID',
-  })
-  @ApiResponse({ status: 200, description: 'Planta eliminada con éxito.' })
-  @ApiResponse({ status: 404, description: 'Planta no encontrada.' })
-  @ApiParam({ name: 'id', description: 'ID de la planta', required: true })
-  async deletePlanta(
-    @Param('id', ParseIntPipe) id: number,
-    @Res() res: Response,
-  ) {
-    try {
-      await this.productosService.deletePlanta(id);
-      res
-        .status(HttpStatus.OK)
-        .json({ message: 'Planta eliminada con éxito.' });
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
-      } else {
-        throw new HttpException(
-          {
-            status: HttpStatus.BAD_REQUEST,
-            error: 'Datos inválidos.',
-          },
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-    }
-  }
-
   @Post('categorias/create')
   @ApiOperation({
     summary: 'Crear una nueva categoría',
@@ -561,6 +397,170 @@ export class ProductosController {
       res
         .status(HttpStatus.OK)
         .json({ message: 'Categoría eliminada con éxito.' });
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'Datos inválidos.',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
+  }
+
+  @Post('plantas/create')
+  @ApiOperation({
+    summary: 'Crear una nueva planta',
+    description: 'Crea una nueva planta en el sistema',
+  })
+  @ApiResponse({ status: 201, description: 'Planta creada con éxito.' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
+  @ApiBody({ type: CreatePlantaDto })
+  async createPlanta(
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    createPlantaDto: CreatePlantaDto,
+    @Res() res: Response,
+  ) {
+    try {
+      const planta = await this.productosService.createPlanta(createPlantaDto);
+      res.status(HttpStatus.CREATED).json(planta);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Datos inválidos.',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+  @Get('plantas/get')
+  @ApiOperation({
+    summary: 'Obtener plantas paginadas',
+    description: 'Obtiene una lista de plantas',
+  })
+  @ApiQuery({ name: 'page', required: true, type: Number })
+  @ApiQuery({ name: 'size', required: true, type: Number })
+  @ApiResponse({ status: 200, description: 'Plantas obtenidas con éxito.' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
+  async getPlantasPaginadas(
+    @Query('page', ParseIntPipe) page: number,
+    @Query('size', ParseIntPipe) size: number,
+    @Res() res: Response,
+  ) {
+    try {
+      const plantas = await this.productosService.getPlantasPaginadas(
+        page,
+        size,
+      );
+      res.status(HttpStatus.OK).json(plantas);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Datos inválidos.',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+  @Get('plantas/getbyid/:id')
+  @ApiOperation({
+    summary: 'Obtener una planta por ID',
+    description: 'Devuelve los detalles de una planta específica por su ID',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Detalles de la planta encontrada',
+    type: Planta,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Planta no encontrada',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID de la planta',
+    required: true,
+  })
+  async findPlantaById(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: Response,
+  ) {
+    try {
+      const planta = await this.productosService.findPlantaById(id);
+      if (!planta) {
+        return res
+          .status(HttpStatus.NOT_FOUND)
+          .json({ message: 'Planta no encontrada' });
+      }
+      res.status(HttpStatus.OK).json(planta);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Error al obtener la planta.',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+  @Put('plantas/update/:id')
+  @ApiOperation({
+    summary: 'Actualizar una planta',
+    description: 'Actualiza los detalles de una planta existente',
+  })
+  @ApiResponse({ status: 200, description: 'Planta actualizada con éxito.' })
+  @ApiResponse({ status: 404, description: 'Planta no encontrada.' })
+  @ApiBody({ type: UpdatePlantaDto })
+  @ApiParam({ name: 'id', description: 'ID de la planta', required: true })
+  async updatePlanta(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    updatePlantaDto: UpdatePlantaDto,
+    @Res() res: Response,
+  ) {
+    try {
+      const planta = await this.productosService.updatePlanta(
+        id,
+        updatePlantaDto,
+      );
+      res.status(HttpStatus.OK).json(planta);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'Datos inválidos.',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
+  }
+  @Delete('plantas/delete/:id')
+  @ApiOperation({
+    summary: 'Eliminar una planta',
+    description: 'Elimina una planta existente por su ID',
+  })
+  @ApiResponse({ status: 200, description: 'Planta eliminada con éxito.' })
+  @ApiResponse({ status: 404, description: 'Planta no encontrada.' })
+  @ApiParam({ name: 'id', description: 'ID de la planta', required: true })
+  async deletePlanta(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: Response,
+  ) {
+    try {
+      await this.productosService.deletePlanta(id);
+      res
+        .status(HttpStatus.OK)
+        .json({ message: 'Planta eliminada con éxito.' });
     } catch (error) {
       if (error instanceof NotFoundException) {
         res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
