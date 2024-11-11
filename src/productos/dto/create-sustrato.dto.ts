@@ -43,12 +43,4 @@ export class CreateSustratoDto extends CreateProductoDto {
   @IsNumber()
   @IsNotEmpty()
   stock: number;
-
-  @ApiProperty({
-    description: 'URL de la imagen del sustrato',
-    example: 'https://example.com/sustrato.jpg',
-  })
-  @IsArray()
-  @MaxLength(255)
-  imagenProducto: string[];
 }
