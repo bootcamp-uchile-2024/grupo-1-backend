@@ -10,6 +10,7 @@ import { Usuario } from '../entities/usuario.entity';
 import { CreateUsuarioDto } from '../dto/create-usuario.dto';
 import { Comuna } from 'src/localizaciones/entities/comuna.entity';
 import { Perfil } from '../entities/perfil.entity';
+import { UpdateUsuarioDto } from '../dto/update-usuario.dto';
 
 @Injectable()
 export class UsuariosService {
@@ -97,5 +98,24 @@ export class UsuariosService {
     if (result.affected === 0) {
       throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
     }
+  }
+  async findUsuarioByRut(rut: string): Promise<Usuario> {
+    const usuario = await this.usuarioRepository.findOneBy({ rutUsuario: rut });
+    if (!usuario) {
+      throw new NotFoundException(`Usuario con RUT ${rut} no encontrado`);
+    }
+    return usuario;
+  }
+  async updateUsuario(
+    id: number,
+    updateUsuarioDto: UpdateUsuarioDto,
+  ): Promise<Usuario> {
+    const usuario = await this.usuarioRepository.findOneBy({ id });
+    if (!usuario) {
+      throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
+    }
+
+    Object.assign(usuario, updateUsuarioDto);
+    return await this.usuarioRepository.save(usuario);
   }
 }

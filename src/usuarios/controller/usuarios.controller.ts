@@ -12,6 +12,8 @@ import {
   HttpStatus,
   HttpException,
   NotFoundException,
+  BadRequestException,
+  Put,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -23,6 +25,8 @@ import {
 import { UsuariosService } from '../service/usuarios.service';
 import { CreateUsuarioDto } from '../dto/create-usuario.dto';
 import { Response } from 'express';
+import { UpdateUsuarioDto } from '../dto/update-usuario.dto';
+import { Usuario } from '../entities/usuario.entity';
 
 @ApiTags('usuarios')
 @Controller('usuarios')
@@ -86,38 +90,60 @@ export class UsuariosController {
     }
   }
 
-  @Get(':id')
-  @ApiParam({
-    name: 'id',
-    description: 'ID del usuario a obtener',
-    required: true,
-    schema: { type: 'integer' },
+  @Get(':identifier')
+  @ApiOperation({
+    summary: 'Obtener un usuario por ID o RUT',
+    description:
+      'Devuelve los detalles de un usuario específico por su ID o RUT',
   })
-  @ApiOperation({ summary: 'Obtener un usuario por ID' })
-  @ApiResponse({ status: 200, description: 'Usuario obtenido con éxito.' })
-  @ApiResponse({ status: 404, description: 'Usuario no encontrado.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Detalles del usuario encontrado',
+    type: Usuario,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Usuario no encontrado',
+  })
   @ApiResponse({
     status: 500,
-    description: 'Error interno del servidor.',
+    description: 'Error interno del servidor',
   })
-  async findOne(@Param('id', ParseIntPipe) id: number, @Res() res: Response) {
+  @ApiParam({
+    name: 'identifier',
+    description: 'ID o RUT del usuario',
+    required: true,
+  })
+  async findOne(@Param('identifier') identifier: string, @Res() res: Response) {
     try {
-      const usuario = await this.usuariosService.findOne(id);
-      if (!usuario) {
-        res
-          .status(HttpStatus.NOT_FOUND)
-          .json({ message: 'Usuario no encontrado.' });
+      let usuario;
+      if (isNaN(Number(identifier))) {
+        // Buscar por RUT
+        usuario = await this.usuariosService.findUsuarioByRut(identifier);
       } else {
-        res.status(HttpStatus.OK).json(usuario);
+        // Buscar por ID
+        usuario = await this.usuariosService.findOne(Number(identifier));
       }
+
+      if (!usuario) {
+        return res
+          .status(HttpStatus.NOT_FOUND)
+          .json({ message: 'Usuario no encontrado' });
+      }
+
+      res.status(HttpStatus.OK).json(usuario);
     } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'Error al obtener el usuario.',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      if (error instanceof NotFoundException) {
+        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            error: 'Error al obtener el usuario.',
+          },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
   }
 
@@ -163,6 +189,41 @@ export class UsuariosController {
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
+    }
+  }
+  @Put(':id')
+  @ApiOperation({
+    summary: 'Actualizar un usuario',
+    description: 'Actualiza los detalles de un usuario existente',
+  })
+  @ApiResponse({ status: 200, description: 'Usuario actualizado con éxito.' })
+  @ApiResponse({ status: 404, description: 'Usuario no encontrado.' })
+  @ApiBody({ type: UpdateUsuarioDto })
+  @ApiParam({ name: 'id', description: 'ID del usuario', required: true })
+  async updateUsuario(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    updateUsuarioDto: UpdateUsuarioDto,
+    @Res() res: Response,
+  ) {
+    try {
+      const usuario = await this.usuariosService.updateUsuario(
+        id,
+        updateUsuarioDto,
+      );
+      res.status(HttpStatus.OK).json(usuario);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'Datos inválidos.',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
     }
   }
 }
