@@ -12,7 +12,6 @@ import {
   HttpStatus,
   HttpException,
   NotFoundException,
-  BadRequestException,
   Put,
 } from '@nestjs/common';
 import {
@@ -27,11 +26,15 @@ import { CreateUsuarioDto } from '../dto/create-usuario.dto';
 import { Response } from 'express';
 import { UpdateUsuarioDto } from '../dto/update-usuario.dto';
 import { Usuario } from '../entities/usuario.entity';
+import { Perfil } from '../entities/perfil.entity';
+import { UpdatePerfilDto } from '../dto/update-perfil.dto';
+import { CreatePerfilDto } from '../dto/create-perfil.dto';
 
 @ApiTags('usuarios')
 @Controller('usuarios')
 @UsePipes(new ValidationPipe({ transform: true }))
 export class UsuariosController {
+  perfilRepository: any;
   constructor(private readonly usuariosService: UsuariosService) {}
 
   @Post()
@@ -222,6 +225,184 @@ export class UsuariosController {
             error: 'Datos inválidos.',
           },
           HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
+  }
+  @Post('perfil/create')
+  @ApiOperation({
+    summary: 'Crear un nuevo perfil',
+    description: 'Crea un nuevo perfil en el sistema',
+  })
+  @ApiResponse({ status: 201, description: 'Perfil creado con éxito.' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
+  @ApiBody({ type: CreatePerfilDto })
+  async createPerfil(
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    createPerfilDto: CreatePerfilDto,
+    @Res() res: Response,
+  ) {
+    try {
+      const perfil = await this.usuariosService.createPerfil(createPerfilDto);
+      res.status(HttpStatus.CREATED).json(perfil);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Error al crear el perfil.',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Get('perfil/get')
+  @ApiOperation({ summary: 'Obtener todos los perfiles' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de perfiles obtenida con éxito.',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Error interno del servidor.',
+  })
+  async findAllPerfil(@Res() res: Response) {
+    try {
+      const perfiles = await this.usuariosService.findAllPerfil();
+      res.status(HttpStatus.OK).json(perfiles);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Error al obtener los perfiles.',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Get('perfil/getbyid/:id')
+  @ApiOperation({
+    summary: 'Obtener un perfil por ID',
+    description: 'Devuelve los detalles de un perfil específico por su ID',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Detalles del perfil encontrado',
+    type: Perfil,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Perfil no encontrado',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Error interno del servidor',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID del perfil',
+    required: true,
+  })
+  async findOnePerfil(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: Response,
+  ) {
+    try {
+      const perfil = await this.usuariosService.findOnePerfil(id);
+      if (!perfil) {
+        return res
+          .status(HttpStatus.NOT_FOUND)
+          .json({ message: 'Perfil no encontrado' });
+      }
+      res.status(HttpStatus.OK).json(perfil);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            error: 'Error al obtener el perfil.',
+          },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
+  }
+
+  @Put('perfil/update/:id')
+  @ApiOperation({
+    summary: 'Actualizar un perfil',
+    description: 'Actualiza los detalles de un perfil existente',
+  })
+  @ApiResponse({ status: 200, description: 'Perfil actualizado con éxito.' })
+  @ApiResponse({ status: 404, description: 'Perfil no encontrado.' })
+  @ApiBody({ type: UpdatePerfilDto })
+  @ApiParam({ name: 'id', description: 'ID del perfil', required: true })
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    updatePerfilDto: UpdatePerfilDto,
+    @Res() res: Response,
+  ) {
+    try {
+      const perfil = await this.usuariosService.updatePerfil(
+        id,
+        updatePerfilDto,
+      );
+      res.status(HttpStatus.OK).json(perfil);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'Datos inválidos.',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
+  }
+
+  @Delete('perfil/delete/:id')
+  @ApiParam({
+    name: 'id',
+    description: 'ID del perfil a eliminar',
+    required: true,
+    schema: { type: 'integer' },
+  })
+  @ApiOperation({ summary: 'Eliminar un perfil' })
+  @ApiResponse({ status: 200, description: 'Perfil eliminado con éxito.' })
+  @ApiResponse({ status: 404, description: 'Perfil no encontrado.' })
+  @ApiResponse({
+    status: 500,
+    description: 'Error interno del servidor.',
+  })
+  async deletePerfil(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: Response,
+  ) {
+    try {
+      await this.usuariosService.deletePerfil(id);
+      res
+        .status(HttpStatus.OK)
+        .json({ message: 'Perfil eliminado con éxito.' });
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            error: 'Error al eliminar el perfil.',
+          },
+          HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
     }
