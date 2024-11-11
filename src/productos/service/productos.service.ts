@@ -28,6 +28,7 @@ import { ImagenProducto } from '../entities/imagen_producto.entity';
 import { Macetero } from '../entities/macetero.entity';
 import { UpdateFertilizanteDto } from '../dto/update-fertilizante.dto';
 import { UpdateMaceteroDto } from '../dto/update-macetero.dto';
+import { UpdatePlantaDto } from '../dto/update-planta.dto';
 @Injectable()
 export class ProductosService {
   productos: Producto[] = [];
@@ -86,6 +87,21 @@ export class ProductosService {
     if (result.affected === 0) {
       throw new NotFoundException(`Categoría con ID ${id} no encontrada`);
     }
+  }
+  async findAllCatalogoPaginado(
+    page: number,
+    size: number,
+  ): Promise<{ data: Producto[]; total: number }> {
+    const [result, total] = await this.productoRepository.findAndCount({
+      relations: ['categoria', 'imagenes'],
+      skip: (page - 1) * size,
+      take: size,
+    });
+
+    return {
+      data: result,
+      total,
+    };
   }
   async findAllCategorias(): Promise<Categoria[]> {
     return await this.categoriaRepository.find();
@@ -205,6 +221,24 @@ export class ProductosService {
 
     return productos;
   }
+  async deleteProducto(id: number): Promise<void> {
+    const result = await this.productoRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Producto con ID ${id} no encontrado`);
+    }
+  }
+  async updateProducto(
+    id: number,
+    updateProductoDto: CreateProductoDto,
+  ): Promise<Producto> {
+    const producto = await this.productoRepository.findOneBy({ id });
+    if (!producto) {
+      throw new NotFoundException(`Producto con ID ${id} no encontrado`);
+    }
+
+    Object.assign(producto, updateProductoDto);
+    return await this.productoRepository.save(producto);
+  }
 
   async createPlanta(createPlantaDto: CreatePlantaDto): Promise<Planta> {
     const {
@@ -312,6 +346,65 @@ export class ProductosService {
     }
 
     return await this.plantaRepository.save(nuevaPlanta);
+  }
+  async getPlantasPaginadas(
+    page: number,
+    size: number,
+  ): Promise<{ data: Planta[]; total: number }> {
+    const [result, total] = await this.plantaRepository.findAndCount({
+      relations: ['producto', 'producto.categoria', 'producto.imagenes'],
+      skip: (page - 1) * size,
+      take: size,
+    });
+
+    return {
+      data: result,
+      total,
+    };
+  }
+  async findPlantaById(id: number): Promise<Planta> {
+    const planta = await this.plantaRepository.findOne({
+      where: { id },
+      relations: ['producto', 'producto.categoria', 'producto.imagenes'],
+    });
+
+    if (!planta) {
+      throw new NotFoundException(`Planta con ID ${id} no encontrada`);
+    }
+
+    return planta;
+  }
+  async updatePlanta(
+    id: number,
+    updatePlantaDto: UpdatePlantaDto,
+  ): Promise<Planta> {
+    const planta = await this.plantaRepository.findOneBy({ id });
+    if (!planta) {
+      throw new NotFoundException(`Planta con ID ${id} no encontrada`);
+    }
+
+    const producto = await this.productoRepository.findOneBy({
+      id: planta.producto.id,
+    });
+    if (!producto) {
+      throw new NotFoundException(
+        `Producto asociado con ID ${planta.producto.id} no encontrado`,
+      );
+    }
+
+    // Actualizar el producto asociado
+    Object.assign(producto, updatePlantaDto);
+    await this.productoRepository.save(producto);
+
+    // Actualizar la planta
+    Object.assign(planta, updatePlantaDto);
+    return await this.plantaRepository.save(planta);
+  }
+  async deletePlanta(id: number): Promise<void> {
+    const result = await this.plantaRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Planta con ID ${id} no encontrada`);
+    }
   }
   async createProducto(
     createProductoDto: CreateProductoDto,

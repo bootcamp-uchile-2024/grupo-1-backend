@@ -37,26 +37,64 @@ import { Categoria } from '../entities/categoria.entity';
 import { UpdateFertilizanteDto } from '../dto/update-fertilizante.dto';
 import { Fertilizante } from '../entities/fertilizante.entity';
 import { Macetero } from '../entities/macetero.entity';
+import { UpdatePlantaDto } from '../dto/update-planta.dto';
+import { Planta } from '../entities/planta.entity';
 
 @ApiTags('productos')
 @Controller('productos')
 export class ProductosController {
   constructor(private readonly productosService: ProductosService) {}
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-  @Get('catalogo')
+  @Post('/create')
+  @ApiOperation({
+    summary: 'Crear un nuevo producto',
+    description: 'Crea un nuevo producto en el sistema',
+  })
+  @ApiResponse({ status: 201, description: 'Producto creado con éxito.' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
+  @ApiBody({ type: CreateProductoDto })
+  async createProducto(
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    createProductoDto: CreateProductoDto,
+    @Res() res: Response,
+  ) {
+    try {
+      const producto =
+        await this.productosService.createProducto(createProductoDto);
+      res.status(HttpStatus.CREATED).json(producto);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Datos inválidos.',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+  @Get('/catalogo')
   @ApiOperation({
     summary: 'Historia Usuario H004: Listado de Productos Plantopia',
     description:
-      'Lista todos los productos del catalogo de plantopia sin filtros',
+      'Lista todos los productos del catalogo de plantopia con paginación',
   })
+  @ApiQuery({ name: 'page', required: true, type: Number })
+  @ApiQuery({ name: 'size', required: true, type: Number })
   @ApiResponse({
     status: 200,
     description: 'Listado de todos los productos',
     type: [Producto],
   })
-  async findAllCatalogo(@Res() res: Response) {
+  async findAllCatalogo(
+    @Query('page', ParseIntPipe) page: number,
+    @Query('size', ParseIntPipe) size: number,
+    @Res() res: Response,
+  ) {
     try {
-      const productos = await this.productosService.findallcatalogo();
+      const productos = await this.productosService.findAllCatalogoPaginado(
+        page,
+        size,
+      );
       res.status(HttpStatus.OK).json(productos);
     } catch (error) {
       throw new HttpException(
@@ -68,8 +106,7 @@ export class ProductosController {
       );
     }
   }
-
-  @Get(':id')
+  @Get('/catalogobyid/:id')
   @ApiOperation({
     summary: 'Obtener un producto por ID',
     description: 'Devuelve los detalles de un producto específico por su ID',
@@ -107,8 +144,74 @@ export class ProductosController {
       );
     }
   }
+  @Delete('/delete/:id')
+  @ApiOperation({
+    summary: 'Eliminar un producto',
+    description: 'Elimina un producto existente por su ID',
+  })
+  @ApiResponse({ status: 200, description: 'Producto eliminado con éxito.' })
+  @ApiResponse({ status: 404, description: 'Producto no encontrado.' })
+  @ApiParam({ name: 'id', description: 'ID del producto', required: true })
+  async deleteProducto(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: Response,
+  ) {
+    try {
+      await this.productosService.deleteProducto(id);
+      res
+        .status(HttpStatus.OK)
+        .json({ message: 'Producto eliminado con éxito.' });
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'Datos inválidos.',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
+  }
+  @Put('/update/:id')
+  @ApiOperation({
+    summary: 'Actualizar un producto',
+    description: 'Actualiza los detalles de un producto existente',
+  })
+  @ApiResponse({ status: 200, description: 'Producto actualizado con éxito.' })
+  @ApiResponse({ status: 404, description: 'Producto no encontrado.' })
+  @ApiBody({ type: CreateProductoDto })
+  @ApiParam({ name: 'id', description: 'ID del producto', required: true })
+  async updateProducto(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    updateProductoDto: CreateProductoDto,
+    @Res() res: Response,
+  ) {
+    try {
+      const producto = await this.productosService.updateProducto(
+        id,
+        updateProductoDto,
+      );
+      res.status(HttpStatus.OK).json(producto);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'Datos inválidos.',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
+  }
 
-  @Post('planta')
+  @Post('plantas/create')
   @ApiOperation({
     summary: 'Crear una nueva planta',
     description: 'Crea una nueva planta en el sistema',
@@ -134,8 +237,145 @@ export class ProductosController {
       );
     }
   }
+  @Get('plantas/get')
+  @ApiOperation({
+    summary: 'Obtener plantas paginadas',
+    description: 'Obtiene una lista de plantas',
+  })
+  @ApiQuery({ name: 'page', required: true, type: Number })
+  @ApiQuery({ name: 'size', required: true, type: Number })
+  @ApiResponse({ status: 200, description: 'Plantas obtenidas con éxito.' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
+  async getPlantasPaginadas(
+    @Query('page', ParseIntPipe) page: number,
+    @Query('size', ParseIntPipe) size: number,
+    @Res() res: Response,
+  ) {
+    try {
+      const plantas = await this.productosService.getPlantasPaginadas(
+        page,
+        size,
+      );
+      res.status(HttpStatus.OK).json(plantas);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Datos inválidos.',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+  @Get('plantas/getbyid/:id')
+  @ApiOperation({
+    summary: 'Obtener una planta por ID',
+    description: 'Devuelve los detalles de una planta específica por su ID',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Detalles de la planta encontrada',
+    type: Planta,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Planta no encontrada',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID de la planta',
+    required: true,
+  })
+  async findPlantaById(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: Response,
+  ) {
+    try {
+      const planta = await this.productosService.findPlantaById(id);
+      if (!planta) {
+        return res
+          .status(HttpStatus.NOT_FOUND)
+          .json({ message: 'Planta no encontrada' });
+      }
+      res.status(HttpStatus.OK).json(planta);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Error al obtener la planta.',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+  @Put('plantas/update/:id')
+  @ApiOperation({
+    summary: 'Actualizar una planta',
+    description: 'Actualiza los detalles de una planta existente',
+  })
+  @ApiResponse({ status: 200, description: 'Planta actualizada con éxito.' })
+  @ApiResponse({ status: 404, description: 'Planta no encontrada.' })
+  @ApiBody({ type: UpdatePlantaDto })
+  @ApiParam({ name: 'id', description: 'ID de la planta', required: true })
+  async updatePlanta(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    updatePlantaDto: UpdatePlantaDto,
+    @Res() res: Response,
+  ) {
+    try {
+      const planta = await this.productosService.updatePlanta(
+        id,
+        updatePlantaDto,
+      );
+      res.status(HttpStatus.OK).json(planta);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'Datos inválidos.',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
+  }
+  @Delete('plantas/delete/:id')
+  @ApiOperation({
+    summary: 'Eliminar una planta',
+    description: 'Elimina una planta existente por su ID',
+  })
+  @ApiResponse({ status: 200, description: 'Planta eliminada con éxito.' })
+  @ApiResponse({ status: 404, description: 'Planta no encontrada.' })
+  @ApiParam({ name: 'id', description: 'ID de la planta', required: true })
+  async deletePlanta(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: Response,
+  ) {
+    try {
+      await this.productosService.deletePlanta(id);
+      res
+        .status(HttpStatus.OK)
+        .json({ message: 'Planta eliminada con éxito.' });
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'Datos inválidos.',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
+  }
 
-  @Post('categoria')
+  @Post('categorias/create')
   @ApiOperation({
     summary: 'Crear una nueva categoría',
     description: 'Crea una nueva categoría en el sistema',
@@ -162,76 +402,7 @@ export class ProductosController {
       );
     }
   }
-
-  @Put('categoria/:id')
-  @ApiOperation({
-    summary: 'Actualizar una categoría',
-    description: 'Actualiza los detalles de una categoría existente',
-  })
-  @ApiResponse({ status: 200, description: 'Categoría actualizada con éxito.' })
-  @ApiResponse({ status: 404, description: 'Categoría no encontrada.' })
-  @ApiBody({ type: UpdateCategoriaDto })
-  @ApiParam({ name: 'id', description: 'ID de la categoría', required: true })
-  async updateCategoria(
-    @Param('id', ParseIntPipe) id: number,
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-    updateCategoriaDto: UpdateCategoriaDto,
-    @Res() res: Response,
-  ) {
-    try {
-      const categoria = await this.productosService.updateCategoria(
-        id,
-        updateCategoriaDto,
-      );
-      res.status(HttpStatus.OK).json(categoria);
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
-      } else {
-        throw new HttpException(
-          {
-            status: HttpStatus.BAD_REQUEST,
-            error: 'Datos inválidos.',
-          },
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-    }
-  }
-
-  @Delete('categoria/:id')
-  @ApiOperation({
-    summary: 'Eliminar una categoría',
-    description: 'Elimina una categoría existente por su ID',
-  })
-  @ApiResponse({ status: 200, description: 'Categoría eliminada con éxito.' })
-  @ApiResponse({ status: 404, description: 'Categoría no encontrada.' })
-  @ApiParam({ name: 'id', description: 'ID de la categoría', required: true })
-  async deleteCategoria(
-    @Param('id', ParseIntPipe) id: number,
-    @Res() res: Response,
-  ) {
-    try {
-      await this.productosService.deleteCategoria(id);
-      res
-        .status(HttpStatus.OK)
-        .json({ message: 'Categoría eliminada con éxito.' });
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
-      } else {
-        throw new HttpException(
-          {
-            status: HttpStatus.BAD_REQUEST,
-            error: 'Datos inválidos.',
-          },
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-    }
-  }
-
-  @Get('categorias/listado')
+  @Get('categorias/get')
   @ApiOperation({
     summary: 'Listar todas las categorías',
     description: 'Devuelve una lista de todas las categorías',
@@ -256,8 +427,7 @@ export class ProductosController {
       );
     }
   }
-
-  @Get('categoria/:id')
+  @Get('categorias/getbyid/:id')
   @ApiOperation({
     summary: 'Obtener una categoría por ID',
     description: 'Devuelve los detalles de una categoría específica por su ID',
@@ -295,7 +465,7 @@ export class ProductosController {
     }
   }
 
-  @Get('categoria/nombre/:nombrecategoria')
+  @Get('categorias/getbynombre/:nombrecategoria')
   @ApiOperation({
     summary: 'Obtener una categoría por nombre',
     description:
@@ -338,32 +508,71 @@ export class ProductosController {
       );
     }
   }
-
-  @Post('crear/producto')
+  @Put('categorias/update/:id')
   @ApiOperation({
-    summary: 'Crear un nuevo producto',
-    description: 'Crea un nuevo producto en el sistema',
+    summary: 'Actualizar una categoría',
+    description: 'Actualiza los detalles de una categoría existente',
   })
-  @ApiResponse({ status: 201, description: 'Producto creado con éxito.' })
-  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
-  @ApiBody({ type: CreateProductoDto })
-  async createProducto(
+  @ApiResponse({ status: 200, description: 'Categoría actualizada con éxito.' })
+  @ApiResponse({ status: 404, description: 'Categoría no encontrada.' })
+  @ApiBody({ type: UpdateCategoriaDto })
+  @ApiParam({ name: 'id', description: 'ID de la categoría', required: true })
+  async updateCategoria(
+    @Param('id', ParseIntPipe) id: number,
     @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-    createProductoDto: CreateProductoDto,
+    updateCategoriaDto: UpdateCategoriaDto,
     @Res() res: Response,
   ) {
     try {
-      const producto =
-        await this.productosService.createProducto(createProductoDto);
-      res.status(HttpStatus.CREATED).json(producto);
-    } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: 'Datos inválidos.',
-        },
-        HttpStatus.BAD_REQUEST,
+      const categoria = await this.productosService.updateCategoria(
+        id,
+        updateCategoriaDto,
       );
+      res.status(HttpStatus.OK).json(categoria);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'Datos inválidos.',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
+  }
+
+  @Delete('categorias/delete/:id')
+  @ApiOperation({
+    summary: 'Eliminar una categoría',
+    description: 'Elimina una categoría existente por su ID',
+  })
+  @ApiResponse({ status: 200, description: 'Categoría eliminada con éxito.' })
+  @ApiResponse({ status: 404, description: 'Categoría no encontrada.' })
+  @ApiParam({ name: 'id', description: 'ID de la categoría', required: true })
+  async deleteCategoria(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: Response,
+  ) {
+    try {
+      await this.productosService.deleteCategoria(id);
+      res
+        .status(HttpStatus.OK)
+        .json({ message: 'Categoría eliminada con éxito.' });
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'Datos inválidos.',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
     }
   }
 
