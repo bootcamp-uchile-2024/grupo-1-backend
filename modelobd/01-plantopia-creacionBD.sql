@@ -78,11 +78,11 @@ CREATE TABLE TipoPlantasRecomendadas (
   id INT AUTO_INCREMENT PRIMARY KEY,
   descripcion VARCHAR(100) UNIQUE NOT NULL
 );
-
+/*
 CREATE TABLE EstadosOC (
   id INT AUTO_INCREMENT PRIMARY KEY,
   descripcion VARCHAR(255)
-);
+);*/
 
 CREATE TABLE FormaMacetero (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -241,10 +241,13 @@ CREATE TABLE Usuario (
 );
 CREATE TABLE OrdenCompra (
   id INT AUTO_INCREMENT PRIMARY KEY,
+  emailComprador VARCHAR(255) DEFAULT NULL, 
   fechaOrden DATE,
-  idEstadoOC INT NOT NULL,
-  FOREIGN KEY (idEstadoOC) REFERENCES EstadosOC(id)
+  estado varchar(100) NOT NULL, 
+  idUsuario INT DEFAULT NULL, 
+  FOREIGN KEY (idUsuario) REFERENCES Usuario(id) 
 );
+ 
 
 CREATE TABLE Venta (
   id INT AUTO_INCREMENT PRIMARY KEY,

@@ -12,6 +12,7 @@ import { Perfil } from './perfil.entity';
 import { Comuna } from 'src/localizaciones/entities/comuna.entity';
 import { JardinVirtual } from './jardin_virtual.entity';
 import { Servicio } from 'src/servicios/entities/servicio.entity';
+import { OrdenCompra } from 'src/ventas/entities/orden_compra.entity';
 
 @Entity({ name: 'Usuario' })
 export class Usuario {
@@ -54,4 +55,7 @@ export class Usuario {
   @ManyToMany(() => Servicio, (servicio) => servicio.usuarios)
   servicios: Servicio[];
   jardinVirtual: any;
+
+  @OneToMany(() => OrdenCompra, (orden) => orden.usuario)
+  orden: OrdenCompra[];
 }

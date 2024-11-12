@@ -165,6 +165,14 @@ export class ProductosService {
     return producto;
   }
 
+  async findOneOC(id: number): Promise<Producto> {
+    const producto = await this.productoRepository.findOneBy({ id });
+    if (!producto) {
+      return null;
+    }
+    return producto;
+  }
+
   async findallcatalogo222(categoriaNombre?: string): Promise<Producto[]> {
     console.log('entro al servicio catalogo de producto ');
 

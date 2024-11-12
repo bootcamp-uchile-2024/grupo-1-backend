@@ -211,18 +211,7 @@ INSERT INTO TipoPlantasRecomendadas (descripcion) VALUES
 ('Trepadoras'),
 ('Acuáticas');
 
--- insert EstadosOC
-INSERT INTO EstadosOC (descripcion) VALUES
-('Pendiente'),
-('Procesando'),
-('Enviado'),
-('Entregado'),
-('Cancelado'),
-('Devuelto'),
-('Reembolsado'),
-('En espera'),
-('Completado'),
-('Fallido');
+ 
 
 -- insert FormaMacetero
 INSERT INTO FormaMacetero (descripcion) VALUES

@@ -32,5 +32,7 @@ RUN npm install --save @nestjs/mapped-types
 RUN npm install --save @nestjs/mapped-types @nestjs/swagger
 RUN npm install --save @nestjs/config @nestjs/core
 RUN npm install --save-dev @types/node
+RUN npm install date-fns
+RUN npm install dayjs
 
 CMD ["npm", "run", "start:dev"]
