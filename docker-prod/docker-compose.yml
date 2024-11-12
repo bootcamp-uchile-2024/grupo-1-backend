@@ -3,6 +3,7 @@ version: '3.8'
 services:
   plantopia:
     image: cnicolas86/plantopia:1.2.0
+    platform: linux/amd64
     container_name: plantopia-prod
     ports:
       - "4000:4000"
