@@ -1,18 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { CreateOrdenCompraDto } from '../dto/create-orden-compra.dto';
 import { OrdenCompra } from '../entities/orden_compra.entity';
-import { ErrorPlantopia } from 'src/comunes/error-plantopia/error-plantopia';
-import { DetalleOrdenCompra } from '../entities/detalle_orden_compra.entity';
-import { ProductosService } from 'src/productos/service/productos.service';
-import { DetalleOrdenComprasService } from './detalle-orden-compras.service';
-import { CreateDetalleOrdenCompraDto } from '../dto/create-detalle-orden-compra.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { GetOrdenDto } from '../dto/getOrden.dto';
-import { Venta } from '../entities/venta.entity';
 import { VentaMappers } from '../mappers/ventas.mappers';
 import { EstadoOrden } from '../enum/estadosOC';
-import { GetOrdenCompraConDetalleDto } from '../dto/VerOrdenCompra.dto';
+import { GetOrdenCompraConDetalleDto } from '../dto/verOrdenCompra.dto';
 @Injectable()
 export class OrdenComprasService {
   ordenesCompras: OrdenCompra[] = [];

@@ -7,7 +7,7 @@ import { GetOrdenDto } from '../dto/getOrden.dto';
 import { CreateDetalleOrdenCompraDto } from '../dto/create-detalle-orden-compra.dto';
 import { ProductosService } from 'src/productos/service/productos.service';
 import { VerDetalleOrdenCompraDto } from '../dto/verDetalleOrden.dto';
-import { GetOrdenCompraConDetalleDto } from '../dto/VerOrdenCompra.dto';
+import { GetOrdenCompraConDetalleDto } from '../dto/verOrdenCompra.dto';
 export class VentaMappers {
   constructor(private readonly productoService: ProductosService) {}
   static async dtotoEntityOrden(
