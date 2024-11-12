@@ -10,5 +10,6 @@ import { Perfil } from './entities/perfil.entity';
   imports: [TypeOrmModule.forFeature([Usuario, Comuna, Perfil])],
   controllers: [UsuariosController],
   providers: [UsuariosService],
+  exports: [UsuariosService],
 })
 export class UsuariosModule {}

@@ -1,12 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { CreateOrdenCompraDto } from '../dto/create-orden-compra.dto';
 import { OrdenCompra } from '../entities/orden_compra.entity';
-import { EstadosOC } from '../enum/estadosOC';
 import { ErrorPlantopia } from 'src/comunes/error-plantopia/error-plantopia';
 import { DetalleOrdenCompra } from '../entities/detalle_orden_compra.entity';
 import { ProductosService } from 'src/productos/service/productos.service';
 import { DetalleOrdenComprasService } from './detalle-orden-compras.service';
 import { CreateDetalleOrdenCompraDto } from '../dto/create-detalle-orden-compra.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { GetOrdenDto } from '../dto/getOrden.dto';
+import { Venta } from '../entities/venta.entity';
+import { VentaMappers } from '../mappers/ventas.mappers';
+import { EstadoOrden } from '../enum/estadosOC';
+import { GetOrdenCompraConDetalleDto } from '../dto/VerOrdenCompra.dto';
 @Injectable()
 export class OrdenComprasService {
   ordenesCompras: OrdenCompra[] = [];
@@ -18,14 +24,36 @@ export class OrdenComprasService {
     '-' +
     String(this.fechaHoy.getDate()).padStart(2, '0');
   constructor(
-    private readonly productoServices: ProductosService,
-    private readonly detalleOrdenServices: DetalleOrdenComprasService,
+    @InjectRepository(OrdenCompra)
+    private readonly ordencompraRepository: Repository<OrdenCompra>,
   ) {}
-
-  create(createOrdenCompraDto: CreateOrdenCompraDto) {
-    return 'En construcción crear orden de compra';
+  async create(
+    createOrdenCompraDto: CreateOrdenCompraDto,
+  ): Promise<GetOrdenDto> {
+    const carrito = await VentaMappers.dtotoEntityOrden(createOrdenCompraDto);
+    const carritoGuardado = await this.ordencompraRepository.save(carrito);
+    return VentaMappers.entityToDtoOrden(carritoGuardado);
   }
-  findAll() {
-    return 'en construcción listar ordenes de compra';
+  async findOneOC(id: number): Promise<OrdenCompra> {
+    console.log('Buscando orden con id:', id);
+    const orden = await this.ordencompraRepository.findOneBy({ id });
+    console.log('Resultado de la búsqueda:', orden);
+    if (!orden) {
+      return null;
+    }
+    return orden;
+  }
+  async buscarCarrito(
+    emailComprador: string,
+    idUsuario: number,
+  ): Promise<GetOrdenCompraConDetalleDto[]> {
+    const ordenCompra = await this.ordencompraRepository.find({
+      where: [
+        { idUsuario: idUsuario, estado: EstadoOrden.CREADA },
+        { emailComprador: emailComprador, estado: EstadoOrden.CREADA },
+      ],
+      relations: ['detallesOrden'],
+    });
+    return ordenCompra.map((orden) => VentaMappers.buscarOrden(orden));
   }
 }

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-export class CreateDetalleOrdenCompraDto {
+export class QuitarProductoCarritoDto {
   @ApiProperty({
     description: 'id Orden Compra',
     example: 1,
@@ -10,9 +10,4 @@ export class CreateDetalleOrdenCompraDto {
     example: 1,
   })
   public idProducto: number;
-  @ApiProperty({
-    description: 'Cantidad Compra ',
-    example: 2,
-  })
-  public cantidad: number;
 }

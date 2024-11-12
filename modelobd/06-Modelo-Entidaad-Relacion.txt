@@ -197,8 +197,9 @@
   }
   Table OrdenCompra{
     id  int [pk, increment]
+    emailComprador varchar(255)
     fecha_Orden date
-    id_estadoOC  int [not null]
+    estado varchar(100)
   }
   Table EstadosOC{
     id  int [pk, increment]
@@ -315,6 +316,7 @@
   Ref: EstadosFormaPago.id > FormaPago.id_estadoFormaPago
   Ref: EstadosVenta.id > Venta.id_estadoVenta
   Ref: EstadosOC.id > OrdenCompra.id_estadoOC
+  Ref: Usuario.id >  OrdenCompra.idUsuario
   Ref: Comuna.id > Despacho.id_comuna
   Ref: TipoDespacho.id > Despacho.id_tipo_despacho
   Ref: Macetero.id_producto - Producto.id

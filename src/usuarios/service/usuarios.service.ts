@@ -94,7 +94,13 @@ export class UsuariosService {
     }
     return usuario;
   }
-
+  async findOneOC(id: number): Promise<Usuario> {
+    const usuario = await this.usuarioRepository.findOneBy({ id });
+    if (!usuario) {
+      return null;
+    }
+    return usuario;
+  }
   async remove(id: number): Promise<void> {
     const result = await this.usuarioRepository.delete(id);
     if (result.affected === 0) {
