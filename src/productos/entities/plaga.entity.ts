@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn,ManyToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany } from 'typeorm';
 import { ControlPlaga } from './control_plaga.entity';
 
 @Entity({ name: 'Plaga' })
@@ -11,5 +11,4 @@ export class Plaga {
 
   @ManyToMany(() => ControlPlaga, (controlplaga) => controlplaga.plagas)
   controlplagas: ControlPlaga[];
-
 }

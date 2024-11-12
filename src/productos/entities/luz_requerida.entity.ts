@@ -11,5 +11,4 @@ export class LuzRequerida {
 
   @OneToMany(() => Planta, (planta) => planta.luz)
   plantas: Planta[];
-   
 }

@@ -6,11 +6,8 @@ import {
 } from '@nestjs/common';
 import { CreateMaceteroDto } from '../dto/create-macetero.dto';
 import { CreatePlantaDto } from '../dto/create-planta.dto';
-import { CreateControlPlagasDto } from '../dto/create-control-plagas.dto';
-import { ErrorPlantopia } from 'src/comunes/error-plantopia/error-plantopia';
 import { Producto } from 'src/productos/entities/producto.entity';
 import { CreateFertilizanteDto } from '../dto/create-fertilizante.dto';
-import { CreateSustratoDto } from '../dto/create-sustrato.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DificultadDeCuidado } from '../entities/dificultad_de_cuidado.entity';
@@ -24,12 +21,16 @@ import { Planta } from '../entities/planta.entity';
 import { Sustrato } from '../entities/sustrato.entity';
 import { TipoDeSuelo } from '../entities/tipo_de_suelo.entity';
 import { CreateProductoDto } from '../dto/create-producto.dto';
-import { TipoProductos } from '../enum/tipo-productos';
 import { CreateCategoriaDto } from '../dto/create-categoria.dto';
 import { UpdateCategoriaDto } from '../dto/update-categoria.dto';
 import { Categoria } from '../entities/categoria.entity';
 import { ImagenProducto } from '../entities/imagen_producto.entity';
 import { Macetero } from '../entities/macetero.entity';
+import { UpdateFertilizanteDto } from '../dto/update-fertilizante.dto';
+import { UpdateMaceteroDto } from '../dto/update-macetero.dto';
+import { UpdatePlantaDto } from '../dto/update-planta.dto';
+import { CreateSustratoDto } from '../dto/create-sustrato.dto';
+import { UpdateSustratoDto } from '../dto/update-sustrato.dto';
 @Injectable()
 export class ProductosService {
   productos: Producto[] = [];
@@ -89,8 +90,21 @@ export class ProductosService {
       throw new NotFoundException(`Categoría con ID ${id} no encontrada`);
     }
   }
-  async findAllCategorias(): Promise<Categoria[]> {
-    return await this.categoriaRepository.find();
+  async findAllCatalogoPaginado(
+    page: number,
+    size: number,
+  ): Promise<{ data: Producto[]; total: number }> {
+    return this.gestionPaginacion(this.productoRepository, page, size, [
+      'categoria',
+      'imagenes',
+    ]);
+  }
+
+  async findAllCategorias(
+    page: number,
+    size: number,
+  ): Promise<{ data: Categoria[]; total: number }> {
+    return this.gestionPaginacion(this.categoriaRepository, page, size);
   }
 
   async findCategoriaById(id: number): Promise<Categoria> {
@@ -207,6 +221,24 @@ export class ProductosService {
 
     return productos;
   }
+  async deleteProducto(id: number): Promise<void> {
+    const result = await this.productoRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Producto con ID ${id} no encontrado`);
+    }
+  }
+  async updateProducto(
+    id: number,
+    updateProductoDto: CreateProductoDto,
+  ): Promise<Producto> {
+    const producto = await this.productoRepository.findOneBy({ id });
+    if (!producto) {
+      throw new NotFoundException(`Producto con ID ${id} no encontrado`);
+    }
+
+    Object.assign(producto, updateProductoDto);
+    return await this.productoRepository.save(producto);
+  }
 
   async createPlanta(createPlantaDto: CreatePlantaDto): Promise<Planta> {
     const {
@@ -229,11 +261,19 @@ export class ProductosService {
       ...productoData
     } = createPlantaDto;
 
+    const categoriaPlanta = await this.categoriaRepository.findOne({
+      where: { nombreCategoria: 'Plantas' },
+    });
+
+    if (!categoriaPlanta) {
+      throw new NotFoundException('Categoría de plantas no encontrada');
+    }
+
     const createProductoDto: CreateProductoDto = {
       ...productoData,
       nombreProducto: nombrePlanta,
       descripcionProducto: `Planta: ${nombrePlanta}`,
-      idCategoria: 1, // Asigna la categoría de planta (ID número 1)
+      idCategoria: categoriaPlanta.id, // Asigna la categoría de planta (ID número 1)
       imagenProducto,
     };
 
@@ -315,6 +355,60 @@ export class ProductosService {
 
     return await this.plantaRepository.save(nuevaPlanta);
   }
+  async getPlantasPaginadas(
+    page: number,
+    size: number,
+  ): Promise<{ data: Planta[]; total: number }> {
+    return this.gestionPaginacion(this.plantaRepository, page, size, [
+      'producto',
+      'producto.categoria',
+      'producto.imagenes',
+    ]);
+  }
+  async findPlantaById(id: number): Promise<Planta> {
+    const planta = await this.plantaRepository.findOne({
+      where: { id },
+      relations: ['producto', 'producto.categoria', 'producto.imagenes'],
+    });
+
+    if (!planta) {
+      throw new NotFoundException(`Planta con ID ${id} no encontrada`);
+    }
+
+    return planta;
+  }
+  async updatePlanta(
+    id: number,
+    updatePlantaDto: UpdatePlantaDto,
+  ): Promise<Planta> {
+    const planta = await this.plantaRepository.findOneBy({ id });
+    if (!planta) {
+      throw new NotFoundException(`Planta con ID ${id} no encontrada`);
+    }
+
+    const producto = await this.productoRepository.findOneBy({
+      id: planta.producto.id,
+    });
+    if (!producto) {
+      throw new NotFoundException(
+        `Producto asociado con ID ${planta.producto.id} no encontrado`,
+      );
+    }
+
+    // Actualizar el producto asociado
+    Object.assign(producto, updatePlantaDto);
+    await this.productoRepository.save(producto);
+
+    // Actualizar la planta
+    Object.assign(planta, updatePlantaDto);
+    return await this.plantaRepository.save(planta);
+  }
+  async deletePlanta(id: number): Promise<void> {
+    const result = await this.plantaRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Planta con ID ${id} no encontrada`);
+    }
+  }
   async createProducto(
     createProductoDto: CreateProductoDto,
   ): Promise<Producto> {
@@ -369,9 +463,15 @@ export class ProductosService {
   async createMacetero(
     createMaceteroDto: CreateMaceteroDto,
   ): Promise<Macetero> {
+    const categoriaMacetero = await this.categoriaRepository.findOne({
+      where: { nombreCategoria: 'Maceteros' },
+    });
+    if (!categoriaMacetero) {
+      throw new NotFoundException('Categoría de maceteros no encontrada');
+    }
     const createProductoDto: CreateProductoDto = {
       ...createMaceteroDto,
-      idCategoria: 3, // Asigna la categoría de macetero (ID número 3)
+      idCategoria: categoriaMacetero.id,
     };
 
     const producto = await this.createProducto(createProductoDto);
@@ -388,16 +488,57 @@ export class ProductosService {
     page: number,
     size: number,
   ): Promise<{ data: Macetero[]; total: number }> {
-    const [result, total] = await this.maceteroRepository.findAndCount({
+    return this.gestionPaginacion(this.maceteroRepository, page, size, [
+      'producto',
+      'producto.categoria',
+      'producto.imagenes',
+    ]);
+  }
+
+  async findMaceteroById(id: number): Promise<Macetero> {
+    const macetero = await this.maceteroRepository.findOne({
+      where: { id },
       relations: ['producto', 'producto.categoria', 'producto.imagenes'],
-      skip: (page - 1) * size,
-      take: size,
     });
 
-    return {
-      data: result,
-      total,
-    };
+    if (!macetero) {
+      throw new NotFoundException(`Macetero con ID ${id} no encontrado`);
+    }
+
+    return macetero;
+  }
+  async updateMacetero(
+    id: number,
+    updateMaceteroDto: UpdateMaceteroDto,
+  ): Promise<Macetero> {
+    const macetero = await this.maceteroRepository.findOneBy({ id });
+    if (!macetero) {
+      throw new NotFoundException(`Macetero con ID ${id} no encontrado`);
+    }
+
+    const producto = await this.productoRepository.findOneBy({
+      id: macetero.producto.id,
+    });
+    if (!producto) {
+      throw new NotFoundException(
+        `Producto asociado con ID ${macetero.producto.id} no encontrado`,
+      );
+    }
+
+    // Actualizar el producto asociado
+    Object.assign(producto, updateMaceteroDto);
+    await this.productoRepository.save(producto);
+
+    // Actualizar el macetero
+    Object.assign(macetero, updateMaceteroDto);
+    return await this.maceteroRepository.save(macetero);
+  }
+
+  async deleteMacetero(id: number): Promise<void> {
+    const result = await this.maceteroRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Macetero con ID ${id} no encontrado`);
+    }
   }
   async createFertilizante(
     createFertilizanteDto: CreateFertilizanteDto,
@@ -433,6 +574,130 @@ export class ProductosService {
   ): Promise<{ data: Fertilizante[]; total: number }> {
     const [result, total] = await this.fertilizanteRepository.findAndCount({
       relations: ['producto', 'producto.categoria', 'producto.imagenes'],
+      skip: (page - 1) * size,
+      take: size,
+    });
+
+    return {
+      data: result,
+      total,
+    };
+  }
+
+  async findFertilizanteById(id: number): Promise<Fertilizante> {
+    const fertilizante = await this.fertilizanteRepository.findOne({
+      where: { id },
+      relations: ['producto', 'producto.categoria', 'producto.imagenes'],
+    });
+
+    if (!fertilizante) {
+      throw new NotFoundException(`Fertilizante con ID ${id} no encontrado`);
+    }
+
+    return fertilizante;
+  }
+
+  async updateFertilizante(
+    id: number,
+    updateFertilizanteDto: UpdateFertilizanteDto,
+  ): Promise<Fertilizante> {
+    const fertilizante = await this.fertilizanteRepository.findOneBy({ id });
+    if (!fertilizante) {
+      throw new NotFoundException(`Fertilizante con ID ${id} no encontrado`);
+    }
+    Object.assign(fertilizante, updateFertilizanteDto);
+    return await this.fertilizanteRepository.save(fertilizante);
+  }
+
+  async deleteFertilizante(id: number): Promise<void> {
+    const result = await this.fertilizanteRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Fertilizante con ID ${id} no encontrado`);
+    }
+  }
+
+  async createSustrato(
+    createSustratoDto: CreateSustratoDto,
+  ): Promise<Sustrato> {
+    const categoriaSustrato = await this.categoriaRepository.findOne({
+      where: { nombreCategoria: 'Sustratos' },
+    });
+    if (!categoriaSustrato) {
+      throw new NotFoundException('Categoría de sustratos no encontrada');
+    }
+    const createProductoDto: CreateProductoDto = {
+      nombreProducto: createSustratoDto.nombre,
+      descripcionProducto: createSustratoDto.descripcion,
+      idCategoria: categoriaSustrato.id,
+      imagenProducto: createSustratoDto.imagenProducto,
+      precioNormal: createSustratoDto.precioNormal,
+      stock: createSustratoDto.stock,
+    };
+    const producto = await this.createProducto(createProductoDto);
+
+    const nuevoSustrato = this.sustratoRepository.create({
+      ...createSustratoDto,
+      producto,
+    });
+
+    return await this.sustratoRepository.save(nuevoSustrato);
+  }
+
+  async findAllSustratos(
+    page: number,
+    size: number,
+  ): Promise<{ data: Sustrato[]; total: number }> {
+    const [result, total] = await this.sustratoRepository.findAndCount({
+      relations: ['producto', 'producto.categoria', 'producto.imagenes'],
+      skip: (page - 1) * size,
+      take: size,
+    });
+
+    return {
+      data: result,
+      total,
+    };
+  }
+
+  async findSustratoById(id: number): Promise<Sustrato> {
+    const sustrato = await this.sustratoRepository.findOne({
+      where: { id },
+      relations: ['producto', 'producto.categoria', 'producto.imagenes'],
+    });
+    if (!sustrato) {
+      throw new NotFoundException(`Sustrato con ID ${id} no encontrado`);
+    }
+    return sustrato;
+  }
+
+  async updateSustrato(
+    id: number,
+    updateSustratoDto: UpdateSustratoDto,
+  ): Promise<Sustrato> {
+    const sustrato = await this.sustratoRepository.findOneBy({ id });
+    if (!sustrato) {
+      throw new NotFoundException(`Sustrato con ID ${id} no encontrado`);
+    }
+
+    Object.assign(sustrato, updateSustratoDto);
+    return await this.sustratoRepository.save(sustrato);
+  }
+
+  async deleteSustrato(id: number): Promise<void> {
+    const result = await this.sustratoRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Sustrato con ID ${id} no encontrado`);
+    }
+  }
+  //METODO UNICO PARA EL CONTROL DE PAGINACION
+  async gestionPaginacion<T>(
+    repository: Repository<T>,
+    page: number,
+    size: number,
+    relations: string[] = [],
+  ): Promise<{ data: T[]; total: number }> {
+    const [result, total] = await repository.findAndCount({
+      relations,
       skip: (page - 1) * size,
       take: size,
     });
