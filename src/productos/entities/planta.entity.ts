@@ -21,7 +21,7 @@ import { Fertilizante } from './fertilizante.entity';
 import { Estacion } from './estacion.entity';
 import { TipoDeSuelo } from './tipo_de_suelo.entity';
 
-@Entity()
+@Entity('Planta')
 export class Planta {
   @PrimaryGeneratedColumn()
   id: number;

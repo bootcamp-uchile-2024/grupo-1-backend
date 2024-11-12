@@ -10,6 +10,9 @@ import { Usuario } from '../entities/usuario.entity';
 import { CreateUsuarioDto } from '../dto/create-usuario.dto';
 import { Comuna } from 'src/localizaciones/entities/comuna.entity';
 import { Perfil } from '../entities/perfil.entity';
+import { UpdateUsuarioDto } from '../dto/update-usuario.dto';
+import { UpdatePerfilDto } from '../dto/update-perfil.dto';
+import { CreatePerfilDto } from '../dto/create-perfil.dto';
 
 @Injectable()
 export class UsuariosService {
@@ -102,6 +105,92 @@ export class UsuariosService {
     const result = await this.usuarioRepository.delete(id);
     if (result.affected === 0) {
       throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
+    }
+  }
+  async findUsuarioByRut(rut: string): Promise<Usuario> {
+    const usuario = await this.usuarioRepository.findOneBy({ rutUsuario: rut });
+    if (!usuario) {
+      throw new NotFoundException(`Usuario con RUT ${rut} no encontrado`);
+    }
+    return usuario;
+  }
+  async updateUsuario(
+    id: number,
+    updateUsuarioDto: UpdateUsuarioDto,
+  ): Promise<Usuario> {
+    const usuario = await this.usuarioRepository.findOneBy({ id });
+    if (!usuario) {
+      throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
+    }
+
+    Object.assign(usuario, updateUsuarioDto);
+    return await this.usuarioRepository.save(usuario);
+  }
+  async createPerfil(createPerfilDto: CreatePerfilDto): Promise<Perfil> {
+    const nuevoPerfil = this.perfilRepository.create(createPerfilDto);
+    return await this.perfilRepository.save(nuevoPerfil);
+  }
+
+  async findAllPerfil(): Promise<Perfil[]> {
+    return await this.perfilRepository.find();
+  }
+
+  async findOnePerfil(id: number): Promise<Perfil> {
+    const perfil = await this.perfilRepository.findOneBy({ id });
+    if (!perfil) {
+      throw new NotFoundException(`Perfil con ID ${id} no encontrado`);
+    }
+    return perfil;
+  }
+
+  async updatePerfil(
+    id: number,
+    updatePerfilDto: UpdatePerfilDto,
+  ): Promise<Perfil> {
+    const perfil = await this.perfilRepository.findOneBy({ id });
+    if (!perfil) {
+      throw new NotFoundException(`Perfil con ID ${id} no encontrado`);
+    }
+
+    Object.assign(perfil, updatePerfilDto);
+    return await this.perfilRepository.save(perfil);
+  }
+
+  async deletePerfil(id: number): Promise<void> {
+    const perfil = await this.perfilRepository.findOne({
+      where: { id },
+      relations: ['usuarios'],
+    });
+
+    if (!perfil) {
+      throw new NotFoundException(`Perfil con ID ${id} no encontrado`);
+    }
+
+    if (perfil.accesoSistema) {
+      throw new BadRequestException(
+        `No se puede eliminar el perfil con ID ${id} porque tiene acceso al sistema`,
+      );
+    }
+
+    if (perfil.descripcion === 'Administrador') {
+      throw new BadRequestException(
+        `No se puede eliminar el perfil con ID ${id} porque es el perfil de Administrador`,
+      );
+    }
+
+    const usuariosAsociados = await this.usuarioRepository.find({
+      where: { perfil: { id } },
+    });
+
+    if (usuariosAsociados.length > 0) {
+      throw new BadRequestException(
+        `No se puede eliminar el perfil con ID ${id} porque tiene usuarios asociados`,
+      );
+    }
+
+    const result = await this.perfilRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Perfil con ID ${id} no encontrado`);
     }
   }
 }

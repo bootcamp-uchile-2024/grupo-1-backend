@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn,JoinTable } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, JoinTable } from 'typeorm';
 
 @Entity({ name: 'TipoPlantasRecomendadas' })
 export class TipoPlantasRecomendadas {
@@ -11,14 +11,14 @@ export class TipoPlantasRecomendadas {
   @JoinTable({
     name: 'FertilizanteTipoPlantas', // Nombre de la tabla intermedia
     joinColumn: {
-        name: 'idFertilizante', // Nombre de la columna en la tabla intermedia que referencia a ControlPlaga
-        referencedColumnName: 'id', // Columna de ControlPlaga
+      name: 'idFertilizante', // Nombre de la columna en la tabla intermedia que referencia a ControlPlaga
+      referencedColumnName: 'id', // Columna de ControlPlaga
     },
     inverseJoinColumn: {
-        name: 'idTipoPlanta', // Nombre de la columna en la tabla intermedia que referencia a FormaAplicacion
-        referencedColumnName: 'id', // Columna de FormaAplicacion
+      name: 'idTipoPlanta', // Nombre de la columna en la tabla intermedia que referencia a FormaAplicacion
+      referencedColumnName: 'id', // Columna de FormaAplicacion
     },
-})
-suelos: TipoPlantasRecomendadas[];
+  })
+  suelos: TipoPlantasRecomendadas[];
   fertilizantes: any;
 }

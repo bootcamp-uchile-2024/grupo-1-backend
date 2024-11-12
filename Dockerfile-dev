@@ -1,38 +1,22 @@
 FROM node:20.15.1-slim
 
+# Instalar procps para que el comando ps esté disponible
+RUN apt-get update && apt-get install -y procps
+
+# Agrega esta línea al principio del Dockerfile para descargar el script
+ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh /wait-for-it.sh
+RUN chmod +x /wait-for-it.sh
+
 EXPOSE 3000
 
 WORKDIR /app
 
 ENV AMBIENTE=desarrollo
-COPY package*.json /app/
-COPY  ./.eslintrc.js /app/.eslintrc.js
-COPY ./.gitignore /app/.gitignore
-COPY ./.prettierrc /app/.prettierrc
-COPY ./Logo-Green.png /app/Logo-Green.png
-COPY ./nest-cli.json /app/nest-cli.json
-COPY ./README.md /app/README.md
-COPY ./tsconfig.build.json /app/tsconfig.build.json
-COPY ./tsconfig.json /app/tsconfig.json
-COPY ./src /app/src
-COPY ./test /app/test
-COPY ./.env.develop /app/.env.develop
 
+COPY package*.json ./
 RUN npm install
-RUN npm install -g @nestjs/cli
-RUN npm install --save @nestjs/common
-RUN npm install --save @nestjs/core
-RUN npm install --save @nestjs/typeorm typeorm mysql2
-RUN npm install --save @nestjs/config
-RUN npm install --save @nestjs/swagger
-RUN npm install --save class-validator class-transformer
-RUN npm install --save rxjs
-RUN npm install --save express
-RUN npm install --save @nestjs/mapped-types
-RUN npm install --save @nestjs/mapped-types @nestjs/swagger
-RUN npm install --save @nestjs/config @nestjs/core
-RUN npm install --save-dev @types/node
-RUN npm install date-fns
-RUN npm install dayjs
 
+COPY . ./
+
+RUN npm install -g @nestjs/cli
 CMD ["npm", "run", "start:dev"]

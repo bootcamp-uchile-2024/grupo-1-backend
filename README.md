@@ -74,9 +74,9 @@ Ejecuta el siguiente comando
 
 ```bash
 
-docker run --name mysql-prod -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=PlantopiaDB -p 3306:3306 -d mysql:8.0
-docker pull roancamo/plantopia:1.2.0
-docker run -p 7000:7000 -e AMBIENTE=produccion roancamo/plantopia:1.2.0
+docker run --name mysql-prod -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=plantopiaDB -p 3306:3306 -d mysql:8.0
+docker pull cnicolas86/plantopia:1.2.0
+docker run -p 4000:4000 -e AMBIENTE=produccion cnicolas86/plantopia:1.2.0
 
 ```
 
@@ -103,6 +103,7 @@ $ npm run start:prod
 
 Puedes encontrar la documentación completa de la API en el siguiente enlace:
 <https://plantopia.koyeb.app/api/productos>
+<http://13.51.194.39:4000/api>
 
 ## 🌍 Variables de Entorno
 
@@ -112,24 +113,26 @@ Asegúrate de configurar las siguientes variables de entorno antes de ejecutar l
 # Desarrollo
 PUERTO=3000
 AMBIENTE=desarrollo
-VERSION=1.1.0
-DB_HOST=mysql-dev
-DB_PORT=3307
+VERSION=1.2.0
+DB_HOST=mysql
+DB_PORT=3306
+DB_TYPE=mysql
 DB_USERNAME=user_dev
 DB_PASSWORD=password_dev
-DB_DATABASE=PlantopiaDB
+DB_DATABASE=plantopiadb
 ```
 
 ```textplain
 # Produccion
-PUERTO=7000
+PUERTO=4000
 AMBIENTE=produccion
-VERSION=1.1.0
-DB_HOST=mysql-prod
+VERSION=1.2.0
+DB_HOST=mysql
 DB_PORT=3306
-DB_USERNAME=user_dev
-DB_PASSWORD=password_dev
-DB_DATABASE=PlantopiaDB
+DB_TYPE=mysql
+DB_USERNAME=user_prod
+DB_PASSWORD=password_prod
+DB_DATABASE=plantopiadb
 ```
 
 ## 🏛️ Estructura del Proyecto
