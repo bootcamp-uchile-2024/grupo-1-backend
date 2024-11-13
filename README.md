@@ -102,7 +102,6 @@ $ npm run start:prod
 ## 📖 Documentacion API 🌎
 
 Puedes encontrar la documentación completa de la API en el siguiente enlace:
-<https://plantopia.koyeb.app/api/productos>
 <http://13.51.194.39:4000/api>
 
 ## 🌍 Variables de Entorno
