@@ -37,7 +37,7 @@ services:
       - mysql
     command: -url=jdbc:mysql://mysql:3306/PlantopiaDB?allowPublicKeyRetrieval=true&useSSL=false -user=user_prod -password=password_prod -locations=filesystem:/flyway/sql migrate
     volumes:
-      - ./db/migrations:/flyway/sql  # Mapea la carpeta de migraciones
+      - ./migrations:/flyway/sql  # Mapea la carpeta de migraciones
     networks:
       - plantopia-network
     restart: on-failure  # Reinicia Flyway si falla
