@@ -1,6 +1,6 @@
 services:
   plantopia:
-    image: cnicolas86/plantopia:1.2.1
+    image: cnicolas86/plantopia:1.2.0
     platform: linux/amd64
     container_name: plantopia-prod
     ports:
