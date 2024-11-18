@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   plantopia:
     image: cnicolas86/plantopia:1.2.0
@@ -8,9 +6,10 @@ services:
     ports:
       - "4000:4000"
     env_file:
-      - ../.env.productivo # Carga las variables de entorno desde el archivo .env.productivo
+      - ../.env.productivo
     depends_on:
-      - mysql  # Asegúrate de que MySQL esté listo antes de levantar la app
+      - mysql
+      - flyway
     networks:
       - plantopia-network
 
@@ -25,10 +24,29 @@ services:
       MYSQL_USER: user_prod
       MYSQL_PASSWORD: password_prod
     volumes:
-      - ./db:/var/lib/mysql
+      - mysql-data:/var/lib/mysql
+    networks:
+      - plantopia-network
+
+  flyway:
+    image: flyway/flyway:10.20.1-alpine
+    volumes:
+      - ./scripts:/flyway/sql
+    environment:
+      HOST: mysql-prod
+      PORT: 3306
+      DB_NAME: PlantopiaDB
+      DB_USER: user_prod
+      DB_PASS: password_prod
+    command: -url=jdbc:mysql://mysql:3306/PlantopiaDB -user=user_prod -password=password_prod -connectRetries=60 migrate
+    depends_on:
+      - mysql
     networks:
       - plantopia-network
 
 networks:
   plantopia-network:
     driver: bridge
+
+volumes:
+  mysql-data:
