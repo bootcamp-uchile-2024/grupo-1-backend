@@ -34,6 +34,22 @@ services:
     networks:
       - plantopiadev-network
 
+  flyway:
+    image: flyway/flyway:10.20.1-alpine
+    volumes:
+      - ./scripts:/flyway/sql
+    environment:
+      HOST: mysql-dev
+      PORT: 3306
+      DB_NAME: plantopiadb
+      DB_USER: user_dev
+      DB_PASS: password_dev
+    command: -url=jdbc:mysql://mysql:3306/plantopiadb -user=user_dev -password=password_dev -connectRetries=60 migrate
+    depends_on:
+      - mysql
+    networks:
+      - plantopiadev-network
+
 networks:
   plantopiadev-network:
     driver: bridge
