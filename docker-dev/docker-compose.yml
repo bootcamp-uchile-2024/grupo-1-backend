@@ -4,7 +4,7 @@ services:
     user: root
     working_dir: /app
     env_file:
-      - ../.env.develop
+      - .env.develop
     ports:
       - "3000:${PUERTO}"
     volumes:
