@@ -1,36 +1,32 @@
 services:
-  plantopia:
-    build:
-      context: ..
-      dockerfile: Dockerfile-dev
-    container_name: plantopia-dev
-    ports:
-      - "3000:3000"
-    volumes:
-      - ../src:/app/src
+  desarollo:
+    image: node:22-alpine3.19
+    user: root
+    working_dir: /app
     env_file:
       - ../.env.develop
-    environment:
-      - AMBIENTE=desarrollo
-      - PATH=/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin
-    command: sh -c "/wait-for-it.sh mysql:3307 -- npm run start:dev"
-    networks:
-      - plantopiadev-network
+    ports:
+      - "3000:${PUERTO}"
+    volumes:
+      - ../:/app
+    command: npm run start:dev
     depends_on:
       - mysql
-
+      - flyway
+    networks:
+      - plantopiadev-network
   mysql:
     image: mysql:8.0
-    container_name: mysql-dev
+    container_name: mysql
     ports:
-      - "3307:3306"  # 3307 es el puerto local, 3306 es el puerto dentro del contenedor
+      - "3307:${DB_PORT}"  # 3307 es el puerto local, DB_PORT ES EL DEL CONTENEDOR
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: plantopiadb
-      MYSQL_USER: user_dev
-      MYSQL_PASSWORD: password_dev
+      MYSQL_ROOT_PASSWORD: ${DB_PASS_ROOT}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - mysql-data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
     networks:
       - plantopiadev-network
 
@@ -39,12 +35,12 @@ services:
     volumes:
       - ./scripts:/flyway/sql
     environment:
-      HOST: mysql-dev
-      PORT: 3306
-      DB_NAME: plantopiadb
-      DB_USER: user_dev
-      DB_PASS: password_dev
-    command: -url=jdbc:mysql://mysql:3306/plantopiadb -user=user_dev -password=password_dev -connectRetries=60 migrate
+      HOST: ${DB_HOST}
+      PORT: ${DB_PORT}
+      DB_NAME: ${DB_DATABASE}
+      DB_USER: ${DB_USERNAME}
+      DB_PASS: ${DB_PASSWORD}
+    command: -url=jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_DATABASE} -user=${DB_USERNAME} -password=${DB_PASSWORD} -connectRetries=5 migrate
     depends_on:
       - mysql
     networks:
@@ -55,4 +51,5 @@ networks:
     driver: bridge
 
 volumes:
-  mysql-data:
+  mysql_data:
+    driver: local

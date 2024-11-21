@@ -407,4 +407,8 @@ export class UsuariosController {
       }
     }
   }
+  @Get('prueba1')
+  async prueba() {
+    return 'Hola mundo';
+  }
 }
