@@ -26,4 +26,4 @@ RUN npm install
 COPY . .
 
 # Ejecuta el proyecto
-CMD ["npm", "run", "start:dev"]
+CMD npm run start:dev
