@@ -1,24 +1,19 @@
 version: '3.8'
 
 services:
-  desarollo:
-    build:
-      context: ..
-      dockerfile: Dockerfile.dev
-    container_name: desarollo
-    user: root
+  api:
+    image: "node:${VERSION_NODE}"
+    command: "npm run start:dev"
+    user: node
     working_dir: /app
-    env_file:
-      - .env.develop
+    environment:
+      - PUERTO_NESTJS=${PUERTO}
     ports:
       - "3000:${PUERTO}"
     volumes:
-      - ../:/app:cached
-      - /app/node_modules
-    command: npm run start:dev
+      - .:/app
     depends_on:
       - mysql
-      - flyway
     networks:
       - plantopiadev-network
 
@@ -26,7 +21,7 @@ services:
     image: mysql:8.0
     container_name: mysql
     ports:
-      - "3307:${DB_PORT}"  # 3307 es el puerto local, DB_PORT ES EL DEL CONTENEDOR
+      - '3307:${DB_PORT}' # 3307 es el puerto local, DB_PORT ES EL DEL CONTENEDOR
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASS_ROOT}
       MYSQL_DATABASE: ${DB_DATABASE}
