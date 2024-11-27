@@ -193,4 +193,14 @@ export class UsuariosService {
       throw new NotFoundException(`Perfil con ID ${id} no encontrado`);
     }
   }
+
+  async findPasswordByEmail(email: string): Promise<Usuario> {
+    const usuario = await this.usuarioRepository.findOneBy({
+      email: email,
+    });
+    if (!usuario) {
+      throw new NotFoundException(`Usuario con email ${email} no encontrado`);
+    }
+    return usuario;
+  }
 }

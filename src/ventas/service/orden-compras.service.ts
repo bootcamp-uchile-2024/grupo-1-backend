@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateOrdenCompraDto } from '../dto/create-orden-compra.dto';
 import { OrdenCompra } from '../entities/orden_compra.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -24,6 +24,15 @@ export class OrdenComprasService {
   async create(
     createOrdenCompraDto: CreateOrdenCompraDto,
   ): Promise<GetOrdenDto> {
+    const carroVigente = await this.buscarCarrito(
+      createOrdenCompraDto.emailComprador,
+      createOrdenCompraDto.idUsuario,
+    );
+    if (carroVigente && carroVigente.length > 0) {
+      throw new BadRequestException(
+        'Ya existe carrito creado para el usuario o email',
+      );
+    }
     const carrito = await VentaMappers.dtotoEntityOrden(createOrdenCompraDto);
     const carritoGuardado = await this.ordencompraRepository.save(carrito);
     return VentaMappers.entityToDtoOrden(carritoGuardado);
@@ -41,13 +50,21 @@ export class OrdenComprasService {
     emailComprador: string,
     idUsuario: number,
   ): Promise<GetOrdenCompraConDetalleDto[]> {
+    let whereCondition = [];
+
+    if (idUsuario) {
+      whereCondition.push({ idUsuario, estado: EstadoOrden.CREADA });
+    }
+    if (emailComprador) {
+      whereCondition.push({ emailComprador, estado: EstadoOrden.CREADA });
+    }
+
     const ordenCompra = await this.ordencompraRepository.find({
-      where: [
-        { idUsuario: idUsuario, estado: EstadoOrden.CREADA },
-        { emailComprador: emailComprador, estado: EstadoOrden.CREADA },
-      ],
+      where:
+        whereCondition.length > 1 ? { $or: whereCondition } : whereCondition[0],
       relations: ['detallesOrden'],
     });
+
     return ordenCompra.map((orden) => VentaMappers.buscarOrden(orden));
   }
 }

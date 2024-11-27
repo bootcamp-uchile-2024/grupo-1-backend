@@ -29,6 +29,7 @@ import { Usuario } from '../entities/usuario.entity';
 import { Perfil } from '../entities/perfil.entity';
 import { UpdatePerfilDto } from '../dto/update-perfil.dto';
 import { CreatePerfilDto } from '../dto/create-perfil.dto';
+import { ValidaForamteEmailPipe } from 'src/comunes/pipes/validaFormatoEmail.pipe';
 
 @ApiTags('usuarios')
 @Controller('usuarios')
@@ -404,6 +405,64 @@ export class UsuariosController {
           },
           HttpStatus.INTERNAL_SERVER_ERROR,
         );
+      }
+    }
+  }
+
+  /************************************ */
+
+  @Get('findPasswordByEmail/:email')
+  @ApiOperation({
+    summary: 'HU010-Recuperar Clave por Email',
+    description:
+      'Devuelve clave usuario registrado de un usuario específico por su email',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Clave recuperada',
+    type: Usuario,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Usuario no encontrado',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Error interno del servidor',
+  })
+  @ApiParam({
+    name: 'email',
+    description: 'email',
+    required: true,
+  })
+  @UsePipes(ValidaForamteEmailPipe) // Aplicar el Pipe de validación
+  async findPasswordByEmail(
+    @Param('email') email: string,
+    @Res() res: Response,
+  ) {
+    {
+      try {
+        let usuario = await this.usuariosService.findPasswordByEmail(email);
+
+        if (!usuario) {
+          return res
+            .status(HttpStatus.NOT_FOUND)
+            .json({ message: 'Usuario no encontrado' });
+        }
+
+        res.status(HttpStatus.OK).json(usuario.clave);
+      } catch (error) {
+        if (error instanceof NotFoundException) {
+          res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+        } else {
+          throw new HttpException(
+            {
+              status: HttpStatus.INTERNAL_SERVER_ERROR,
+              error: 'Error al obtener el usuario.',
+            },
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          );
+        }
       }
     }
   }

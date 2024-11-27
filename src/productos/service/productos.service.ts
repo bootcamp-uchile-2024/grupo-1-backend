@@ -1,6 +1,8 @@
 import {
+  BadRequestException,
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -31,6 +33,11 @@ import { UpdateMaceteroDto } from '../dto/update-macetero.dto';
 import { UpdatePlantaDto } from '../dto/update-planta.dto';
 import { CreateSustratoDto } from '../dto/create-sustrato.dto';
 import { UpdateSustratoDto } from '../dto/update-sustrato.dto';
+import * as fsPromises from 'fs/promises';
+import * as path from 'path';
+import * as fs from 'fs';
+import { v4 as uuidv4 } from 'uuid';
+import { join } from 'path';
 @Injectable()
 export class ProductosService {
   productos: Producto[] = [];
@@ -63,6 +70,8 @@ export class ProductosService {
     private imagenProductoRepository: Repository<ImagenProducto>,
     @InjectRepository(Macetero)
     private maceteroRepository: Repository<Macetero>,
+    //private readonly imagePath: string,
+    @Inject('IMAGE_PATH') private readonly imagePath: string, // Token registrado
   ) {}
   // METODOS DE CATEGORIA
   async createCategoria(
@@ -72,6 +81,104 @@ export class ProductosService {
     return await this.categoriaRepository.save(nuevaCategoria);
   }
 
+  async addImageToProduct(
+    productId: number,
+    imageBase64: string,
+  ): Promise<Producto> {
+    const producto = await this.productoRepository.findOne({
+      where: { id: productId },
+      relations: ['imagenes'],
+    });
+    if (!producto) {
+      throw new NotFoundException('Producto no encontrado');
+    }
+    const imageBuffer = Buffer.from(imageBase64, 'base64');
+    const imageName = `${productId}-${Date.now()}.jpg`;
+    const fullImagePath = path.join(this.imagePath, imageName);
+    await fsPromises.mkdir(this.imagePath, { recursive: true });
+    await fsPromises.writeFile(fullImagePath, imageBuffer);
+    const nuevaImagen = this.imagenProductoRepository.create({
+      urlImagen: `/images/${imageName}`,
+      producto: producto,
+    });
+    await this.imagenProductoRepository.save(nuevaImagen);
+    producto.imagenes.push(nuevaImagen);
+    return await this.productoRepository.save(producto);
+  }
+
+  async editImageForProduct(
+    productId: number,
+    imageId: number,
+    imageBase64: string,
+  ): Promise<Producto> {
+    const producto = await this.productoRepository.findOne({
+      where: { id: productId },
+      relations: ['imagenes'],
+    });
+
+    if (!producto) {
+      throw new NotFoundException('Producto no encontrado');
+    }
+    const imagenExistente = producto.imagenes.find(
+      (img) => img.id === +imageId,
+    );
+    if (!imagenExistente) {
+      throw new NotFoundException('Imagen no encontrada');
+    }
+    const imageBuffer = Buffer.from(imageBase64, 'base64');
+    const imageName = `${productId}-${Date.now()}.jpg`;
+    const fullImagePath = path.join(
+      __dirname,
+      '..',
+      'public',
+      'images',
+      imageName,
+    );
+    await fsPromises.mkdir(path.dirname(fullImagePath), { recursive: true });
+    await fsPromises.writeFile(fullImagePath, imageBuffer);
+    imagenExistente.urlImagen = `/images/${imageName}`;
+    await this.imagenProductoRepository.save(imagenExistente);
+    return this.productoRepository.save(producto);
+  }
+
+  async deleteImageFromProduct(
+    productId: number,
+    imageId: number,
+  ): Promise<Producto> {
+    const producto = await this.productoRepository.findOne({
+      where: { id: productId },
+      relations: ['imagenes'],
+    });
+    if (!producto) {
+      throw new NotFoundException('Producto no encontrado');
+    }
+    const imagenExistente = producto.imagenes.find(
+      (img) => img.id === +imageId,
+    );
+    if (!imagenExistente) {
+      throw new NotFoundException('Imagen no encontrada');
+    }
+    if (!imagenExistente.urlImagen.startsWith('http')) {
+      const imagePath = path.join(
+        __dirname,
+        '..',
+        'public',
+        imagenExistente.urlImagen,
+      );
+      try {
+        await fsPromises.unlink(imagePath);
+        console.log('Imagen eliminada del sistema de archivos:', imagePath);
+      } catch (err) {
+        console.error(
+          'Error al eliminar la imagen del sistema de archivos:',
+          err,
+        );
+      }
+    }
+    await this.imagenProductoRepository.remove(imagenExistente);
+    producto.imagenes = producto.imagenes.filter((img) => img.id !== +imageId);
+    return await this.productoRepository.save(producto);
+  }
   async updateCategoria(
     id: number,
     updateCategoriaDto: UpdateCategoriaDto,
@@ -83,7 +190,6 @@ export class ProductosService {
     Object.assign(categoria, updateCategoriaDto);
     return await this.categoriaRepository.save(categoria);
   }
-
   async deleteCategoria(id: number): Promise<void> {
     const result = await this.categoriaRepository.delete(id);
     if (result.affected === 0) {
@@ -367,12 +473,30 @@ export class ProductosService {
     page: number,
     size: number,
   ): Promise<{ data: Planta[]; total: number }> {
-    return this.gestionPaginacion(this.plantaRepository, page, size, [
-      'producto',
-      'producto.categoria',
-      'producto.imagenes',
-    ]);
+    const queryBuilder = this.plantaRepository.createQueryBuilder('planta');
+
+    // Añadir condición para filtrar por 'activo = 1' en la entidad Producto
+    queryBuilder
+      .innerJoinAndSelect('planta.producto', 'producto')
+      .where('producto.activo = :activo', { activo: 1 });
+
+    // Añadir las relaciones adicionales
+    queryBuilder.leftJoinAndSelect('producto.categoria', 'categoria');
+    queryBuilder.leftJoinAndSelect('producto.imagenes', 'imagenes');
+
+    // Paginación
+    queryBuilder.skip((page - 1) * size);
+    queryBuilder.take(size);
+
+    // Ejecutar la consulta y contar los resultados
+    const [result, total] = await queryBuilder.getManyAndCount();
+
+    return {
+      data: result,
+      total,
+    };
   }
+
   async findPlantaById(id: number): Promise<Planta> {
     const planta = await this.plantaRepository.findOne({
       where: { id },
@@ -496,11 +620,28 @@ export class ProductosService {
     page: number,
     size: number,
   ): Promise<{ data: Macetero[]; total: number }> {
-    return this.gestionPaginacion(this.maceteroRepository, page, size, [
-      'producto',
-      'producto.categoria',
-      'producto.imagenes',
-    ]);
+    const queryBuilder = this.maceteroRepository.createQueryBuilder('macetero');
+
+    // Añadir condición para filtrar por 'activo = 1' en la entidad Producto
+    queryBuilder
+      .innerJoinAndSelect('macetero.producto', 'producto')
+      .where('producto.activo = :activo', { activo: 1 });
+
+    // Añadir las relaciones adicionales
+    queryBuilder.leftJoinAndSelect('producto.categoria', 'categoria');
+    queryBuilder.leftJoinAndSelect('producto.imagenes', 'imagenes');
+
+    // Paginación
+    queryBuilder.skip((page - 1) * size);
+    queryBuilder.take(size);
+
+    // Ejecutar la consulta y contar los resultados
+    const [result, total] = await queryBuilder.getManyAndCount();
+
+    return {
+      data: result,
+      total,
+    };
   }
 
   async findMaceteroById(id: number): Promise<Macetero> {
@@ -580,11 +721,24 @@ export class ProductosService {
     page: number,
     size: number,
   ): Promise<{ data: Fertilizante[]; total: number }> {
-    const [result, total] = await this.fertilizanteRepository.findAndCount({
-      relations: ['producto', 'producto.categoria', 'producto.imagenes'],
-      skip: (page - 1) * size,
-      take: size,
-    });
+    const queryBuilder =
+      this.fertilizanteRepository.createQueryBuilder('fertilizante');
+
+    // Añadir condición para filtrar por 'activo = 1' en la entidad Producto
+    queryBuilder
+      .innerJoinAndSelect('fertilizante.producto', 'producto')
+      .where('producto.activo = :activo', { activo: 1 });
+
+    // Añadir las relaciones adicionales
+    queryBuilder.leftJoinAndSelect('producto.categoria', 'categoria');
+    queryBuilder.leftJoinAndSelect('producto.imagenes', 'imagenes');
+
+    // Paginación
+    queryBuilder.skip((page - 1) * size);
+    queryBuilder.take(size);
+
+    // Ejecutar la consulta y contar los resultados
+    const [result, total] = await queryBuilder.getManyAndCount();
 
     return {
       data: result,
@@ -640,6 +794,7 @@ export class ProductosService {
       imagenProducto: createSustratoDto.imagenProducto,
       precioNormal: createSustratoDto.precioNormal,
       stock: createSustratoDto.stock,
+      activo: 1,
     };
     const producto = await this.createProducto(createProductoDto);
 
@@ -704,15 +859,122 @@ export class ProductosService {
     size: number,
     relations: string[] = [],
   ): Promise<{ data: T[]; total: number }> {
-    const [result, total] = await repository.findAndCount({
-      relations,
-      skip: (page - 1) * size,
-      take: size,
+    const queryBuilder = repository.createQueryBuilder('producto');
+
+    // Añadir la condición donde 'activo' sea 1
+    queryBuilder.where('producto.activo = :activo', { activo: 1 });
+
+    // Añadir relaciones si las tienes
+    relations.forEach((relation) => {
+      queryBuilder.leftJoinAndSelect(`producto.${relation}`, relation);
     });
+
+    // Paginación
+    queryBuilder.skip((page - 1) * size);
+    queryBuilder.take(size);
+
+    const [result, total] = await queryBuilder.getManyAndCount();
 
     return {
       data: result,
       total,
     };
+  }
+
+  async removeImageFromProduct(
+    productId: number,
+    imageId: number, // Añadimos el parámetro imageId
+  ): Promise<Producto> {
+    const producto = await this.productoRepository.findOne({
+      where: { id: productId },
+      relations: ['imagenes'],
+    });
+
+    if (!producto) {
+      throw new NotFoundException('Producto no encontrado');
+    }
+    const imagenExistente = producto.imagenes.find((img) => img.id === imageId);
+
+    if (!imagenExistente) {
+      throw new NotFoundException('Imagen no encontrada');
+    }
+    const imagePath = path.join(
+      __dirname,
+      '..',
+      'public',
+      imagenExistente.urlImagen,
+    );
+    try {
+      await fsPromises.unlink(imagePath); // Eliminar archivo
+    } catch (err) {
+      console.error('Error al eliminar la imagen:', err);
+      throw new Error('Error al eliminar la imagen del sistema de archivos');
+    }
+    await this.imagenProductoRepository.remove(imagenExistente);
+    producto.imagenes = producto.imagenes.filter((img) => img.id !== imageId);
+    return this.productoRepository.save(producto);
+  }
+
+  /**
+   * Carga una imagen y la asocia al producto en la base de datos.
+   * @param productId ID del producto al cual se asocia la imagen.
+   * @param file Archivo de imagen subido.
+   * @returns Producto con la nueva imagen asociada.
+   */
+  async uploadProductImage(
+    productId: number,
+    file: Express.Multer.File,
+  ): Promise<Producto> {
+    if (!file) {
+      throw new BadRequestException('No se ha recibido el archivo.');
+    }
+
+    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    if (!allowedMimeTypes.includes(file.mimetype)) {
+      throw new BadRequestException('El archivo no es una imagen válida.');
+    }
+
+    const producto = await this.productoRepository.findOne({
+      where: { id: productId },
+      relations: ['imagenes'],
+    });
+    if (!producto) {
+      throw new NotFoundException('Producto no encontrado.');
+    }
+    const staticDir = path.join(__dirname, '..', '..', 'static');
+    if (!fs.existsSync(staticDir)) {
+      fs.mkdirSync(staticDir, { recursive: true });
+    }
+    const fileName = `${Date.now()}-${file.originalname}`;
+    const newFilePath = path.join(staticDir, fileName);
+    fs.renameSync(file.path, newFilePath);
+    const urlImagen = `/static/${fileName}`;
+    const nuevaImagen = this.imagenProductoRepository.create({
+      producto,
+      urlImagen,
+    });
+    await this.imagenProductoRepository.save(nuevaImagen);
+    return await this.productoRepository.findOne({
+      where: { id: productId },
+      relations: ['imagenes'],
+    });
+  }
+
+  async habilitarProducto(id: number): Promise<Producto> {
+    const producto = await this.productoRepository.findOne({ where: { id } });
+    if (!producto) {
+      throw new NotFoundException(`Producto con ID ${id} no encontrado.`);
+    }
+    producto.activo = 1;
+    return this.productoRepository.save(producto);
+  }
+
+  async deshabilitarProducto(id: number): Promise<Producto> {
+    const producto = await this.productoRepository.findOne({ where: { id } });
+    if (!producto) {
+      throw new NotFoundException(`Producto con ID ${id} no encontrado.`);
+    }
+    producto.activo = 0;
+    return this.productoRepository.save(producto);
   }
 }

@@ -10,7 +10,9 @@ import { EquipoModule } from './equipo/equipo.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { GlobalMiddlewareMiddleware } from './comunes/middleware/global.middleware.middleware';
-
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { MulterModule } from '@nestjs/platform-express/multer';
 @Module({
   imports: [
     UsuariosModule,
@@ -18,7 +20,6 @@ import { GlobalMiddlewareMiddleware } from './comunes/middleware/global.middlewa
     DespachosModule,
     VentasModule,
     EquipoModule,
-    // Configuración global de .env según el entorno (producción/desarrollo)
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath:
@@ -26,23 +27,26 @@ import { GlobalMiddlewareMiddleware } from './comunes/middleware/global.middlewa
           ? '.env.productivo'
           : '.env.develop',
     }),
-    // Conexión a la base de datos
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        type: 'mysql',
-        host: configService.get<string>('DB_HOST'),
-        port: configService.get<number>('DB_PORT'),
-        username: configService.get<string>('DB_USERNAME'),
-        password: configService.get<string>('DB_PASSWORD'),
-        database: configService.get<string>('DB_DATABASE'),
-        autoLoadEntities: true,
-        entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-        //       synchronize: process.env.AMBIENTE !== 'produccion', // No sincronizar en producción
-        synchronize: false, // No sincronizar en producción
-        logging: true,
-      }),
-      inject: [ConfigService],
+
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/static',
+    }),
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: process.env.DB_HOST,
+      port: parseInt(process.env.DB_PORT, 10),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_DATABASE,
+      autoLoadEntities: true,
+      entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+      synchronize: false,
+      logging: true,
+    }),
+    MulterModule.register({
+      dest: './uploads',
+      limits: { fileSize: 10 * 1024 * 1024 }, // Limitar el tamaño del archivo a 10MB
     }),
   ],
   controllers: [AppController],

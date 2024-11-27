@@ -16,6 +16,7 @@ import { ProductosService } from './service/productos.service';
 import { Categoria } from './entities/categoria.entity';
 import { ImagenProducto } from './entities/imagen_producto.entity';
 import { Macetero } from './entities/macetero.entity';
+import * as path from 'path';
 
 @Module({
   imports: [
@@ -37,7 +38,13 @@ import { Macetero } from './entities/macetero.entity';
     ]),
   ],
   controllers: [ProductosController],
-  providers: [ProductosService],
+  providers: [
+    ProductosService,
+    {
+      provide: 'IMAGE_PATH', // Un token para identificar el valor
+      useValue: path.join(__dirname, '..', 'public', 'images'),
+    },
+  ],
   exports: [ProductosService], // Exporta el ProductosService
 })
 export class ProductosModule {}

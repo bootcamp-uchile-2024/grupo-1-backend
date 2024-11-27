@@ -4,15 +4,18 @@ import { AppModule } from './app.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { ProductosModule } from './productos/productos.module';
 import { DespachosModule } from './despachos/despachos.module';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { LogRespuestasInterceptor } from './comunes/interceptor/log-respuestas/log-respuestas.interceptor';
 import { GlobalFilter } from './comunes/filter/global.filter';
 import * as packageJson from '../package.json';
 import { ConfigService } from '@nestjs/config';
 import { VentasModule } from './ventas/ventas.module';
+import { join, resolve } from 'path';
+import * as express from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
   const configService = app.get(ConfigService);
   const puerto = configService.get<number>('PUERTO');
   const ambiente = configService.get<string>('AMBIENTE');
@@ -88,7 +91,16 @@ async function bootstrap() {
   });
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new GlobalFilter());
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
+  console.log(
+    'Ruta a los archivos estáticos:',
+    join(__dirname, '..', 'uploads'),
+  );
+  const uploadsPath = resolve(__dirname, '..', 'uploads');
+  app.use('/static', express.static(uploadsPath));
   await app.listen(puerto);
+  console.log('Ruta a los archivos estáticos:', uploadsPath);
   console.log(
     'Aplicación escuchando en http://localhost:' +
       puerto +
@@ -97,11 +109,5 @@ async function bootstrap() {
       ' con version: ' +
       version,
   );
-
-  console.log(process.env.DB_PORT);
-  console.log(process.env.DB_HOST);
-  console.log(process.env.DB_USERNAME);
-  console.log(process.env.DB_PASSWORD);
-  console.log(process.env.DB_DATABASE);
 }
 bootstrap();

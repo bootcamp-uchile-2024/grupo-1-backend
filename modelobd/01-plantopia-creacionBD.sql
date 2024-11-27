@@ -151,6 +151,7 @@ CREATE TABLE Producto (
   FOREIGN KEY (idCategoria) REFERENCES Categoria(id)
 );
 
+
 CREATE TABLE Planta (
   id INT AUTO_INCREMENT PRIMARY KEY,
   idProducto INT UNIQUE NOT NULL,

@@ -11,34 +11,24 @@ export class ValidaEmailIdPipe implements PipeTransform {
   constructor(private readonly usuarioService: UsuariosService) {}
   async transform(value: CreateOrdenCompraDto, { metatype }: ArgumentMetadata) {
     const { emailComprador, idUsuario } = value;
+    console.log('el id es;a: ', idUsuario);
     if (Number(idUsuario) == 0) {
       if (emailComprador && !this.isValidEmail(emailComprador)) {
-        throw new BadRequestException('Email o id de usuario no válido.');
+        throw new BadRequestException('Email o id de usuario no válido1.');
       } else {
         value.idUsuario = null;
       }
-    } else {
-      if (idUsuario) {
-        const usuario = await this.usuarioService.findOneOC(idUsuario);
-        if (!usuario) {
-          if (!emailComprador) {
-            throw new BadRequestException('Email o id de usuario no válido.');
-          } else {
-            if (this.isValidEmail(emailComprador)) {
-              value.idUsuario = null; // Permite que siga solo con email
-            } else {
-              throw new BadRequestException('Email o id de usuario no válido.');
-            }
-          }
-        } else {
-          value.emailComprador = '';
-        }
+    }
+    if (Number(idUsuario) > 0) {
+      const usuario = await this.usuarioService.findOneOC(idUsuario);
+      console.log(usuario);
+      if (!usuario) {
+        throw new BadRequestException('Email o id de usuario no válidoA.');
       } else {
-        if (emailComprador && !this.isValidEmail(emailComprador)) {
-          throw new BadRequestException('El email proporcionado no es válido');
-        }
+        value.emailComprador = null;
       }
     }
+
     return value;
   }
   private isValidEmail(email: string): boolean {

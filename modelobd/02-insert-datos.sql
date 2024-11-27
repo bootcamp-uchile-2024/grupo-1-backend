@@ -521,3 +521,5 @@ INSERT INTO PlantaEstacion (idPlanta,idEstacion) VALUES
 (8,1),
 (9,1),
 (10,1);
+ALTER TABLE Producto
+ADD COLUMN activo INT DEFAULT 1;

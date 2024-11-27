@@ -12,4 +12,5 @@ export class VerProductosDto {
   public valoracion: number;
   public cantidadVentas: number;
   public codigoProducto: string;
+  public activo: number;
 }

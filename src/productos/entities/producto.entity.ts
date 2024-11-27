@@ -46,6 +46,8 @@ export class Producto {
   @ManyToOne(() => Categoria, (categoria) => categoria.productos)
   @JoinColumn({ name: 'idCategoria' })
   categoria: Categoria;
+  @Column({ type: 'int', default: 1 })
+  activo: number; // Campo activo (0 para deshabilitado, 1 para habilitado)
 
   @OneToOne(() => Planta, (planta) => planta.producto)
   planta: Planta;

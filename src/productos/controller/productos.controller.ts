@@ -14,6 +14,10 @@ import {
   NotFoundException,
   ParseIntPipe,
   Put,
+  UploadedFile,
+  UseInterceptors,
+  Patch,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -22,6 +26,7 @@ import {
   ApiBody,
   ApiQuery,
   ApiParam,
+  ApiConsumes,
 } from '@nestjs/swagger';
 import { Response } from 'express';
 import { ProductosService } from '../service/productos.service';
@@ -42,7 +47,9 @@ import { Planta } from '../entities/planta.entity';
 import { UpdateSustratoDto } from '../dto/update-sustrato.dto';
 import { Sustrato } from '../entities/sustrato.entity';
 import { CreateSustratoDto } from '../dto/create-sustrato.dto';
-
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 @ApiTags('productos')
 @Controller('productos')
 export class ProductosController {
@@ -147,37 +154,7 @@ export class ProductosController {
       );
     }
   }
-  @Delete('/delete/:id')
-  @ApiOperation({
-    summary: 'Eliminar un producto',
-    description: 'Elimina un producto existente por su ID',
-  })
-  @ApiResponse({ status: 200, description: 'Producto eliminado con éxito.' })
-  @ApiResponse({ status: 404, description: 'Producto no encontrado.' })
-  @ApiParam({ name: 'id', description: 'ID del producto', required: true })
-  async deleteProducto(
-    @Param('id', ParseIntPipe) id: number,
-    @Res() res: Response,
-  ) {
-    try {
-      await this.productosService.deleteProducto(id);
-      res
-        .status(HttpStatus.OK)
-        .json({ message: 'Producto eliminado con éxito.' });
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
-      } else {
-        throw new HttpException(
-          {
-            status: HttpStatus.BAD_REQUEST,
-            error: 'Datos inválidos.',
-          },
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-    }
-  }
+
   @Put('/update/:id')
   @ApiOperation({
     summary: 'Actualizar un producto',
@@ -392,38 +369,6 @@ export class ProductosController {
     }
   }
 
-  @Delete('categorias/delete/:id')
-  @ApiOperation({
-    summary: 'Eliminar una categoría',
-    description: 'Elimina una categoría existente por su ID',
-  })
-  @ApiResponse({ status: 200, description: 'Categoría eliminada con éxito.' })
-  @ApiResponse({ status: 404, description: 'Categoría no encontrada.' })
-  @ApiParam({ name: 'id', description: 'ID de la categoría', required: true })
-  async deleteCategoria(
-    @Param('id', ParseIntPipe) id: number,
-    @Res() res: Response,
-  ) {
-    try {
-      await this.productosService.deleteCategoria(id);
-      res
-        .status(HttpStatus.OK)
-        .json({ message: 'Categoría eliminada con éxito.' });
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
-      } else {
-        throw new HttpException(
-          {
-            status: HttpStatus.BAD_REQUEST,
-            error: 'Datos inválidos.',
-          },
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-    }
-  }
-
   @Post('plantas/create')
   @ApiOperation({
     summary: 'Crear una nueva planta',
@@ -556,37 +501,6 @@ export class ProductosController {
       }
     }
   }
-  @Delete('plantas/delete/:id')
-  @ApiOperation({
-    summary: 'Eliminar una planta',
-    description: 'Elimina una planta existente por su ID',
-  })
-  @ApiResponse({ status: 200, description: 'Planta eliminada con éxito.' })
-  @ApiResponse({ status: 404, description: 'Planta no encontrada.' })
-  @ApiParam({ name: 'id', description: 'ID de la planta', required: true })
-  async deletePlanta(
-    @Param('id', ParseIntPipe) id: number,
-    @Res() res: Response,
-  ) {
-    try {
-      await this.productosService.deletePlanta(id);
-      res
-        .status(HttpStatus.OK)
-        .json({ message: 'Planta eliminada con éxito.' });
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
-      } else {
-        throw new HttpException(
-          {
-            status: HttpStatus.BAD_REQUEST,
-            error: 'Datos inválidos.',
-          },
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-    }
-  }
 
   @Post('maceteros/create')
   @ApiOperation({
@@ -687,37 +601,7 @@ export class ProductosController {
       );
     }
   }
-  @Delete('maceteros/delete/:id')
-  @ApiOperation({
-    summary: 'Eliminar un macetero',
-    description: 'Elimina un macetero existente por su ID',
-  })
-  @ApiResponse({ status: 200, description: 'Macetero eliminado con éxito.' })
-  @ApiResponse({ status: 404, description: 'Macetero no encontrado.' })
-  @ApiParam({ name: 'id', description: 'ID del macetero', required: true })
-  async deleteMacetero(
-    @Param('id', ParseIntPipe) id: number,
-    @Res() res: Response,
-  ) {
-    try {
-      await this.productosService.deleteMacetero(id);
-      res
-        .status(HttpStatus.OK)
-        .json({ message: 'Macetero eliminado con éxito.' });
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
-      } else {
-        throw new HttpException(
-          {
-            status: HttpStatus.BAD_REQUEST,
-            error: 'Datos inválidos.',
-          },
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-    }
-  }
+
   @Put('maceteros/update/:id')
   @ApiOperation({
     summary: 'Actualizar un macetero',
@@ -895,40 +779,6 @@ export class ProductosController {
     }
   }
 
-  @Delete('fertilizantes/delete/:id')
-  @ApiOperation({
-    summary: 'Eliminar un fertilizante',
-    description: 'Elimina un fertilizante existente por su ID',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Fertilizante eliminado con éxito.',
-  })
-  @ApiResponse({ status: 404, description: 'Fertilizante no encontrado.' })
-  @ApiParam({ name: 'id', description: 'ID del fertilizante', required: true })
-  async deleteFertilizante(
-    @Param('id', ParseIntPipe) id: number,
-    @Res() res: Response,
-  ) {
-    try {
-      await this.productosService.deleteFertilizante(id);
-      res
-        .status(HttpStatus.OK)
-        .json({ message: 'Fertilizante eliminado con éxito.' });
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
-      } else {
-        throw new HttpException(
-          {
-            status: HttpStatus.BAD_REQUEST,
-            error: 'Datos inválidos.',
-          },
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-    }
-  }
   @Post('sustratos/create')
   @ApiOperation({
     summary: 'Crear un nuevo sustrato',
@@ -1069,35 +919,267 @@ export class ProductosController {
     }
   }
 
-  @Delete('sustratos/delete/:id')
-  @ApiOperation({
-    summary: 'Eliminar un sustrato',
-    description: 'Elimina un sustrato existente por su ID',
+  @Post('add-image/:id')
+  @ApiParam({
+    name: 'id',
+    type: Number,
+    description: 'ID del producto al que se le añadirá la imagen',
+    example: 1,
   })
-  @ApiResponse({ status: 200, description: 'Sustrato eliminado con éxito.' })
-  @ApiResponse({ status: 404, description: 'Sustrato no encontrado.' })
-  @ApiParam({ name: 'id', description: 'ID del sustrato', required: true })
-  async deleteSustrato(
-    @Param('id', ParseIntPipe) id: number,
+  @ApiBody({
+    description: 'Base64 de la imagen que será añadida al producto',
+    schema: {
+      type: 'object',
+      properties: {
+        imageBase64: {
+          type: 'string',
+          description: 'Cadena codificada en base64 que representa la imagen',
+          example: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAAAAAAAD...',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'La imagen ha sido añadida correctamente',
+    schema: {
+      example: {
+        message: 'Imagen añadida correctamente',
+        producto: {
+          id: 1,
+          nombre: 'Ejemplo de Producto',
+          imagenes: [
+            {
+              id: 1,
+              ruta: '/images/1-1698352365146.jpg',
+            },
+          ],
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Producto no encontrado',
+    schema: {
+      example: {
+        message: 'Producto no encontrado',
+      },
+    },
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'Error al agregar la imagen',
+    schema: {
+      example: {
+        message: 'Error al agregar la imagen',
+      },
+    },
+  })
+  async addImage(
+    @Param('id') id: number,
+    @Body('imageBase64') imageBase64: string,
     @Res() res: Response,
   ) {
     try {
-      await this.productosService.deleteSustrato(id);
-      res
-        .status(HttpStatus.OK)
-        .json({ message: 'Sustrato eliminado con éxito.' });
+      const producto = await this.productosService.addImageToProduct(
+        id,
+        imageBase64,
+      );
+      return res.json({ message: 'Imagen añadida correctamente', producto });
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
-      } else {
-        throw new HttpException(
-          {
-            status: HttpStatus.BAD_REQUEST,
-            error: 'Datos inválidos.',
-          },
-          HttpStatus.BAD_REQUEST,
-        );
-      }
+      return res.status(error.status || 500).json({
+        message: error.message || 'Error al agregar la imagen',
+      });
     }
+  }
+
+  @Post('edit-image/:productId/:imageId')
+  @ApiParam({ name: 'productId', description: 'ID del producto' })
+  @ApiParam({
+    name: 'imageId',
+    description: 'ID de la imagen que se quiere editar',
+  })
+  @ApiBody({
+    description: 'Base64 de la nueva imagen que reemplazará a la existente',
+    schema: {
+      type: 'object',
+      properties: {
+        imageBase64: {
+          type: 'string',
+          description: 'Cadena codificada en base64 de la nueva imagen',
+          example: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAAAAAAAD...',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Imagen editada correctamente',
+    schema: {
+      example: {
+        message: 'Imagen editada correctamente',
+        producto: {
+          id: 1,
+          nombre: 'Ejemplo de Producto',
+          imagenes: [
+            {
+              id: 2,
+              urlImagen: '/images/1-1698352365146.jpg',
+            },
+          ],
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Producto o imagen no encontrada',
+  })
+  @Post('edit-image/:productId/:imageId')
+  async editImage(
+    @Param('productId') productId: number,
+    @Param('imageId') imageId: number,
+    @Body('imageBase64') imageBase64: string,
+    @Res() res: Response,
+  ) {
+    try {
+      const producto = await this.productosService.editImageForProduct(
+        productId,
+        imageId,
+        imageBase64,
+      );
+      return res.json({
+        message: 'Imagen editada correctamente',
+        producto,
+      });
+    } catch (error) {
+      return res.status(error.status || 500).json({
+        message: error.message || 'Error al editar la imagen',
+      });
+    }
+  }
+
+  @Delete('delete-image/:productId/:imageId')
+  @ApiParam({ name: 'productId', description: 'ID del producto' })
+  @ApiParam({ name: 'imageId', description: 'ID de la imagen a eliminar' })
+  @ApiResponse({
+    status: 200,
+    description: 'Imagen eliminada correctamente',
+    schema: {
+      example: {
+        message: 'Imagen eliminada correctamente',
+        producto: {
+          id: 1,
+          nombre: 'Ejemplo de Producto',
+          imagenes: [
+            // La imagen eliminada ya no aparecerá en el arreglo
+          ],
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Producto o imagen no encontrada',
+  })
+  async deleteImage(
+    @Param('productId') productId: number,
+    @Param('imageId') imageId: number,
+    @Res() res: Response,
+  ) {
+    try {
+      const producto = await this.productosService.deleteImageFromProduct(
+        productId,
+        imageId,
+      );
+      return res.json({
+        message: 'Imagen eliminada correctamente',
+        producto,
+      });
+    } catch (error) {
+      return res.status(error.status || 500).json({
+        message: error.message || 'Error al eliminar la imagen',
+      });
+    }
+  }
+
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads', // Directorio de destino
+        filename: (req, file, callback) => {
+          const filename = `${Date.now()}-${file.originalname}`;
+          callback(null, filename);
+        },
+      }),
+      limits: { fileSize: 10 * 1024 * 1024 }, // Limitar el tamaño del archivo a 10MB
+      fileFilter: (req, file, callback) => {
+        if (!file.mimetype.match(/image\/*/)) {
+          return 'Solo se permiten imágenes.';
+        }
+        callback(null, true);
+      },
+    }),
+  )
+  @Patch(':id/carga-imagen')
+  @ApiOperation({ summary: 'Subir una imagen para un producto' })
+  @ApiConsumes('multipart/form-data')
+  @ApiResponse({
+    status: 200,
+    description: 'Imagen subida con éxito y asociada al producto.',
+  })
+  @ApiResponse({ status: 400, description: 'Error al subir la imagen.' })
+  @ApiResponse({ status: 404, description: 'Producto no encontrado.' })
+  //@UseInterceptors(FileInterceptor('file')) // Asegúrate de usar 'file' como clave
+  async cargarImagen(
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    if (!file) {
+      console.log('No se recibió archivo');
+      throw new BadRequestException('No se ha recibido el archivo.');
+    }
+    return {
+      message: `Imagen cargada correctamente para el producto con ID ${file}`,
+    };
+  }
+
+  @Patch(':id/habilitar')
+  @ApiOperation({ summary: 'Habilitar un producto' })
+  @ApiParam({
+    name: 'id',
+    description: 'ID del producto que se va a habilitar',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Producto habilitado correctamente',
+    type: Producto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Producto no encontrado',
+  })
+  async habilitar(@Param('id') id: number): Promise<Producto> {
+    return this.productosService.habilitarProducto(id);
+  }
+
+  @Patch(':id/deshabilitar')
+  @ApiOperation({ summary: 'Deshabilitar un producto' })
+  @ApiParam({
+    name: 'id',
+    description: 'ID del producto que se va a deshabilitar',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Producto deshabilitado correctamente',
+    type: Producto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Producto no encontrado',
+  })
+  async deshabilitar(@Param('id') id: number): Promise<Producto> {
+    return this.productosService.deshabilitarProducto(id);
   }
 }

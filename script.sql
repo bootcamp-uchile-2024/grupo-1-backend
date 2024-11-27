@@ -1,4 +1,4 @@
-
+use plantopiadb;
 CREATE TABLE Categoria (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nombreCategoria VARCHAR(255) NOT NULL
@@ -151,7 +151,6 @@ CREATE TABLE Producto (
   FOREIGN KEY (idCategoria) REFERENCES Categoria(id)
 );
 
-
 CREATE TABLE Planta (
   id INT AUTO_INCREMENT PRIMARY KEY,
   idProducto INT UNIQUE NOT NULL,
@@ -242,13 +241,13 @@ CREATE TABLE Usuario (
 );
 CREATE TABLE OrdenCompra (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  emailComprador VARCHAR(255) DEFAULT NULL,
+  emailComprador VARCHAR(255) DEFAULT NULL, 
   fechaOrden DATE,
-  estado varchar(100) NOT NULL,
-  idUsuario INT DEFAULT NULL,
-  FOREIGN KEY (idUsuario) REFERENCES Usuario(id)
+  estado varchar(100) NOT NULL, 
+  idUsuario INT DEFAULT NULL, 
+  FOREIGN KEY (idUsuario) REFERENCES Usuario(id) 
 );
-
+ 
 
 CREATE TABLE Venta (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -617,7 +616,7 @@ INSERT INTO TipoPlantasRecomendadas (descripcion) VALUES
 ('Trepadoras'),
 ('Acuáticas');
 
-
+ 
 
 -- insert FormaMacetero
 INSERT INTO FormaMacetero (descripcion) VALUES
@@ -928,5 +927,3 @@ INSERT INTO PlantaEstacion (idPlanta,idEstacion) VALUES
 (9,1),
 (10,1);
 
-ALTER TABLE Producto
-ADD COLUMN activo INT DEFAULT 1;

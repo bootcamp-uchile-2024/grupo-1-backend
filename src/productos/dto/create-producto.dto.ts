@@ -113,4 +113,16 @@ export class CreateProductoDto {
   @IsNumber({}, { message: 'El ID de la categoría debe ser un número' })
   @IsNotEmpty({ message: 'El ID de la categoría es campo obligatorio' })
   public idCategoria: number;
+  @ApiProperty({
+    name: 'activo',
+    type: Number,
+    description: 'producto activo',
+    example: 1,
+    required: true,
+    minimum: 0,
+  })
+  @IsNumber({}, { message: 'El indicador activo debe ser numero' })
+  @Min(0, { message: 'El indicador activo  es 0 o 1' })
+  @Max(1, { message: 'El indicador activo  es 0 o 1' })
+  public activo: number;
 }

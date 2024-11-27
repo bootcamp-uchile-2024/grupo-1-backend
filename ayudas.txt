@@ -1,0 +1,43 @@
+
+set COMPOSE_DOCKER_CLI_BUILD=0
+set DOCKER_BUILDKIT=0
+docker compose -f "docker-dev/docker-compose.yml" up -d --build
+
+
+    // Configuración global de .env según el entorno (producción/desarrollo)
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath:
+        process.env.AMBIENTE === 'production'
+          ? '.env.productivo'
+          : '.env.develop',
+    }),
+    // Conexión a la base de datos
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        type: 'mysql',
+        host: configService.get<string>('DB_HOST'),
+        port: configService.get<number>('DB_PORT'),
+        username: configService.get<string>('DB_USERNAME'),
+        password: configService.get<string>('DB_PASSWORD'),
+        database: configService.get<string>('DB_DATABASE'),
+        autoLoadEntities: true,
+        entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+        synchronize: false, 
+        logging: true,
+      }),
+      inject: [ConfigService],
+    }),
+
+
+    PUERTO=3000
+AMBIENTE=desarrollo
+VERSION=1.2.0
+DB_HOST=mysql
+DB_PORT=3306
+DB_TYPE=mysql
+DB_USERNAME=user_dev
+DB_PASSWORD=password_dev
+DB_DATABASE=plantopiadb
+*/
