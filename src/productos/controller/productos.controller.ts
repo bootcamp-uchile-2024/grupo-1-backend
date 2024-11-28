@@ -1147,7 +1147,8 @@ export class ProductosController {
       file,
     );
     return {
-      message: `Imagen cargada correctamente para el producto con ID ${file}`,
+      message: `Imagen cargada correctamente para el producto con ID ${id}`,
+      data: producto,
     };
   }
 

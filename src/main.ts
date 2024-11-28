@@ -12,6 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import { VentasModule } from './ventas/ventas.module';
 import { join, resolve } from 'path';
 import * as express from 'express';
+import * as fs from 'fs';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -93,14 +94,15 @@ async function bootstrap() {
   app.useGlobalFilters(new GlobalFilter());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
-  console.log(
-    'Ruta a los archivos estáticos:',
-    join(__dirname, '..', 'uploads'),
-  );
-  const uploadsPath = resolve(__dirname, '..', 'uploads');
-  app.use('/static', express.static(uploadsPath));
+
+  // Asegurarse de que la carpeta uploads exista
+  const uploadsPath = resolve(__dirname, '..', '..', 'uploads');
+  if (!fs.existsSync(uploadsPath)) {
+    fs.mkdirSync(uploadsPath, { recursive: true });
+  }
+  app.use('/uploads', express.static(uploadsPath));
+
   await app.listen(puerto);
-  console.log('Ruta a los archivos estáticos:', uploadsPath);
   console.log(
     'Aplicación escuchando en http://localhost:' +
       puerto +

@@ -26,8 +26,8 @@ import { MulterModule } from '@nestjs/platform-express/multer';
         process.env.AMBIENTE === 'production' ? '.env.productivo' : '.env',
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'uploads'),
-      serveRoot: '/static',
+      rootPath: '/uploads',
+      serveRoot: '/uploads',
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',
@@ -39,7 +39,7 @@ import { MulterModule } from '@nestjs/platform-express/multer';
       autoLoadEntities: false,
       entities: [__dirname + '/../**/*.entity{.ts,.js}'],
       synchronize: false,
-      logging: true,
+      logging: false,
     }),
     MulterModule.register({
       dest: './uploads',

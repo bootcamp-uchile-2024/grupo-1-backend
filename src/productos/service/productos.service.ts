@@ -936,31 +936,31 @@ export class ProductosService {
     if (!allowedMimeTypes.includes(file.mimetype)) {
       throw new BadRequestException('El archivo no es una imagen válida.');
     }
-    console.log('esel id: ', productId);
 
     const producto = await this.productoRepository.findOne({
       where: { id: Number(productId) },
       relations: ['imagenes'],
     });
-    console.log('esel producto: ', producto);
     if (!producto) {
       throw new NotFoundException('Producto no encontrado.');
     }
-    const staticDir = path.join(__dirname, '..', '..', 'static');
+    const staticDir = path.join('uploads');
 
     if (!fs.existsSync(staticDir)) {
       fs.mkdirSync(staticDir, { recursive: true });
     }
+
     const fileName = `${Date.now()}-${file.originalname}`;
     const newFilePath = path.join(staticDir, fileName);
-    console.log('esta es:', newFilePath);
     fs.renameSync(file.path, newFilePath);
-    const urlImagen = `/static/${fileName}`;
+
+    const urlImagen = `/uploads/${fileName}`;
     const nuevaImagen = this.imagenProductoRepository.create({
       producto,
       urlImagen,
     });
     await this.imagenProductoRepository.save(nuevaImagen);
+
     return await this.productoRepository.findOne({
       where: { id: productId },
       relations: ['imagenes'],
