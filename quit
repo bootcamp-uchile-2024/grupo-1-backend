@@ -1,0 +1,71 @@
+[1mdiff --git a/docker-compose.yml b/docker-compose.yml[m
+[1mindex e69de29..4ce9970 100644[m
+[1m--- a/docker-compose.yml[m
+[1m+++ b/docker-compose.yml[m
+[36m@@ -0,0 +1,18 @@[m
+[32m+[m[32mservices:[m
+[32m+[m[32m  mysql:[m
+[32m+[m[32m    image: mysql:8.0[m
+[32m+[m[32m    container_name: mysql_container[m
+[32m+[m[32m    ports:[m
+[32m+[m[32m      - '3306:3306'[m
+[32m+[m[32m    environment:[m
+[32m+[m[32m      MYSQL_ROOT_PASSWORD: rootpassword[m
+[32m+[m[32m      MYSQL_DATABASE: plantopiadb[m
+[32m+[m[32m      MYSQL_USER: user_dev[m
+[32m+[m[32m      MYSQL_PASSWORD: password_dev[m
+[32m+[m[32m    volumes:[m
+[32m+[m[32m      - ./db:/var/lib/mysql[m
+[32m+[m[32m    networks:[m
+[32m+[m[32m      - app-network[m
+[32m+[m[32mnetworks:[m
+[32m+[m[32m  app-network:[m
+[32m+[m[32m    driver: bridge[m
+[1mdiff --git a/src/productos/controller/productos.controller.ts b/src/productos/controller/productos.controller.ts[m
+[1mindex 4985fd1..b36e8e1 100644[m
+[1m--- a/src/productos/controller/productos.controller.ts[m
+[1m+++ b/src/productos/controller/productos.controller.ts[m
+[36m@@ -1140,8 +1140,12 @@[m [mexport class ProductosController {[m
+       console.log('No se recibió archivo');[m
+       throw new BadRequestException('No se ha recibido el archivo.');[m
+     }[m
+[32m+[m[32m    const producto = await this.productosService.uploadProductImage([m
+[32m+[m[32m      parseInt(id, 10), // Convertir el id a número[m
+[32m+[m[32m      file,[m
+[32m+[m[32m    );[m
+     return {[m
+[31m-      message: `Imagen cargada correctamente para el producto con ID ${file}`,[m
+[32m+[m[32m      message: `Imagen cargada correctamente para el producto  ${producto}`,[m
+     };[m
+   }[m
+ [m
+[1mdiff --git a/src/productos/service/productos.service.ts b/src/productos/service/productos.service.ts[m
+[1mindex 8fb368f..3e7b013 100644[m
+[1m--- a/src/productos/service/productos.service.ts[m
+[1m+++ b/src/productos/service/productos.service.ts[m
+[36m@@ -933,20 +933,24 @@[m [mexport class ProductosService {[m
+     if (!allowedMimeTypes.includes(file.mimetype)) {[m
+       throw new BadRequestException('El archivo no es una imagen válida.');[m
+     }[m
+[32m+[m[32m    console.log('esel id: ', productId);[m
+ [m
+     const producto = await this.productoRepository.findOne({[m
+[31m-      where: { id: productId },[m
+[32m+[m[32m      where: { id: Number(productId) },[m
+       relations: ['imagenes'],[m
+     });[m
+[32m+[m[32m    console.log('esel producto: ', producto);[m
+     if (!producto) {[m
+       throw new NotFoundException('Producto no encontrado.');[m
+     }[m
+     const staticDir = path.join(__dirname, '..', '..', 'static');[m
+[32m+[m
+     if (!fs.existsSync(staticDir)) {[m
+       fs.mkdirSync(staticDir, { recursive: true });[m
+     }[m
+     const fileName = `${Date.now()}-${file.originalname}`;[m
+     const newFilePath = path.join(staticDir, fileName);[m
+[32m+[m[32m    console.log('esta es:', newFilePath);[m
+     fs.renameSync(file.path, newFilePath);[m
+     const urlImagen = `/static/${fileName}`;[m
+     const nuevaImagen = this.imagenProductoRepository.create({[m

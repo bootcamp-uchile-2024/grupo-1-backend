@@ -1142,9 +1142,12 @@ export class ProductosController {
       console.log('No se recibió archivo');
       throw new BadRequestException('No se ha recibido el archivo.');
     }
+    const producto = await this.productosService.uploadProductImage(
+      parseInt(id, 10), // Convertir el id a número
+      file,
+    );
     return {
-      message: `Imagen cargada correctamente para el producto con ID ${id}`,
-      filename: file.filename,
+      message: `Imagen cargada correctamente para el producto con ID ${file}`,
     };
   }
 

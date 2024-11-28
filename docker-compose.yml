@@ -1,6 +1,6 @@
 services:
   mysql:
-    image: "mysql:8.0"
+    image: 'mysql:8.0'
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOTPASS}
       MYSQL_DATABASE: ${DB_DATABASE}
@@ -9,7 +9,7 @@ services:
     volumes:
       - ./db/data_dev:/var/lib/mysql
     ports:
-      - "3306:3306"
+      - '3306:3306'
     networks:
       - app-network
 
@@ -19,7 +19,7 @@ services:
     volumes:
       - ./:/usr/src/app
     ports:
-      - "3000:3000"
+      - '3000:3000'
     depends_on:
       - mysql
     command: npm run start:dev
@@ -32,12 +32,20 @@ services:
     container_name: flyway-migrator
     depends_on:
       - mysql
-    entrypoint: ["flyway", "-url=jdbc:mysql://mysql:3306/${DB_DATABASE}?allowPublicKeyRetrieval=true&useSSL=false", "-user=${DB_USER}", "-password=${DB_PASS}", "-locations=filesystem:/flyway/sql", "migrate"]
+    entrypoint:
+      [
+        'flyway',
+        '-url=jdbc:mysql://mysql:3306/${DB_DATABASE}?allowPublicKeyRetrieval=true&useSSL=false',
+        '-user=${DB_USER}',
+        '-password=${DB_PASS}',
+        '-locations=filesystem:/flyway/sql',
+        'migrate',
+      ]
     volumes:
-      - ./scripts_db:/flyway/sql  # Mapea la carpeta de migraciones
+      - ./scripts_db:/flyway/sql # Mapea la carpeta de migraciones
     networks:
       - app-network
-    restart: on-failure  # Reinicia Flyway si falla
+    restart: on-failure # Reinicia Flyway si falla
 
 networks:
   app-network:
