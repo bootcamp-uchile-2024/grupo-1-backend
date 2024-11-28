@@ -1,7 +1,6 @@
 import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-
+import { ConfigModule } from '@nestjs/config';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { ProductosModule } from './productos/productos.module';
 import { DespachosModule } from './despachos/despachos.module';
@@ -13,6 +12,7 @@ import { GlobalMiddlewareMiddleware } from './comunes/middleware/global.middlewa
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { MulterModule } from '@nestjs/platform-express/multer';
+
 @Module({
   imports: [
     UsuariosModule,
@@ -23,11 +23,8 @@ import { MulterModule } from '@nestjs/platform-express/multer';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath:
-        process.env.AMBIENTE === 'production'
-          ? '.env.productivo'
-          : '.env.develop',
+        process.env.AMBIENTE === 'production' ? '.env.productivo' : '.env',
     }),
-
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),
       serveRoot: '/static',
@@ -36,10 +33,10 @@ import { MulterModule } from '@nestjs/platform-express/multer';
       type: 'mysql',
       host: process.env.DB_HOST,
       port: parseInt(process.env.DB_PORT, 10),
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
+      username: process.env.DB_USER,
+      password: process.env.DB_PASS,
       database: process.env.DB_DATABASE,
-      autoLoadEntities: true,
+      autoLoadEntities: false,
       entities: [__dirname + '/../**/*.entity{.ts,.js}'],
       synchronize: false,
       logging: true,

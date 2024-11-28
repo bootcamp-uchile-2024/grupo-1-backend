@@ -50,6 +50,7 @@ import { CreateSustratoDto } from '../dto/create-sustrato.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+
 @ApiTags('productos')
 @Controller('productos')
 export class ProductosController {
@@ -1036,7 +1037,6 @@ export class ProductosController {
     status: 404,
     description: 'Producto o imagen no encontrada',
   })
-  @Post('edit-image/:productId/:imageId')
   async editImage(
     @Param('productId') productId: number,
     @Param('imageId') imageId: number,
@@ -1116,7 +1116,10 @@ export class ProductosController {
       limits: { fileSize: 10 * 1024 * 1024 }, // Limitar el tamaño del archivo a 10MB
       fileFilter: (req, file, callback) => {
         if (!file.mimetype.match(/image\/*/)) {
-          return 'Solo se permiten imágenes.';
+          return callback(
+            new BadRequestException('Solo se permiten imágenes.'),
+            false,
+          );
         }
         callback(null, true);
       },
@@ -1131,7 +1134,6 @@ export class ProductosController {
   })
   @ApiResponse({ status: 400, description: 'Error al subir la imagen.' })
   @ApiResponse({ status: 404, description: 'Producto no encontrado.' })
-  //@UseInterceptors(FileInterceptor('file')) // Asegúrate de usar 'file' como clave
   async cargarImagen(
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
@@ -1141,7 +1143,8 @@ export class ProductosController {
       throw new BadRequestException('No se ha recibido el archivo.');
     }
     return {
-      message: `Imagen cargada correctamente para el producto con ID ${file}`,
+      message: `Imagen cargada correctamente para el producto con ID ${id}`,
+      filename: file.filename,
     };
   }
 
@@ -1151,17 +1154,12 @@ export class ProductosController {
     name: 'id',
     description: 'ID del producto que se va a habilitar',
   })
-  @ApiResponse({
-    status: 200,
-    description: 'Producto habilitado correctamente',
-    type: Producto,
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Producto no encontrado',
-  })
-  async habilitar(@Param('id') id: number): Promise<Producto> {
-    return this.productosService.habilitarProducto(id);
+  async habilitarProducto(@Param('id', ParseIntPipe) id: number) {
+    const producto = await this.productosService.habilitarProducto(id);
+    if (!producto) {
+      throw new NotFoundException(`Producto con ID ${id} no encontrado`);
+    }
+    return producto;
   }
 
   @Patch(':id/deshabilitar')

@@ -95,6 +95,9 @@ export class ProductosService {
     const imageBuffer = Buffer.from(imageBase64, 'base64');
     const imageName = `${productId}-${Date.now()}.jpg`;
     const fullImagePath = path.join(this.imagePath, imageName);
+
+    console.log('RUTA IMAGEN ', fullImagePath);
+
     await fsPromises.mkdir(this.imagePath, { recursive: true });
     await fsPromises.writeFile(fullImagePath, imageBuffer);
     const nuevaImagen = this.imagenProductoRepository.create({
