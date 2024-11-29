@@ -38,7 +38,7 @@ import { MulterModule } from '@nestjs/platform-express/multer';
       database: process.env.DB_DATABASE,
       autoLoadEntities: false,
       entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-      synchronize: true,
+      synchronize: false,
       logging: true,
     }),
     MulterModule.register({
