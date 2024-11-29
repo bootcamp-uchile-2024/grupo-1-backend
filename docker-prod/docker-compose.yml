@@ -23,7 +23,6 @@ services:
       MYSQL_DATABASE: PlantopiaDB
       MYSQL_USER: user_prod
       MYSQL_PASSWORD: password_prod
-    command: --lower_case_table_names=1
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
