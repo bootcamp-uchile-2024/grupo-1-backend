@@ -23,6 +23,7 @@ async function bootstrap() {
   const version = configService.get<string>('VERSION');
   app.enableCors();
   app.useGlobalInterceptors(new LogRespuestasInterceptor());
+
   const createSwaggerConfig = (moduleName: string) => {
     const title = `${packageJson.name} - ${moduleName} (${ambiente})`;
     const contacts = packageJson.contributors
@@ -36,8 +37,10 @@ async function bootstrap() {
       .setVersion(packageJson.version)
       .setContact(packageJson.author, '', '')
       .setLicense(packageJson.license, '')
+      .addBearerAuth() 
       .build();
   };
+
   const document = SwaggerModule.createDocument(
     app,
     createSwaggerConfig('App'),
@@ -73,29 +76,48 @@ async function bootstrap() {
       include: [DespachosModule],
     },
   );
+
   SwaggerModule.setup('api/productos', app, productos, {
     yamlDocumentUrl: 'swagger/yaml',
+    swaggerOptions: {
+      persistAuthorization: true, 
+    },
   });
 
   SwaggerModule.setup('api/despachos', app, despachoSwagger, {
     yamlDocumentUrl: 'swagger/yaml',
+    swaggerOptions: {
+      persistAuthorization: true, 
+    },
   });
 
   SwaggerModule.setup('api', app, document, {
     yamlDocumentUrl: 'swagger/yaml',
+    swaggerOptions: {
+      persistAuthorization: true, 
+    },
   });
+
   SwaggerModule.setup('api/usuarios', app, usuarioSwagger, {
     yamlDocumentUrl: 'swagger/yaml',
+    swaggerOptions: {
+      persistAuthorization: true, 
+    },
   });
+
   SwaggerModule.setup('api/ventas', app, ventasSwagger, {
     yamlDocumentUrl: 'swagger/yaml',
+    swaggerOptions: {
+      persistAuthorization: true, 
+    },
   });
+
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new GlobalFilter());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  // Asegurarse de que la carpeta uploads exista
+
   const uploadsPath = resolve(__dirname, '..', '..', 'uploads');
   if (!fs.existsSync(uploadsPath)) {
     fs.mkdirSync(uploadsPath, { recursive: true });

@@ -30,6 +30,8 @@ import { Perfil } from '../entities/perfil.entity';
 import { UpdatePerfilDto } from '../dto/update-perfil.dto';
 import { CreatePerfilDto } from '../dto/create-perfil.dto';
 import { ValidaForamteEmailPipe } from 'src/comunes/pipes/validaFormatoEmail.pipe';
+import { RolesAutorizados } from 'src/comunes/decorator/rol.decorator';
+import { Rol } from 'src/enum/rol.enum';
 
 @ApiTags('usuarios')
 @Controller('usuarios')
@@ -38,7 +40,8 @@ export class UsuariosController {
   perfilRepository: any;
   constructor(private readonly usuariosService: UsuariosService) {}
 
-  @Post()
+  @RolesAutorizados(Rol.INVITADO)
+  @Post('gestion/insert')
   @ApiOperation({
     summary: 'Crear un nuevo usuario',
     description:
@@ -69,7 +72,8 @@ export class UsuariosController {
     }
   }
 
-  @Get()
+  @RolesAutorizados(Rol.ADMIN)
+  @Get('/gestion/list')
   @ApiOperation({ summary: 'Obtener todos los usuarios' })
   @ApiResponse({
     status: 200,
@@ -94,7 +98,8 @@ export class UsuariosController {
     }
   }
 
-  @Get(':identifier')
+  @RolesAutorizados(Rol.ADMIN)
+  @Get('/gestion/listbyrut/:rut')
   @ApiOperation({
     summary: 'Obtener un usuario por ID o RUT',
     description:
@@ -151,7 +156,7 @@ export class UsuariosController {
     }
   }
 
-  @Delete(':id')
+  @Delete('/gestion/delete/:rut')
   @ApiParam({
     name: 'id',
     description: 'ID del usuario a eliminar',
@@ -195,7 +200,7 @@ export class UsuariosController {
       );
     }
   }
-  @Put(':id')
+  @Put('/gestion/delete/:rut')
   @ApiOperation({
     summary: 'Actualizar un usuario',
     description: 'Actualiza los detalles de un usuario existente',

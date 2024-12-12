@@ -114,4 +114,6 @@ export class CreateUsuarioDto {
   @IsInt({ message: 'El ID del perfil debe ser un número entero' })
   @IsOptional()
   idPerfil: number;
+
+  // ROL ENUM
 }
