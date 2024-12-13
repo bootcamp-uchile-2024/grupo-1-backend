@@ -6,6 +6,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { v4 as uuidv4 } from 'uuid';
 import logger from 'src/logger';
 
 @Catch()
@@ -23,17 +24,24 @@ export class HttpExceptionFilter implements ExceptionFilter {
       exception instanceof HttpException ? exception.getResponse() : exception;
 
     const context = 'Exception';
+    const requestId = uuidv4();
+    const clientIp = request.ip;
+    const userAgent = request.get('user-agent') || '';
+    const stack = exception instanceof Error ? exception.stack : '';
 
     logger.error(
-      `${request.method} ${request.url} ${status} - ${JSON.stringify(message)}`,
+      `ID: ${requestId} - ${request.method} ${request.url} ${status} - ${JSON.stringify(message)} - IP: ${clientIp} - User-Agent: ${userAgent} - Stack: ${stack}`,
       { context },
     );
 
     response.status(status).json({
+      requestId,
       statusCode: status,
       timestamp: new Date().toISOString(),
       path: request.url,
       message,
+      clientIp,
+      userAgent,
     });
   }
 }

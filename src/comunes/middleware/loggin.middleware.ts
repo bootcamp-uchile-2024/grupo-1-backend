@@ -5,7 +5,7 @@ import logger from 'src/logger';
 @Injectable()
 export class LoggingMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
-    const { method, originalUrl, body } = req;
+    const { method, originalUrl, body, query } = req;
     const userAgent = req.get('user-agent') || '';
     const context = 'HTTP';
 
@@ -16,7 +16,7 @@ export class LoggingMiddleware implements NestMiddleware {
     }
 
     logger.info(
-      `Entrada: ${method} ${originalUrl} - Body: ${JSON.stringify(sanitizedBody)} - User-Agent: ${userAgent}`,
+      `Entrada: ${method} ${originalUrl} - Body: ${JSON.stringify(sanitizedBody)} - Query: ${JSON.stringify(query)} - User-Agent: ${userAgent}`,
       { context },
     );
 

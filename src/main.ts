@@ -13,6 +13,7 @@ import { VentasModule } from './ventas/ventas.module';
 import { join, resolve } from 'path';
 import * as express from 'express';
 import * as fs from 'fs';
+import logger from 'src/logger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -37,7 +38,7 @@ async function bootstrap() {
       .setVersion(packageJson.version)
       .setContact(packageJson.author, '', '')
       .setLicense(packageJson.license, '')
-      .addBearerAuth() 
+      .addBearerAuth()
       .build();
   };
 
@@ -80,35 +81,35 @@ async function bootstrap() {
   SwaggerModule.setup('api/productos', app, productos, {
     yamlDocumentUrl: 'swagger/yaml',
     swaggerOptions: {
-      persistAuthorization: true, 
+      persistAuthorization: true,
     },
   });
 
   SwaggerModule.setup('api/despachos', app, despachoSwagger, {
     yamlDocumentUrl: 'swagger/yaml',
     swaggerOptions: {
-      persistAuthorization: true, 
+      persistAuthorization: true,
     },
   });
 
   SwaggerModule.setup('api', app, document, {
     yamlDocumentUrl: 'swagger/yaml',
     swaggerOptions: {
-      persistAuthorization: true, 
+      persistAuthorization: true,
     },
   });
 
   SwaggerModule.setup('api/usuarios', app, usuarioSwagger, {
     yamlDocumentUrl: 'swagger/yaml',
     swaggerOptions: {
-      persistAuthorization: true, 
+      persistAuthorization: true,
     },
   });
 
   SwaggerModule.setup('api/ventas', app, ventasSwagger, {
     yamlDocumentUrl: 'swagger/yaml',
     swaggerOptions: {
-      persistAuthorization: true, 
+      persistAuthorization: true,
     },
   });
 
@@ -117,7 +118,6 @@ async function bootstrap() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-
   const uploadsPath = resolve(__dirname, '..', '..', 'uploads');
   if (!fs.existsSync(uploadsPath)) {
     fs.mkdirSync(uploadsPath, { recursive: true });
@@ -125,7 +125,7 @@ async function bootstrap() {
   app.use('/uploads', express.static(uploadsPath));
 
   await app.listen(puerto);
-  console.log(
+  Logger.log(
     'Aplicación escuchando en http://localhost:' +
       puerto +
       ' ,en ambiente de ' +
