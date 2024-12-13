@@ -33,13 +33,13 @@ import { ValidaForamteEmailPipe } from 'src/comunes/pipes/validaFormatoEmail.pip
 import { RolesAutorizados } from 'src/comunes/decorator/rol.decorator';
 import { Rol } from 'src/enum/rol.enum';
 
-@ApiTags('usuarios')
 @Controller('usuarios')
 @UsePipes(new ValidationPipe({ transform: true }))
 export class UsuariosController {
   perfilRepository: any;
   constructor(private readonly usuariosService: UsuariosService) {}
 
+  @ApiTags('Gestion - Customer')
   @RolesAutorizados(Rol.INVITADO)
   @Post('gestion/insert')
   @ApiOperation({
@@ -71,7 +71,7 @@ export class UsuariosController {
       );
     }
   }
-
+  @ApiTags('Gestion - Customer')
   @RolesAutorizados(Rol.ADMIN)
   @Get('/gestion/list')
   @ApiOperation({ summary: 'Obtener todos los usuarios' })
@@ -97,7 +97,7 @@ export class UsuariosController {
       );
     }
   }
-
+  @ApiTags('Gestion - Customer')
   @RolesAutorizados(Rol.ADMIN)
   @Get('/gestion/listbyrut/:rut')
   @ApiOperation({
@@ -155,7 +155,7 @@ export class UsuariosController {
       }
     }
   }
-
+  @ApiTags('Gestion - Customer')
   @Delete('/gestion/delete/:rut')
   @ApiParam({
     name: 'id',
@@ -200,7 +200,8 @@ export class UsuariosController {
       );
     }
   }
-  @Put('/gestion/delete/:rut')
+  @ApiTags('Gestion - Customer')
+  @Put('/gestion/update/:rut')
   @ApiOperation({
     summary: 'Actualizar un usuario',
     description: 'Actualiza los detalles de un usuario existente',
@@ -235,6 +236,7 @@ export class UsuariosController {
       }
     }
   }
+  @ApiTags('Gestion-Perfiles')
   @Post('perfil/create')
   @ApiOperation({
     summary: 'Crear un nuevo perfil',
@@ -264,7 +266,7 @@ export class UsuariosController {
       );
     }
   }
-
+  @ApiTags('Gestion-Perfiles')
   @Get('perfil/get')
   @ApiOperation({ summary: 'Obtener todos los perfiles' })
   @ApiResponse({
@@ -289,7 +291,7 @@ export class UsuariosController {
       );
     }
   }
-
+  @ApiTags('Gestion-Perfiles')
   @Get('perfil/getbyid/:id')
   @ApiOperation({
     summary: 'Obtener un perfil por ID',
@@ -339,7 +341,7 @@ export class UsuariosController {
       }
     }
   }
-
+  @ApiTags('Gestion-Perfiles')
   @Put('perfil/update/:id')
   @ApiOperation({
     summary: 'Actualizar un perfil',
@@ -375,7 +377,7 @@ export class UsuariosController {
       }
     }
   }
-
+  @ApiTags('Gestion-Perfiles')
   @Delete('perfil/delete/:id')
   @ApiParam({
     name: 'id',
@@ -413,9 +415,7 @@ export class UsuariosController {
       }
     }
   }
-
-  /************************************ */
-
+  @ApiTags('Gestion - Customer')
   @Get('findPasswordByEmail/:email')
   @ApiOperation({
     summary: 'HU010-Recuperar Clave por Email',
@@ -440,7 +440,7 @@ export class UsuariosController {
     description: 'email',
     required: true,
   })
-  @UsePipes(ValidaForamteEmailPipe) // Aplicar el Pipe de validación
+  @UsePipes(ValidaForamteEmailPipe)
   async findPasswordByEmail(
     @Param('email') email: string,
     @Res() res: Response,
@@ -469,6 +469,43 @@ export class UsuariosController {
           );
         }
       }
+    }
+  }
+  @Get('/mygarden/:rut')
+  @ApiTags('Gestion - Customer')
+  @ApiOperation({
+    summary: 'Obtener el listado de las plantas que he comprado',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de plantas obtenida con éxito.',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Error interno del servidor.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'No autorizado.',
+  })
+  @ApiParam({
+    name: 'rut',
+    description: 'RUT del usuario',
+    required: true,
+  })
+  @RolesAutorizados(Rol.USUARIO)
+  async myGarden(@Param('rut') rut: string, @Res() res: Response) {
+    try {
+      const plantas = await this.usuariosService.myGarden(rut);
+      res.status(HttpStatus.OK).json(plantas);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Error al obtener las plantas.',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

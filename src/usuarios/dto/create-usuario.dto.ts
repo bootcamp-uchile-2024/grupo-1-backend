@@ -116,4 +116,5 @@ export class CreateUsuarioDto {
   idPerfil: number;
 
   // ROL ENUM
+  
 }

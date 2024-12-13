@@ -51,12 +51,12 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 
-@ApiTags('productos')
 @Controller('productos')
 export class ProductosController {
   constructor(private readonly productosService: ProductosService) {}
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   @Post('/create')
+  @ApiTags('Gestion-Productos')
   @ApiOperation({
     summary: 'Crear un nuevo producto',
     description: 'Crea un nuevo producto en el sistema',
@@ -84,6 +84,7 @@ export class ProductosController {
     }
   }
   @Get('/catalogo')
+  @ApiTags('Gestion-Productos')
   @ApiOperation({
     summary: 'Historia Usuario H004: Listado de Productos Plantopia',
     description:
@@ -118,6 +119,7 @@ export class ProductosController {
     }
   }
   @Get('/catalogobyid/:id')
+  @ApiTags('Gestion-Productos')
   @ApiOperation({
     summary: 'Obtener un producto por ID',
     description: 'Devuelve los detalles de un producto específico por su ID',
@@ -157,6 +159,7 @@ export class ProductosController {
   }
 
   @Put('/update/:id')
+  @ApiTags('Gestion-Productos')
   @ApiOperation({
     summary: 'Actualizar un producto',
     description: 'Actualiza los detalles de un producto existente',
@@ -193,6 +196,7 @@ export class ProductosController {
   }
 
   @Post('categorias/create')
+  @ApiTags('Gestion-Productos-Categorias')
   @ApiOperation({
     summary: 'Crear una nueva categoría',
     description: 'Crea una nueva categoría en el sistema',
@@ -220,6 +224,7 @@ export class ProductosController {
     }
   }
   @Get('categorias/get')
+  @ApiTags('Gestion-Productos-Categorias')
   @ApiOperation({
     summary: 'Listar todas las categorías',
     description: 'Devuelve una lista de todas las categorías',
@@ -254,6 +259,7 @@ export class ProductosController {
     }
   }
   @Get('categorias/getbyid/:id')
+  @ApiTags('Gestion-Productos-Categorias')
   @ApiOperation({
     summary: 'Obtener una categoría por ID',
     description: 'Devuelve los detalles de una categoría específica por su ID',
@@ -292,6 +298,7 @@ export class ProductosController {
   }
 
   @Get('categorias/getbynombre/:nombrecategoria')
+  @ApiTags('Gestion-Productos-Categorias')
   @ApiOperation({
     summary: 'Obtener una categoría por nombre',
     description:
@@ -335,6 +342,7 @@ export class ProductosController {
     }
   }
   @Put('categorias/update/:id')
+  @ApiTags('Gestion-Productos-Categorias')
   @ApiOperation({
     summary: 'Actualizar una categoría',
     description: 'Actualiza los detalles de una categoría existente',
@@ -371,6 +379,7 @@ export class ProductosController {
   }
 
   @Post('plantas/create')
+  @ApiTags('Gestion-Productos-Plantas')
   @ApiOperation({
     summary: 'Crear una nueva planta',
     description: 'Crea una nueva planta en el sistema',
@@ -396,7 +405,9 @@ export class ProductosController {
       );
     }
   }
+
   @Get('plantas/get')
+  @ApiTags('Gestion-Productos-Plantas')
   @ApiOperation({
     summary: 'Obtener plantas paginadas',
     description: 'Obtiene una lista de plantas',
@@ -427,6 +438,7 @@ export class ProductosController {
     }
   }
   @Get('plantas/getbyid/:id')
+  @ApiTags('Gestion-Productos-Plantas')
   @ApiOperation({
     summary: 'Obtener una planta por ID',
     description: 'Devuelve los detalles de una planta específica por su ID',
@@ -468,6 +480,7 @@ export class ProductosController {
     }
   }
   @Put('plantas/update/:id')
+  @ApiTags('Gestion-Productos-Plantas')
   @ApiOperation({
     summary: 'Actualizar una planta',
     description: 'Actualiza los detalles de una planta existente',
@@ -502,8 +515,8 @@ export class ProductosController {
       }
     }
   }
-
   @Post('maceteros/create')
+  @ApiTags('Gestion-Productos-Maceteros')
   @ApiOperation({
     summary: 'Crear un nuevo macetero',
     description: 'Crea un nuevo macetero en el sistema',
@@ -532,6 +545,7 @@ export class ProductosController {
   }
 
   @Get('maceteros/get')
+  @ApiTags('Gestion-Productos-Maceteros')
   @ApiOperation({
     summary: 'Obtener maceteros paginados',
     description: 'Obtiene una lista de maceteros paginados',
@@ -562,6 +576,7 @@ export class ProductosController {
     }
   }
   @Get('maceteros/getbyid/:id')
+  @ApiTags('Gestion-Productos-Maceteros')
   @ApiOperation({
     summary: 'Obtener un macetero por ID',
     description: 'Devuelve los detalles de un macetero específico por su ID',
@@ -604,6 +619,7 @@ export class ProductosController {
   }
 
   @Put('maceteros/update/:id')
+  @ApiTags('Gestion-Productos-Maceteros')
   @ApiOperation({
     summary: 'Actualizar un macetero',
     description: 'Actualiza los detalles de un macetero existente',
@@ -639,6 +655,7 @@ export class ProductosController {
     }
   }
   @Post('fertilizantes/create')
+  @ApiTags('Gestion-Productos-Fertilizantes')
   @ApiOperation({
     summary: 'Crear un nuevo fertilizante',
     description: 'Crea un nuevo fertilizante en el sistema',
@@ -668,6 +685,7 @@ export class ProductosController {
   }
 
   @Get('fertilizantes/get')
+  @ApiTags('Gestion-Productos-Fertilizantes')
   @ApiOperation({
     summary: 'Obtener fertilizantes paginados',
     description: 'Obtiene una lista de fertilizantes paginados',
@@ -699,6 +717,7 @@ export class ProductosController {
     }
   }
   @Get('fertilizantes/getbyid/:id')
+  @ApiTags('Gestion-Productos-Fertilizantes')
   @ApiOperation({
     summary: 'Obtener un fertilizante por ID',
     description:
@@ -742,6 +761,7 @@ export class ProductosController {
   }
 
   @Put('fertilizantes/update/:id')
+  @ApiTags('Gestion-Productos-Fertilizantes')
   @ApiOperation({
     summary: 'Actualizar un fertilizante',
     description: 'Actualiza los detalles de un fertilizante existente',
@@ -781,6 +801,7 @@ export class ProductosController {
   }
 
   @Post('sustratos/create')
+  @ApiTags('Gestion-Productos-Sustratos')
   @ApiOperation({
     summary: 'Crear un nuevo sustrato',
     description: 'Crea un nuevo sustrato en el sistema',
@@ -809,6 +830,7 @@ export class ProductosController {
   }
 
   @Get('sustratos/get')
+  @ApiTags('Gestion-Productos-Sustratos')
   @ApiOperation({
     summary: 'Obtener sustratos paginados',
     description: 'Devuelve una lista de sustratos paginados',
@@ -843,6 +865,7 @@ export class ProductosController {
   }
 
   @Get('sustratos/getbyid/:id')
+  @ApiTags('Gestion-Productos-Sustratos')
   @ApiOperation({
     summary: 'Obtener un sustrato por ID',
     description: 'Devuelve los detalles de un sustrato específico por su ID',
@@ -885,6 +908,7 @@ export class ProductosController {
   }
 
   @Put('sustratos/update/:id')
+  @ApiTags('Gestion-Productos-Sustratos')
   @ApiOperation({
     summary: 'Actualizar un sustrato',
     description: 'Actualiza los detalles de un sustrato existente',
@@ -921,6 +945,7 @@ export class ProductosController {
   }
 
   @Post('add-image/:id')
+  @ApiTags('Gestion-Productos')
   @ApiParam({
     name: 'id',
     type: Number,
@@ -996,6 +1021,7 @@ export class ProductosController {
   }
 
   @Post('edit-image/:productId/:imageId')
+  @ApiTags('Gestion-Productos')
   @ApiParam({ name: 'productId', description: 'ID del producto' })
   @ApiParam({
     name: 'imageId',
@@ -1061,6 +1087,7 @@ export class ProductosController {
   }
 
   @Delete('delete-image/:productId/:imageId')
+  @ApiTags('Gestion-Productos')
   @ApiParam({ name: 'productId', description: 'ID del producto' })
   @ApiParam({ name: 'imageId', description: 'ID de la imagen a eliminar' })
   @ApiResponse({
@@ -1126,6 +1153,7 @@ export class ProductosController {
     }),
   )
   @Patch(':id/carga-imagen')
+  @ApiTags('Gestion-Productos')
   @ApiOperation({ summary: 'Subir una imagen para un producto' })
   @ApiConsumes('multipart/form-data')
   @ApiResponse({
@@ -1153,6 +1181,7 @@ export class ProductosController {
   }
 
   @Patch(':id/habilitar')
+  @ApiTags('Gestion-Productos')
   @ApiOperation({ summary: 'Habilitar un producto' })
   @ApiParam({
     name: 'id',
@@ -1167,6 +1196,7 @@ export class ProductosController {
   }
 
   @Patch(':id/deshabilitar')
+  @ApiTags('Gestion-Productos')
   @ApiOperation({ summary: 'Deshabilitar un producto' })
   @ApiParam({
     name: 'id',
