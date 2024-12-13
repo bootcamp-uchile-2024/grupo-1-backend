@@ -115,6 +115,102 @@ export class CreateUsuarioDto {
   @IsOptional()
   idPerfil: number;
 
-  // ROL ENUM
-  
+  @ApiProperty({
+    description: 'Respuesta 1 de las preferencias del usuario',
+    example: 'Respuesta 1',
+  })
+  @IsString()
+  @IsOptional()
+  @MaxLength(255, {
+    message: 'La respuesta 1 no puede exceder los 255 caracteres',
+  })
+  respuesta1: string;
+
+  @ApiProperty({
+    description: 'Respuesta 2 de las preferencias del usuario',
+    example: 'Respuesta 2',
+  })
+  @IsString()
+  @IsOptional()
+  @MaxLength(255, {
+    message: 'La respuesta 2 no puede exceder los 255 caracteres',
+  })
+  respuesta2: string;
+
+  @ApiProperty({
+    description: 'Respuesta 3 de las preferencias del usuario',
+    example: 'Respuesta 3',
+  })
+  @IsString()
+  @IsOptional()
+  @MaxLength(255, {
+    message: 'La respuesta 3 no puede exceder los 255 caracteres',
+  })
+  respuesta3: string;
+
+  @ApiProperty({
+    description: 'Respuesta 4 de las preferencias del usuario',
+    example: 'Respuesta 4',
+  })
+  @IsString()
+  @IsOptional()
+  @MaxLength(255, {
+    message: 'La respuesta 4 no puede exceder los 255 caracteres',
+  })
+  respuesta4: string;
+
+  @ApiProperty({
+    description: 'Respuesta 5 de las preferencias del usuario',
+    example: 'Respuesta 5',
+  })
+  @IsString()
+  @IsOptional()
+  @MaxLength(255, {
+    message: 'La respuesta 5 no puede exceder los 255 caracteres',
+  })
+  respuesta5: string;
+
+  @ApiProperty({
+    description: 'Respuesta 6 de las preferencias del usuario',
+    example: 'Respuesta 6',
+  })
+  @IsString()
+  @IsOptional()
+  @MaxLength(255, {
+    message: 'La respuesta 6 no puede exceder los 255 caracteres',
+  })
+  respuesta6: string;
+
+  @ApiProperty({
+    description: 'Respuesta 7 de las preferencias del usuario',
+    example: 'Respuesta 7',
+  })
+  @IsString()
+  @IsOptional()
+  @MaxLength(255, {
+    message: 'La respuesta 7 no puede exceder los 255 caracteres',
+  })
+  respuesta7: string;
+
+  @ApiProperty({
+    description: 'Respuesta 8 de las preferencias del usuario',
+    example: 'Respuesta 8',
+  })
+  @IsString()
+  @IsOptional()
+  @MaxLength(255, {
+    message: 'La respuesta 8 no puede exceder los 255 caracteres',
+  })
+  respuesta8: string;
+
+  @ApiProperty({
+    description: 'Respuesta 9 de las preferencias del usuario',
+    example: 'Respuesta 9',
+  })
+  @IsString()
+  @IsOptional()
+  @MaxLength(255, {
+    message: 'La respuesta 9 no puede exceder los 255 caracteres',
+  })
+  respuesta9: string;
 }
