@@ -18,12 +18,17 @@ export class LoggingInterceptor implements NestInterceptor {
     const { method, originalUrl } = request;
     const contextName = context.getClass().name;
 
+    logger.info(
+      `Flujo de implementación: ${method} ${originalUrl} - Contexto: ${contextName}`,
+      { context: contextName },
+    );
+
     return next.handle().pipe(
-      tap(() => {
-        const { statusCode } = response;
-        logger.info(`${method} ${originalUrl} ${statusCode}`, {
-          context: contextName,
-        });
+      tap((data) => {
+        logger.info(
+          `Salida: ${method} ${originalUrl} - Respuesta: ${JSON.stringify(data)}`,
+          { context: contextName },
+        );
       }),
     );
   }
