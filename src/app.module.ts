@@ -12,6 +12,10 @@ import { GlobalMiddlewareMiddleware } from './comunes/middleware/global.middlewa
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { MulterModule } from '@nestjs/platform-express/multer';
+import { APP_INTERCEPTOR, APP_FILTER } from '@nestjs/core';
+import { HttpExceptionFilter } from './comunes/filter/http-exception.filter';
+import { LoggingInterceptor } from './comunes/interceptor/loggin.interceptor';
+import { LoggingMiddleware } from './comunes/middleware/loggin.middleware';
 
 @Module({
   imports: [
@@ -46,13 +50,21 @@ import { MulterModule } from '@nestjs/platform-express/multer';
       limits: { fileSize: 10 * 1024 * 1024 }, // Limitar el tamaño del archivo a 10MB
     }),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(GlobalMiddlewareMiddleware) // Middleware global
+      .apply(LoggingMiddleware, GlobalMiddlewareMiddleware) // Middleware global
       .forRoutes('*'); // Aplica a todas las rutas
   }
 }
