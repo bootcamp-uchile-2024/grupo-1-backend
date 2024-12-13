@@ -471,41 +471,4 @@ export class UsuariosController {
       }
     }
   }
-  @Get('/mygarden/:rut')
-  @ApiTags('Gestion - Customer')
-  @ApiOperation({
-    summary: 'Obtener el listado de las plantas que he comprado',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Lista de plantas obtenida con éxito.',
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Error interno del servidor.',
-  })
-  @ApiResponse({
-    status: 401,
-    description: 'No autorizado.',
-  })
-  @ApiParam({
-    name: 'rut',
-    description: 'RUT del usuario',
-    required: true,
-  })
-  @RolesAutorizados(Rol.USUARIO)
-  async myGarden(@Param('rut') rut: string, @Res() res: Response) {
-    try {
-      const plantas = await this.usuariosService.myGarden(rut);
-      res.status(HttpStatus.OK).json(plantas);
-    } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'Error al obtener las plantas.',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
 }
