@@ -88,18 +88,19 @@ export class UsuariosService {
   }
 
   async findOne(id: number): Promise<Usuario> {
-    const usuario = await this.usuarioRepository.findOneBy({ id });
-    if (!usuario) {
+    try {
+      return await this.usuarioRepository.findOneOrFail({ where: { id } });
+    } catch (error) {
       throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
     }
-    return usuario;
   }
+
   async findOneOC(id: number): Promise<Usuario> {
-    const usuario = await this.usuarioRepository.findOneBy({ id });
-    if (!usuario) {
+    try {
+      return await this.usuarioRepository.findOneOrFail({ where: { id } });
+    } catch (error) {
       return null;
     }
-    return usuario;
   }
   async remove(id: number): Promise<void> {
     const result = await this.usuarioRepository.delete(id);
@@ -108,63 +109,69 @@ export class UsuariosService {
     }
   }
   async findUsuarioByRut(rut: string): Promise<Usuario> {
-    const usuario = await this.usuarioRepository.findOneBy({ rutUsuario: rut });
-    if (!usuario) {
+    try {
+      return await this.usuarioRepository.findOneOrFail({
+        where: { rutUsuario: rut },
+      });
+    } catch (error) {
       throw new NotFoundException(`Usuario con RUT ${rut} no encontrado`);
     }
-    return usuario;
   }
+
   async updateUsuario(
     id: number,
     updateUsuarioDto: UpdateUsuarioDto,
   ): Promise<Usuario> {
-    const usuario = await this.usuarioRepository.findOneBy({ id });
-    if (!usuario) {
-      throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
-    }
+    const usuario = await this.findOne(id);
 
     Object.assign(usuario, updateUsuarioDto);
-    return await this.usuarioRepository.save(usuario);
+    try {
+      return await this.usuarioRepository.save(usuario);
+    } catch (error) {
+      throw new BadRequestException('Error al actualizar el usuario');
+    }
   }
   async createPerfil(createPerfilDto: CreatePerfilDto): Promise<Perfil> {
     const nuevoPerfil = this.perfilRepository.create(createPerfilDto);
-    return await this.perfilRepository.save(nuevoPerfil);
+    try {
+      return await this.perfilRepository.save(nuevoPerfil);
+    } catch (error) {
+      throw new BadRequestException('Error al crear el perfil');
+    }
   }
 
   async findAllPerfil(): Promise<Perfil[]> {
-    return await this.perfilRepository.find();
+    try {
+      return await this.perfilRepository.find();
+    } catch (error) {
+      throw new BadRequestException('Error al obtener los perfiles');
+    }
   }
 
   async findOnePerfil(id: number): Promise<Perfil> {
-    const perfil = await this.perfilRepository.findOneBy({ id });
-    if (!perfil) {
+    try {
+      return await this.perfilRepository.findOneOrFail({ where: { id } });
+    } catch (error) {
       throw new NotFoundException(`Perfil con ID ${id} no encontrado`);
     }
-    return perfil;
   }
 
   async updatePerfil(
     id: number,
     updatePerfilDto: UpdatePerfilDto,
   ): Promise<Perfil> {
-    const perfil = await this.perfilRepository.findOneBy({ id });
-    if (!perfil) {
-      throw new NotFoundException(`Perfil con ID ${id} no encontrado`);
-    }
+    const perfil = await this.findOnePerfil(id);
 
     Object.assign(perfil, updatePerfilDto);
-    return await this.perfilRepository.save(perfil);
+    try {
+      return await this.perfilRepository.save(perfil);
+    } catch (error) {
+      throw new BadRequestException('Error al actualizar el perfil');
+    }
   }
 
   async deletePerfil(id: number): Promise<void> {
-    const perfil = await this.perfilRepository.findOne({
-      where: { id },
-      relations: ['usuarios'],
-    });
-
-    if (!perfil) {
-      throw new NotFoundException(`Perfil con ID ${id} no encontrado`);
-    }
+    const perfil = await this.findOnePerfil(id);
 
     if (perfil.accesoSistema) {
       throw new BadRequestException(
@@ -195,12 +202,12 @@ export class UsuariosService {
   }
 
   async findPasswordByEmail(email: string): Promise<Usuario> {
-    const usuario = await this.usuarioRepository.findOneBy({
-      email: email,
-    });
-    if (!usuario) {
+    try {
+      return await this.usuarioRepository.findOneOrFail({
+        where: { email: email },
+      });
+    } catch (error) {
       throw new NotFoundException(`Usuario con email ${email} no encontrado`);
     }
-    return usuario;
   }
 }
