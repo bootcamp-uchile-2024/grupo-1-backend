@@ -13,6 +13,7 @@ import {
   HttpException,
   NotFoundException,
   Put,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -73,6 +74,7 @@ export class UsuariosController {
       );
     }
   }
+
   @ApiTags('Gestion - Customer')
   @RolesAutorizados(Rol.ADMIN)
   @Get('/gestion/list')
@@ -100,6 +102,7 @@ export class UsuariosController {
       );
     }
   }
+
   @ApiTags('Gestion - Customer')
   @RolesAutorizados(Rol.ADMIN)
   @Get('/gestion/listbyrut/:rut')
@@ -158,6 +161,7 @@ export class UsuariosController {
       }
     }
   }
+
   @ApiTags('Gestion - Customer')
   @Delete('/gestion/delete/:rut')
   @ApiParam({
@@ -172,11 +176,6 @@ export class UsuariosController {
   @ApiResponse({
     status: 500,
     description: 'Error interno del servidor.',
-  })
-  @ApiParam({
-    name: 'id',
-    description: 'ID del usuario a eliminar',
-    required: true,
   })
   async remove(@Param('id', ParseIntPipe) id: number, @Res() res: Response) {
     try {
@@ -203,6 +202,7 @@ export class UsuariosController {
       );
     }
   }
+
   @ApiTags('Gestion - Customer')
   @Put('/gestion/update/:rut')
   @ApiOperation({
@@ -211,6 +211,7 @@ export class UsuariosController {
   })
   @ApiResponse({ status: 200, description: 'Usuario actualizado con éxito.' })
   @ApiResponse({ status: 404, description: 'Usuario no encontrado.' })
+  @ApiResponse({ status: 500, description: 'Error interno del servidor.' })
   @ApiBody({ type: UpdateUsuarioDto })
   @ApiParam({ name: 'id', description: 'ID del usuario', required: true })
   async updateUsuario(
@@ -228,17 +229,20 @@ export class UsuariosController {
     } catch (error) {
       if (error instanceof NotFoundException) {
         res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      } else if (error instanceof BadRequestException) {
+        res.status(HttpStatus.BAD_REQUEST).json({ message: error.message });
       } else {
         throw new HttpException(
           {
-            status: HttpStatus.BAD_REQUEST,
-            error: 'Datos inválidos.',
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            error: 'Error al actualizar el usuario.',
           },
-          HttpStatus.BAD_REQUEST,
+          HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
     }
   }
+
   @ApiTags('Gestion-Perfiles')
   @Post('perfil/create')
   @ApiOperation({
@@ -247,6 +251,7 @@ export class UsuariosController {
   })
   @ApiResponse({ status: 201, description: 'Perfil creado con éxito.' })
   @ApiResponse({ status: 400, description: 'Datos inválidos.' })
+  @ApiResponse({ status: 500, description: 'Error interno del servidor.' })
   @ApiBody({ type: CreatePerfilDto })
   async createPerfil(
     @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
@@ -269,6 +274,7 @@ export class UsuariosController {
       );
     }
   }
+
   @ApiTags('Gestion-Perfiles')
   @Get('perfil/get')
   @ApiOperation({ summary: 'Obtener todos los perfiles' })
@@ -280,6 +286,7 @@ export class UsuariosController {
     status: 500,
     description: 'Error interno del servidor.',
   })
+  @ApiResponse({ status: 404, description: 'Perfiles no encontrados.' })
   async findAllPerfil(@Res() res: Response) {
     try {
       const perfiles = await this.usuariosService.findAllPerfil();
@@ -294,6 +301,7 @@ export class UsuariosController {
       );
     }
   }
+
   @ApiTags('Gestion-Perfiles')
   @Get('perfil/getbyid/:id')
   @ApiOperation({
@@ -344,6 +352,7 @@ export class UsuariosController {
       }
     }
   }
+
   @ApiTags('Gestion-Perfiles')
   @Put('perfil/update/:id')
   @ApiOperation({
@@ -352,6 +361,7 @@ export class UsuariosController {
   })
   @ApiResponse({ status: 200, description: 'Perfil actualizado con éxito.' })
   @ApiResponse({ status: 404, description: 'Perfil no encontrado.' })
+  @ApiResponse({ status: 500, description: 'Error interno del servidor.' })
   @ApiBody({ type: UpdatePerfilDto })
   @ApiParam({ name: 'id', description: 'ID del perfil', required: true })
   async update(
@@ -369,17 +379,20 @@ export class UsuariosController {
     } catch (error) {
       if (error instanceof NotFoundException) {
         res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      } else if (error instanceof BadRequestException) {
+        res.status(HttpStatus.BAD_REQUEST).json({ message: error.message });
       } else {
         throw new HttpException(
           {
-            status: HttpStatus.BAD_REQUEST,
-            error: 'Datos inválidos.',
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            error: 'Error al actualizar el perfil.',
           },
-          HttpStatus.BAD_REQUEST,
+          HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
     }
   }
+
   @ApiTags('Gestion-Perfiles')
   @Delete('perfil/delete/:id')
   @ApiParam({
@@ -418,6 +431,7 @@ export class UsuariosController {
       }
     }
   }
+
   @ApiTags('Gestion - Customer')
   @Get('findPasswordByEmail/:email')
   @ApiOperation({
@@ -450,7 +464,7 @@ export class UsuariosController {
   ) {
     {
       try {
-        let usuario = await this.usuariosService.findPasswordByEmail(email);
+        const usuario = await this.usuariosService.findPasswordByEmail(email);
 
         if (!usuario) {
           return res
