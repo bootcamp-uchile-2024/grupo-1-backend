@@ -50,6 +50,7 @@ import { CreateSustratoDto } from '../dto/create-sustrato.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import logger from 'src/logger';
 
 @Controller('productos')
 export class ProductosController {
@@ -84,6 +85,12 @@ export class ProductosController {
     }
   }
   @Get('/catalogo')
+  @ApiResponse({
+    status: 200,
+    description: 'Listado de todos los productos',
+    type: [Producto],
+  })
+  @ApiResponse({ status: 404, description: 'No se encontraron productos' })
   @ApiTags('Gestion-Productos')
   @ApiOperation({
     summary: 'Historia Usuario H004: Listado de Productos Plantopia',
@@ -92,11 +99,6 @@ export class ProductosController {
   })
   @ApiQuery({ name: 'page', required: true, type: Number })
   @ApiQuery({ name: 'size', required: true, type: Number })
-  @ApiResponse({
-    status: 200,
-    description: 'Listado de todos los productos',
-    type: [Producto],
-  })
   async findAllCatalogo(
     @Query('page', ParseIntPipe) page: number,
     @Query('size', ParseIntPipe) size: number,
@@ -109,6 +111,7 @@ export class ProductosController {
       );
       res.status(HttpStatus.OK).json(productos);
     } catch (error) {
+      error('Error al obtener los productos: ' + error.message);
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -148,6 +151,7 @@ export class ProductosController {
       }
       res.status(HttpStatus.OK).json(producto);
     } catch (error) {
+      error('Error al obtener el producto: ' + error.message);
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -181,6 +185,7 @@ export class ProductosController {
       );
       res.status(HttpStatus.OK).json(producto);
     } catch (error) {
+      error('Error al actualizar producto: ' + error.message);
       if (error instanceof NotFoundException) {
         res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
       } else {
@@ -1099,9 +1104,7 @@ export class ProductosController {
         producto: {
           id: 1,
           nombre: 'Ejemplo de Producto',
-          imagenes: [
-            // La imagen eliminada ya no aparecerá en el arreglo
-          ],
+          imagenes: [],
         },
       },
     },
@@ -1167,11 +1170,10 @@ export class ProductosController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     if (!file) {
-      console.log('No se recibió archivo');
       throw new BadRequestException('No se ha recibido el archivo.');
     }
     const producto = await this.productosService.uploadProductImage(
-      parseInt(id, 10), // Convertir el id a número
+      parseInt(id, 10),
       file,
     );
     return {
@@ -1183,6 +1185,15 @@ export class ProductosController {
   @Patch(':id/habilitar')
   @ApiTags('Gestion-Productos')
   @ApiOperation({ summary: 'Habilitar un producto' })
+  @ApiResponse({
+    status: 200,
+    description: 'Producto habilitado correctamente',
+    type: Producto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Producto no encontrado',
+  })
   @ApiParam({
     name: 'id',
     description: 'ID del producto que se va a habilitar',

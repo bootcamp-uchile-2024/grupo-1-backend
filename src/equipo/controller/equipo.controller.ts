@@ -25,7 +25,6 @@ export class EquipoController {
   }
   @Get('informacion/ecommerce')
   getEcommerce(): object {
-    console.log('ecommerce');
     return this.equipoService.getEcommerce();
   }
 }

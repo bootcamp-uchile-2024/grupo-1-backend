@@ -3,6 +3,7 @@ import {
   ExecutionContext,
   Injectable,
   NestInterceptor,
+  Param,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -15,11 +16,16 @@ export class LoggingInterceptor implements NestInterceptor {
     const ctx = context.switchToHttp();
     const request = ctx.getRequest<Request>();
     const response = ctx.getResponse<Response>();
-    const { method, originalUrl } = request;
+    const { method, originalUrl, body } = request;
     const contextName = context.getClass().name;
 
     logger.info(
-      `Flujo de implementación: ${method} ${originalUrl} - Contexto: ${contextName}`,
+      `🚀🚀 => Flujo de implementación: 🚩 ${method} ${originalUrl} - Contexto: ${contextName}`,
+      { context: contextName },
+    );
+
+    logger.verbose(
+      `📖 Datos de entrada: ${method} ${originalUrl} - Body: ${JSON.stringify(body)} - Param: ${JSON.stringify(Param)}`,
       { context: contextName },
     );
 

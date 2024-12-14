@@ -1,44 +1,57 @@
-import { ArgumentsHost, BadRequestException, Catch, ExceptionFilter, HttpException, HttpStatus, ImATeapotException } from '@nestjs/common';
-import { Response } from 'express';
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
+import { Response, Request } from 'express';
 import { ErrorPlantopia } from '../error-plantopia/error-plantopia';
+import logger from 'src/logger';
+
 @Catch()
-export class GlobalFilter<ImATeapotException> implements ExceptionFilter {
+export class GlobalFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
-    // Variables para manejar el código de estado y mensaje
     let status: number;
     let message: string;
-    console.log('Filter HttpException Inicio');
-    // Si la excepción es una instancia de HttpException (manejo de excepciones NestJS)
+    let errorResponse: any;
+
     if (exception instanceof HttpException) {
       status = exception.getStatus();
-      const errorResponse = exception.getResponse();
-      message = typeof errorResponse === 'string' ? errorResponse : (errorResponse as any).message || 'Unknown error';
-    }
-    // Si la excepción es una instancia de ErrorPlantopia (excepción personalizada)
-    else if (exception instanceof ErrorPlantopia) {
-      status = exception.statusCode; // Usamos el statusCode de ErrorPlantopia
+      errorResponse = exception.getResponse();
+      message =
+        typeof errorResponse === 'string'
+          ? errorResponse
+          : (errorResponse as any).message || 'Unknown error';
+    } else if (exception instanceof ErrorPlantopia) {
+      status = exception.statusCode;
       message = exception.message;
-    }
-    // Si es una excepción genérica o no controlada
-    else {
-      status = HttpStatus.BAD_REQUEST;  // Usar 400 por defecto en lugar de 500
+    } else {
+      status = HttpStatus.INTERNAL_SERVER_ERROR;
       message = 'Ha ocurrido un error interno';
     }
 
-    // Enviar la respuesta con el código de estado adecuado
+    logger.error(`Excepción capturada: ${message}`, {
+      statusCode: status,
+      timestamp: new Date().toISOString(),
+      path: request.url,
+      method: request.method,
+      stack: exception instanceof Error ? exception.stack : null,
+    });
+
     response.status(status).json({
       statusCode: status,
-      message: message,
+      message:
+        process.env.NODE_ENV === 'production' &&
+        status === HttpStatus.INTERNAL_SERVER_ERROR
+          ? 'Ha ocurrido un error interno'
+          : message,
       timestamp: new Date().toISOString(),
       path: request.url,
     });
-  
-    console.log('Filter HttpException Global PLANTOPIA Status:' + status);
-    console.log('Filter HttpException Global PLANTOPIA Mensaje del PIPE:' + message);
   }
-
 }

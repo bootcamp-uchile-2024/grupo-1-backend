@@ -49,6 +49,8 @@ export class UsuariosController {
   })
   @ApiResponse({ status: 201, description: 'Usuario creado con éxito.' })
   @ApiResponse({ status: 400, description: 'Datos inválidos.' })
+  @ApiResponse({ status: 500, description: 'Error interno del servidor.' })
+  @ApiResponse({ status: 409, description: 'Usuario ya existe.' })
   @ApiBody({ type: CreateUsuarioDto })
   async create(
     @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
@@ -79,6 +81,7 @@ export class UsuariosController {
     status: 200,
     description: 'Lista de usuarios obtenida con éxito.',
   })
+  @ApiResponse({ status: 404, description: 'Usuarios no encontrados.' })
   @ApiResponse({
     status: 500,
     description: 'Error interno del servidor.',

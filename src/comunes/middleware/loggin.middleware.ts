@@ -1,4 +1,4 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import { Injectable, NestMiddleware, Param } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import logger from 'src/logger';
 
@@ -9,14 +9,13 @@ export class LoggingMiddleware implements NestMiddleware {
     const userAgent = req.get('user-agent') || '';
     const context = 'HTTP';
 
-    // Ocultar datos sensibles
     const sanitizedBody = { ...body };
     if (sanitizedBody.password) {
       sanitizedBody.password = '******';
     }
 
     logger.info(
-      `Entrada: ${method} ${originalUrl} - Body: ${JSON.stringify(sanitizedBody)} - Query: ${JSON.stringify(query)} - User-Agent: ${userAgent}`,
+      `Datos de Entrada: ${method} ${originalUrl} - Body: ${JSON.stringify(sanitizedBody)} - Query: ${JSON.stringify(query)} - User-Agent: ${userAgent}`,
       { context },
     );
 

@@ -96,8 +96,6 @@ export class ProductosService {
     const imageName = `${productId}-${Date.now()}.jpg`;
     const fullImagePath = path.join(this.imagePath, imageName);
 
-    console.log('RUTA IMAGEN ', fullImagePath);
-
     await fsPromises.mkdir(this.imagePath, { recursive: true });
     await fsPromises.writeFile(fullImagePath, imageBuffer);
     const nuevaImagen = this.imagenProductoRepository.create({
@@ -170,12 +168,8 @@ export class ProductosService {
       );
       try {
         await fsPromises.unlink(imagePath);
-        console.log('Imagen eliminada del sistema de archivos:', imagePath);
       } catch (err) {
-        console.error(
-          'Error al eliminar la imagen del sistema de archivos:',
-          err,
-        );
+        throw new Error('Error al eliminar la imagen del sistema de archivos');
       }
     }
     await this.imagenProductoRepository.remove(imagenExistente);
@@ -224,10 +218,6 @@ export class ProductosService {
     return categoria;
   }
   async findCategoriaIdByName(nombreCategoria: string): Promise<Categoria> {
-    console.log(
-      'entro al servicio de categoria findCategoriaIdByName',
-      nombreCategoria,
-    );
     const categoria = await this.categoriaRepository.findOne({
       where: { nombreCategoria },
     });
@@ -242,7 +232,6 @@ export class ProductosService {
   // CATALOGO de productos
   // busca todos los productos
   async findallcatalogo(): Promise<Producto[]> {
-    console.log('entro al servicio catalogo de producto ');
     const productos = await this.productoRepository.find({
       relations: ['categoria', 'imagenes'],
     });
@@ -297,8 +286,6 @@ export class ProductosService {
   }
 
   async findallcatalogo222(categoriaNombre?: string): Promise<Producto[]> {
-    console.log('entro al servicio catalogo de producto ');
-
     let productos: Producto[];
 
     if (categoriaNombre) {

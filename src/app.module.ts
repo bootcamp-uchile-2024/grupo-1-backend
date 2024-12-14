@@ -43,7 +43,7 @@ import { LoggingMiddleware } from './comunes/middleware/loggin.middleware';
       autoLoadEntities: false,
       entities: [__dirname + '/../**/*.entity{.ts,.js}'],
       synchronize: false,
-      logging: true,
+      logging: false,
     }),
     MulterModule.register({
       dest: './uploads',

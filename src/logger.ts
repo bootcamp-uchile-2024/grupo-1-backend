@@ -21,10 +21,9 @@ const logger = createLogger({
     }),
   ),
   transports: [
-    new transports.Console(),
-    ...(process.env.NODE_ENV === 'production'
-      ? [dailyRotateFileTransport]
-      : []),
+    new transports.Console({
+      level: process.env.NODE_ENV === 'development' ? 'verbose' : 'info',
+    }),
   ],
 });
 
