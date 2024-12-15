@@ -10,7 +10,7 @@ services:
     depends_on:
       - mysql
       - flyway
-    restart: on failure
+    restart: on-failure
     networks:
       - plantopia-network
 
@@ -31,7 +31,7 @@ services:
       - plantopia-network
 
   flyway:
-    image: flyway/flyway:10.20.1-alpine
+    image: flyway/flyway
     volumes:
       - ../scripts_db:/flyway/sql
     environment:
