@@ -11,7 +11,7 @@ CREATE TABLE preferencias (
   respuesta8 VARCHAR(255) NOT NULL,
   respuesta9 VARCHAR(255) NOT NULL,
   usuarioId INT,
-  CONSTRAINT FK_usuario_preferencias FOREIGN KEY (usuarioId) REFERENCES usuarios(id)
+  CONSTRAINT FK_usuario_preferencias FOREIGN KEY (usuarioId) REFERENCES Usuario(id)
 );
 
 -- Alterar la tabla Usuario para agregar la relación con la tabla preferencias
