@@ -1225,4 +1225,57 @@ export class ProductosController {
   async deshabilitar(@Param('id') id: number): Promise<Producto> {
     return this.productosService.deshabilitarProducto(id);
   }
+  @ApiTags('Filtros - Productos')
+  @Get('plantas/filtropetfriendly')
+  @ApiOperation({
+    summary: 'Filtrar plantas pet friendly',
+    description: 'Devuelve una lista de plantas pet friendly',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Lista de plantas pet friendly obtenida con éxito.',
+    type: [Planta],
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'Error al obtener las plantas pet friendly.',
+  })
+  @ApiQuery({
+    name: 'filtro',
+    description: 'Filtro para obtener plantas pet friendly (true o false)',
+    required: true,
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'Error al obtener las plantas pet friendly.',
+  })
+  @ApiQuery({
+    name: 'filtro',
+    description: 'Filtro para obtener plantas pet friendly (true o false)',
+    required: true,
+  })
+  async filtroPetFriendly(
+    @Query('filtro') filtro: string, // Recibimos el filtro como string
+    @Res() res: Response,
+  ) {
+    try {
+      const filtroBooleano = filtro === 'true' ? 0 : 1;
+      const plantas =
+        await this.productosService.filtroPetFriendly(filtroBooleano);
+      res.status(HttpStatus.OK).json({
+        status: HttpStatus.OK,
+        message: 'Plantas pet friendly obtenidas con éxito',
+        data: plantas,
+      });
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          data: error,
+          error: 'Error al obtener las plantas pet friendly.',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 }

@@ -431,6 +431,7 @@ export class ProductosService {
       humedad: humedadEntity,
       temperaturaIdeal,
       toxicidadMascotas,
+      //      petfriendly,
       tamanoMaximo,
       peso,
       dificultad: dificultadEntity,
@@ -970,5 +971,19 @@ export class ProductosService {
     }
     producto.activo = 0;
     return this.productoRepository.save(producto);
+  }
+  async filtroPetFriendly(filtro: number): Promise<Planta[]> {
+    try {
+      const filtroPlantas: Planta[] = await this.plantaRepository.find({
+        where: { toxicidadMascotas: filtro },
+      });
+      return filtroPlantas;
+    } catch (error) {
+      throw new BadRequestException({
+        status: HttpStatus.BAD_REQUEST,
+        error: 'Error al obtener las plantas',
+        data: error,
+      });
+    }
   }
 }

@@ -6,10 +6,9 @@ import * as fs from 'fs';
 const logDir = '/app/logs';
 
 if (!fs.existsSync(logDir)) {
-  fs.mkdirSync(logDir);
+  fs.mkdirSync(logDir, { recursive: true });
 }
 
-// Configura el transporte para logs diarios
 const dailyRotateFileTransport = new transports.DailyRotateFile({
   filename: `${logDir}/%DATE%-results.log`,
   datePattern: 'YYYY-MM-DD',
@@ -28,9 +27,12 @@ const logger = createLogger({
   ),
   transports: [
     new transports.Console({
-      level: process.env.NODE_ENV === 'development' ? 'verbose' : 'info',
+      level: process.env.NODE_ENV === 'desarrollo' ? 'verbose' : 'info',
     }),
-    dailyRotateFileTransport,
+    ...(process.env.NODE_ENV === 'production' ||
+    process.env.NODE_ENV === 'produccion'
+      ? [dailyRotateFileTransport]
+      : []),
   ],
 });
 

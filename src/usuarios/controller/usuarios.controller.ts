@@ -273,18 +273,16 @@ export class UsuariosController {
     createPerfilDto: CreatePerfilDto,
   ): Promise<Perfil> {
     try {
-      // Llama al servicio para crear el perfil.
       return await this.usuariosService.createPerfil(createPerfilDto);
     } catch (error) {
-      // Si es una excepción de NestJS, la vuelve a lanzar.
       if (error instanceof HttpException) {
         throw error;
       }
-      // Lanza una excepción genérica para errores inesperados.
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
           error: 'Error al crear el perfil.',
+          data: error,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );

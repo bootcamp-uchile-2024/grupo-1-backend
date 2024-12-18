@@ -3,6 +3,7 @@ import {
   NotFoundException,
   BadRequestException,
   ConflictException,
+  HttpStatus,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -13,6 +14,8 @@ import { NombrePerfil, Perfil } from '../entities/perfil.entity';
 import { UpdateUsuarioDto } from '../dto/update-usuario.dto';
 import { UpdatePerfilDto } from '../dto/update-perfil.dto';
 import { CreatePerfilDto } from '../dto/create-perfil.dto';
+import { Planta } from 'src/productos/entities/planta.entity';
+import { http } from 'winston';
 
 @Injectable()
 export class UsuariosService {
@@ -156,19 +159,12 @@ export class UsuariosService {
   async createPerfil(createPerfilDto: CreatePerfilDto): Promise<Perfil> {
     const nuevoPerfil = this.perfilRepository.create(createPerfilDto);
     try {
-      // Intenta guardar el perfil en la base de datos.
       return await this.perfilRepository.save(nuevoPerfil);
     } catch (error) {
-      // Loggea el error con un mensaje claro.
-      console.error('Error al guardar el perfil:', error.message, error.stack);
-
-      // Opcionalmente, puedes verificar el tipo de error para lanzar mensajes específicos.
       if (error.code === 'ER_DUP_ENTRY') {
         throw new BadRequestException('El perfil ya existe.');
       }
-
-      // Lanza una excepción genérica si no es un caso específico.
-      throw new BadRequestException('Error al crear el perfil');
+      throw new BadRequestException('Error al crear el perfil', error);
     }
   }
 
