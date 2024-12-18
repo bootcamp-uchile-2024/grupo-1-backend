@@ -52,6 +52,7 @@ export class GlobalFilter implements ExceptionFilter {
           : message,
       timestamp: new Date().toISOString(),
       path: request.url,
+      error: exception instanceof Error ? exception.message : null,
     });
   }
 }

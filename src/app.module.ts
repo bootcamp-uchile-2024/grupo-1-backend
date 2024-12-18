@@ -40,10 +40,10 @@ import { LoggingMiddleware } from './comunes/middleware/loggin.middleware';
       username: process.env.DB_USER,
       password: process.env.DB_PASS,
       database: process.env.DB_DATABASE,
-      autoLoadEntities: false,
+      autoLoadEntities: true,
       entities: [__dirname + '/../**/*.entity{.ts,.js}'],
       synchronize: false,
-      logging: false,
+      logging: ['warn', 'error'],
     }),
     MulterModule.register({
       dest: './uploads',

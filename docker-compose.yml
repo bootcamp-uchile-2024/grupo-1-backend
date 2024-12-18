@@ -48,7 +48,7 @@ services:
       - ./scripts_db:/flyway/sql # Mapea la carpeta de migraciones
     networks:
       - app-network
-    restart: on-failure # Reinicia Flyway si falla
+    restart: on-failure
 
 networks:
   app-network:

@@ -78,28 +78,24 @@ export class UsuariosController {
   @ApiTags('Gestion - Customer')
   @RolesAutorizados(Rol.ADMIN)
   @Get('/gestion/list')
-  @ApiOperation({ summary: 'Obtener todos los usuarios' })
+  @ApiOperation({
+    summary: 'Obtener la lista de usuarios',
+    description: 'Obtiene la lista de todos los usuarios registrados',
+  })
   @ApiResponse({
     status: 200,
     description: 'Lista de usuarios obtenida con éxito.',
   })
-  @ApiResponse({ status: 404, description: 'Usuarios no encontrados.' })
-  @ApiResponse({
-    status: 500,
-    description: 'Error interno del servidor.',
-  })
+  @ApiResponse({ status: 500, description: 'Error interno del servidor.' })
   async findAll(@Res() res: Response) {
     try {
       const usuarios = await this.usuariosService.findAll();
       res.status(HttpStatus.OK).json(usuarios);
     } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'Error al obtener los usuarios.',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        error: 'Error al obtener la lista de usuarios.',
+      });
     }
   }
 
@@ -133,10 +129,8 @@ export class UsuariosController {
     try {
       let usuario;
       if (isNaN(Number(identifier))) {
-        // Buscar por RUT
         usuario = await this.usuariosService.findUsuarioByRut(identifier);
       } else {
-        // Buscar por ID
         usuario = await this.usuariosService.findOne(Number(identifier));
       }
 
@@ -161,50 +155,58 @@ export class UsuariosController {
       }
     }
   }
-
   @ApiTags('Gestion - Customer')
-  @Delete('/gestion/delete/:rut')
+  @RolesAutorizados(Rol.ADMIN)
+  @Delete('/gestion/delete/:identificador')
   @ApiParam({
-    name: 'id',
-    description: 'ID del usuario a eliminar',
+    name: 'identificador',
+    description: 'ID o Rut del usuario a eliminar',
     required: true,
-    schema: { type: 'integer' },
+    schema: { type: 'string' },
   })
-  @ApiOperation({ summary: 'Eliminar un usuario' })
+  @ApiOperation({ summary: 'Eliminar un usuario por ID o RUT' })
   @ApiResponse({ status: 200, description: 'Usuario eliminado con éxito.' })
   @ApiResponse({ status: 404, description: 'Usuario no encontrado.' })
   @ApiResponse({
     status: 500,
     description: 'Error interno del servidor.',
   })
-  async remove(@Param('id', ParseIntPipe) id: number, @Res() res: Response) {
+  async remove(
+    @Param('identificador') identificador: string,
+    @Res() res: Response,
+  ): Promise<any> {
     try {
-      await this.usuariosService.remove(id);
+      await this.usuariosService.remove(identificador);
       res
         .status(HttpStatus.OK)
-        .json({ message: 'Usuario eliminado con éxito.' });
+        .json({ message: 'Usuario eliminado con éxito.', data: identificador });
     } catch (error) {
       if (error instanceof NotFoundException) {
-        throw new HttpException(
-          {
-            status: HttpStatus.NOT_FOUND,
-            error: 'Usuario no encontrado.',
-          },
-          HttpStatus.NOT_FOUND,
-        );
+        res.status(HttpStatus.NOT_FOUND).json({
+          statusCode: HttpStatus.NOT_FOUND,
+          message: error.message,
+          timestamp: new Date().toISOString(),
+          path: `/usuarios/gestion/delete/${identificador}`,
+        });
+      } else if (error instanceof BadRequestException) {
+        res.status(HttpStatus.BAD_REQUEST).json({
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: error.message,
+          timestamp: new Date().toISOString(),
+          path: `/usuarios/gestion/delete/${identificador}`,
+        });
+      } else {
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: 'Error interno del servidor.',
+          timestamp: new Date().toISOString(),
+          path: `/usuarios/gestion/delete/${identificador}`,
+        });
       }
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'Error al eliminar el usuario.',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
     }
   }
-
   @ApiTags('Gestion - Customer')
-  @Put('/gestion/update/:rut')
+  @Put('/gestion/update/:identificador')
   @ApiOperation({
     summary: 'Actualizar un usuario',
     description: 'Actualiza los detalles de un usuario existente',
@@ -213,37 +215,50 @@ export class UsuariosController {
   @ApiResponse({ status: 404, description: 'Usuario no encontrado.' })
   @ApiResponse({ status: 500, description: 'Error interno del servidor.' })
   @ApiBody({ type: UpdateUsuarioDto })
-  @ApiParam({ name: 'id', description: 'ID del usuario', required: true })
+  @ApiParam({
+    name: 'identificador',
+    description: 'ID o RUT del usuario',
+    required: true,
+  })
   async updateUsuario(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('identificador') identificador: string,
     @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
     updateUsuarioDto: UpdateUsuarioDto,
     @Res() res: Response,
   ) {
     try {
       const usuario = await this.usuariosService.updateUsuario(
-        id,
+        identificador,
         updateUsuarioDto,
       );
       res.status(HttpStatus.OK).json(usuario);
     } catch (error) {
       if (error instanceof NotFoundException) {
-        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+        res.status(HttpStatus.NOT_FOUND).json({
+          statusCode: HttpStatus.NOT_FOUND,
+          message: error.message,
+          timestamp: new Date().toISOString(),
+          path: `/usuarios/gestion/update/${identificador}`,
+        });
       } else if (error instanceof BadRequestException) {
-        res.status(HttpStatus.BAD_REQUEST).json({ message: error.message });
+        res.status(HttpStatus.BAD_REQUEST).json({
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: error.message,
+          timestamp: new Date().toISOString(),
+          path: `/usuarios/gestion/update/${identificador}`,
+        });
       } else {
-        throw new HttpException(
-          {
-            status: HttpStatus.INTERNAL_SERVER_ERROR,
-            error: 'Error al actualizar el usuario.',
-          },
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: 'Error interno del servidor.',
+          timestamp: new Date().toISOString(),
+          path: `/usuarios/gestion/update/${identificador}`,
+        });
       }
     }
   }
-
   @ApiTags('Gestion-Perfiles')
+  @RolesAutorizados(Rol.ADMIN)
   @Post('perfil/create')
   @ApiOperation({
     summary: 'Crear un nuevo perfil',
@@ -256,15 +271,16 @@ export class UsuariosController {
   async createPerfil(
     @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
     createPerfilDto: CreatePerfilDto,
-    @Res() res: Response,
-  ) {
+  ): Promise<Perfil> {
     try {
-      const perfil = await this.usuariosService.createPerfil(createPerfilDto);
-      res.status(HttpStatus.CREATED).json(perfil);
+      // Llama al servicio para crear el perfil.
+      return await this.usuariosService.createPerfil(createPerfilDto);
     } catch (error) {
+      // Si es una excepción de NestJS, la vuelve a lanzar.
       if (error instanceof HttpException) {
         throw error;
       }
+      // Lanza una excepción genérica para errores inesperados.
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -276,6 +292,7 @@ export class UsuariosController {
   }
 
   @ApiTags('Gestion-Perfiles')
+  @RolesAutorizados(Rol.ADMIN)
   @Get('perfil/get')
   @ApiOperation({ summary: 'Obtener todos los perfiles' })
   @ApiResponse({
@@ -303,6 +320,7 @@ export class UsuariosController {
   }
 
   @ApiTags('Gestion-Perfiles')
+  @RolesAutorizados(Rol.ADMIN)
   @Get('perfil/getbyid/:id')
   @ApiOperation({
     summary: 'Obtener un perfil por ID',
@@ -354,6 +372,7 @@ export class UsuariosController {
   }
 
   @ApiTags('Gestion-Perfiles')
+  @RolesAutorizados(Rol.ADMIN)
   @Put('perfil/update/:id')
   @ApiOperation({
     summary: 'Actualizar un perfil',
@@ -394,6 +413,7 @@ export class UsuariosController {
   }
 
   @ApiTags('Gestion-Perfiles')
+  @RolesAutorizados(Rol.ADMIN)
   @Delete('perfil/delete/:id')
   @ApiParam({
     name: 'id',
@@ -433,6 +453,7 @@ export class UsuariosController {
   }
 
   @ApiTags('Gestion - Customer')
+  @RolesAutorizados(Rol.INVITADO)
   @Get('findPasswordByEmail/:email')
   @ApiOperation({
     summary: 'HU010-Recuperar Clave por Email',

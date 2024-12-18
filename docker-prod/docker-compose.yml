@@ -33,7 +33,7 @@ services:
   flyway:
     image: flyway/flyway
     volumes:
-      - ../scripts_db:/flyway/sql
+      - ./scripts_db:/flyway/sql
     environment:
       HOST: mysql-prod
       PORT: 3306

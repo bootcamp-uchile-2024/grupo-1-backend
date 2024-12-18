@@ -1,14 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsBoolean, IsNotEmpty } from 'class-validator';
+import { IsString, IsBoolean, IsNotEmpty, IsEnum } from 'class-validator';
+import { NombrePerfil } from '../entities/perfil.entity';
 
 export class CreatePerfilDto {
   @ApiProperty({
-    description: 'Descripción del perfil',
-    example: 'Administrador',
+    description: 'Nombre del perfil',
+    example: NombrePerfil.USER,
   })
-  @IsString()
+  @IsEnum(NombrePerfil)
   @IsNotEmpty()
-  descripcion: string;
+  nombrePerfil: NombrePerfil;
 
   @ApiProperty({
     description: 'Acceso al sistema',
