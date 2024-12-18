@@ -13,6 +13,8 @@ services:
     restart: on-failure
     networks:
       - plantopia-network
+    volumes:
+      - ./logs:/app/logs 
 
   mysql:
     image: mysql:8.0
