@@ -49,8 +49,6 @@ import { Sustrato } from '../entities/sustrato.entity';
 import { CreateSustratoDto } from '../dto/create-sustrato.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { extname } from 'path';
-import logger from 'src/logger';
 
 @Controller('productos')
 export class ProductosController {
@@ -1225,7 +1223,7 @@ export class ProductosController {
   async deshabilitar(@Param('id') id: number): Promise<Producto> {
     return this.productosService.deshabilitarProducto(id);
   }
-  @ApiTags('Filtros - Productos')
+  @ApiTags('Filtros - Plantas')
   @Get('plantas/filtropetfriendly')
   @ApiOperation({
     summary: 'Filtrar plantas pet friendly',
@@ -1253,6 +1251,7 @@ export class ProductosController {
     name: 'filtro',
     description: 'Filtro para obtener plantas pet friendly (true o false)',
     required: true,
+    enum: ['true', 'false'],
   })
   async filtroPetFriendly(
     @Query('filtro') filtro: string, // Recibimos el filtro como string
@@ -1273,6 +1272,57 @@ export class ProductosController {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
           data: error,
           error: 'Error al obtener las plantas pet friendly.',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+  @Get('plantas/filtrocuidados')
+  @ApiTags('Filtros - Plantas')
+  @ApiOperation({
+    summary: 'Filtrar plantas segun dificultad de cuidado',
+    description: 'Devuelve una lista de plantas segun dificultad de cuidado',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Lista de plantas obtenida con éxito.',
+    type: [Planta],
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Error al obtener el filtro de cuidados.',
+  })
+  @ApiQuery({
+    name: 'filtro',
+    description: 'Nivel de cuidado permitido para filtrar las plantas',
+    required: true,
+    enum: [
+      'Avanzado',
+      'Difícil',
+      'Experto',
+      'Fácil',
+      'Intermedio',
+      'Maestro',
+      'Moderado',
+      'Muy Difícil',
+      'Principiante',
+      'Profesional',
+    ],
+  })
+  async filtroCuidados(@Query('filtro') filtro: string, @Res() res: Response) {
+    try {
+      const plantas = await this.productosService.filtroCuidados(filtro);
+      res.status(HttpStatus.OK).json({
+        status: HttpStatus.OK,
+        message: 'Plantas obtenidas con éxito',
+        data: plantas,
+      });
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          data: error,
+          error: 'Error al obtener las plantas.',
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );

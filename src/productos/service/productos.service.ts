@@ -36,8 +36,6 @@ import { UpdateSustratoDto } from '../dto/update-sustrato.dto';
 import * as fsPromises from 'fs/promises';
 import * as path from 'path';
 import * as fs from 'fs';
-import { v4 as uuidv4 } from 'uuid';
-import { join } from 'path';
 @Injectable()
 export class ProductosService {
   productos: Producto[] = [];
@@ -852,15 +850,12 @@ export class ProductosService {
   ): Promise<{ data: T[]; total: number }> {
     const queryBuilder = repository.createQueryBuilder('producto');
 
-    // Añadir la condición donde 'activo' sea 1
     queryBuilder.where('producto.activo = :activo', { activo: 1 });
 
-    // Añadir relaciones si las tienes
     relations.forEach((relation) => {
       queryBuilder.leftJoinAndSelect(`producto.${relation}`, relation);
     });
 
-    // Paginación
     queryBuilder.skip((page - 1) * size);
     queryBuilder.take(size);
 
@@ -874,7 +869,7 @@ export class ProductosService {
 
   async removeImageFromProduct(
     productId: number,
-    imageId: number, // Añadimos el parámetro imageId
+    imageId: number,
   ): Promise<Producto> {
     const producto = await this.productoRepository.findOne({
       where: { id: productId },
@@ -896,7 +891,7 @@ export class ProductosService {
       imagenExistente.urlImagen,
     );
     try {
-      await fsPromises.unlink(imagePath); // Eliminar archivo
+      await fsPromises.unlink(imagePath);
     } catch (err) {
       console.error('Error al eliminar la imagen:', err);
       throw new Error('Error al eliminar la imagen del sistema de archivos');
@@ -906,12 +901,6 @@ export class ProductosService {
     return this.productoRepository.save(producto);
   }
 
-  /**
-   * Carga una imagen y la asocia al producto en la base de datos.
-   * @param productId ID del producto al cual se asocia la imagen.
-   * @param file Archivo de imagen subido.
-   * @returns Producto con la nueva imagen asociada.
-   */
   async uploadProductImage(
     productId: number,
     file: Express.Multer.File,
@@ -976,6 +965,23 @@ export class ProductosService {
     try {
       const filtroPlantas: Planta[] = await this.plantaRepository.find({
         where: { toxicidadMascotas: filtro },
+      });
+      return filtroPlantas;
+    } catch (error) {
+      throw new BadRequestException({
+        status: HttpStatus.BAD_REQUEST,
+        error: 'Error al obtener las plantas',
+        data: error,
+      });
+    }
+  }
+  async filtroCuidados(filtro: string): Promise<Planta[]> {
+    try {
+      const filtrocuidados = await this.dificultadRepository.findOne({
+        where: { descripcion: filtro },
+      });
+      const filtroPlantas: Planta[] = await this.plantaRepository.find({
+        where: { dificultad: filtrocuidados },
       });
       return filtroPlantas;
     } catch (error) {
