@@ -18,6 +18,7 @@ import {
   UseInterceptors,
   Patch,
   BadRequestException,
+  UploadedFiles,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -28,7 +29,7 @@ import {
   ApiParam,
   ApiConsumes,
 } from '@nestjs/swagger';
-import { Response } from 'express';
+import { response, Response } from 'express';
 import { ProductosService } from '../service/productos.service';
 import { CreatePlantaDto } from '../dto/create-planta.dto';
 import { CreateCategoriaDto } from '../dto/create-categoria.dto';
@@ -47,8 +48,11 @@ import { Planta } from '../entities/planta.entity';
 import { UpdateSustratoDto } from '../dto/update-sustrato.dto';
 import { Sustrato } from '../entities/sustrato.entity';
 import { CreateSustratoDto } from '../dto/create-sustrato.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
+import { extname } from 'path';
+import { HttpExceptionFilter } from 'src/comunes/filter/http-exception.filter';
+import { CreateProd2Dto } from '../dto/create-prod2.dto';
 
 @Controller('productos')
 export class ProductosController {
@@ -1326,6 +1330,91 @@ export class ProductosController {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
           data: error,
           error: 'Error al obtener las plantas.',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+  @ApiTags('Gestion-Productos')
+  @Post('/newcreate')
+  @ApiConsumes('multipart/form-data')
+  @ApiOperation({ summary: 'Crear un producto con listado de imagenes' })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'Producto creado con éxito',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Error al crear el producto',
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'Error interno del servidor',
+  })
+  @ApiBody({
+    description: 'Crear un producto con listado de imágenes',
+    type: CreateProd2Dto,
+    required: true,
+    schema: { example: { nombre: 'Producto de prueba', precio: 1000 } },
+  })
+  @UseInterceptors(
+    FilesInterceptor('imagenes', 10, {
+      storage: diskStorage({
+        destination: './uploads/productos',
+        filename: (req, file, callback) => {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const ext = extname(file.originalname);
+          callback(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+        },
+      }),
+      fileFilter: (req, file, callback) => {
+        if (!file.mimetype.match(/image\/*/)) {
+          return callback(
+            new BadRequestException('Solo se permiten imágenes.'),
+            false,
+          );
+        }
+        callback(null, true);
+      },
+    }),
+  )
+  //TODO: METODO PARA CREAR PRODUCTO JUNTO A SU IMAGEN
+  async creaProductoImagen(
+    @Body() CreateProd2Dto: CreateProd2Dto,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    if (!files || files.length === 0) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Se deben subir al menos una imagen',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const rutasImagenes = files.map(
+      (file) => `/uploads/productos/${file.filename}`,
+    );
+
+    try {
+      const producto = await this.productosService.creaProductoImagen(
+        CreateProd2Dto,
+        rutasImagenes,
+      );
+      return {
+        statusCode: HttpStatus.CREATED,
+        message: 'Producto creado exitosamente',
+        data: producto,
+        rutasImagenes,
+      };
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Error al crear el producto',
+          data: error.message,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );

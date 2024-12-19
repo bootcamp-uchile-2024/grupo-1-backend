@@ -36,6 +36,7 @@ import { UpdateSustratoDto } from '../dto/update-sustrato.dto';
 import * as fsPromises from 'fs/promises';
 import * as path from 'path';
 import * as fs from 'fs';
+import { CreateProd2Dto } from '../dto/create-prod2.dto';
 @Injectable()
 export class ProductosService {
   productos: Producto[] = [];
@@ -1036,6 +1037,50 @@ export class ProductosService {
         error: 'Error al obtener las plantas',
         data: error,
       });
+    }
+  }
+
+  //TODO: METODO PARA CREAR UN PRODUCTO JUNTO A LAS IMAGENES
+  async creaProductoImagen(
+    CreateProd2Dto: CreateProd2Dto,
+    rutasImagenes: string[],
+  ): Promise<Producto> {
+    const queryRunner =
+      this.productoRepository.manager.connection.createQueryRunner();
+    await queryRunner.startTransaction();
+    try {
+
+      const nuevoProducto = this.productoRepository.create({
+        ...CreateProd2Dto,
+        categoria: { id: CreateProd2Dto.idCategoria } as any,
+      });
+
+      const productoGuardado = await queryRunner.manager.save(nuevoProducto);
+
+      if (rutasImagenes && rutasImagenes.length > 0) {
+        const imagenesEntities = rutasImagenes.map((ruta) =>
+          this.imagenProductoRepository.create({
+            urlImagen: ruta,
+            producto: productoGuardado,
+          }),
+        );
+        await queryRunner.manager.save(imagenesEntities);
+      }
+
+      await queryRunner.commitTransaction();
+      return productoGuardado;
+    } catch (error) {
+      console.error(
+        'Error durante la creación del producto con imágenes:',
+        error,
+      );
+      await queryRunner.rollbackTransaction();
+      throw new HttpException(
+        `Error al crear el producto con imágenes: ${error.message}`,
+        HttpStatus.BAD_REQUEST,
+      );
+    } finally {
+      await queryRunner.release();
     }
   }
 }
