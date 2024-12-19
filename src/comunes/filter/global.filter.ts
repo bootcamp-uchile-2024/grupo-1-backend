@@ -41,6 +41,9 @@ export class GlobalFilter implements ExceptionFilter {
       path: request.url,
       method: request.method,
       stack: exception instanceof Error ? exception.stack : null,
+      requestBody: request.body,
+      queryParams: request.query,
+      headers: request.headers,
     });
 
     response.status(status).json({
@@ -53,6 +56,8 @@ export class GlobalFilter implements ExceptionFilter {
       timestamp: new Date().toISOString(),
       path: request.url,
       error: exception instanceof Error ? exception.message : null,
+      stack: exception instanceof Error ? exception.stack : null,
+      details: exception instanceof HttpException ? errorResponse : null,
     });
   }
 }

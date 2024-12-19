@@ -29,7 +29,7 @@ import {
   ApiParam,
   ApiConsumes,
 } from '@nestjs/swagger';
-import { response, Response } from 'express';
+import { Response } from 'express';
 import { ProductosService } from '../service/productos.service';
 import { CreatePlantaDto } from '../dto/create-planta.dto';
 import { CreateCategoriaDto } from '../dto/create-categoria.dto';
@@ -51,7 +51,6 @@ import { CreateSustratoDto } from '../dto/create-sustrato.dto';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
-import { HttpExceptionFilter } from 'src/comunes/filter/http-exception.filter';
 import { CreateProd2Dto } from '../dto/create-prod2.dto';
 
 @Controller('productos')
