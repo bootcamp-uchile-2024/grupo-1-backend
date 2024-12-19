@@ -18,6 +18,7 @@ import {
   UseInterceptors,
   Patch,
   BadRequestException,
+  UploadedFiles,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -47,9 +48,10 @@ import { Planta } from '../entities/planta.entity';
 import { UpdateSustratoDto } from '../dto/update-sustrato.dto';
 import { Sustrato } from '../entities/sustrato.entity';
 import { CreateSustratoDto } from '../dto/create-sustrato.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { CreateProd2Dto } from '../dto/create-prod2.dto';
 
 @Controller('productos')
 export class ProductosController {
@@ -84,6 +86,12 @@ export class ProductosController {
     }
   }
   @Get('/catalogo')
+  @ApiResponse({
+    status: 200,
+    description: 'Listado de todos los productos',
+    type: [Producto],
+  })
+  @ApiResponse({ status: 404, description: 'No se encontraron productos' })
   @ApiTags('Gestion-Productos')
   @ApiOperation({
     summary: 'Historia Usuario H004: Listado de Productos Plantopia',
@@ -92,11 +100,6 @@ export class ProductosController {
   })
   @ApiQuery({ name: 'page', required: true, type: Number })
   @ApiQuery({ name: 'size', required: true, type: Number })
-  @ApiResponse({
-    status: 200,
-    description: 'Listado de todos los productos',
-    type: [Producto],
-  })
   async findAllCatalogo(
     @Query('page', ParseIntPipe) page: number,
     @Query('size', ParseIntPipe) size: number,
@@ -109,6 +112,7 @@ export class ProductosController {
       );
       res.status(HttpStatus.OK).json(productos);
     } catch (error) {
+      error('Error al obtener los productos: ' + error.message);
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -148,6 +152,7 @@ export class ProductosController {
       }
       res.status(HttpStatus.OK).json(producto);
     } catch (error) {
+      error('Error al obtener el producto: ' + error.message);
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -181,6 +186,7 @@ export class ProductosController {
       );
       res.status(HttpStatus.OK).json(producto);
     } catch (error) {
+      error('Error al actualizar producto: ' + error.message);
       if (error instanceof NotFoundException) {
         res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
       } else {
@@ -440,8 +446,9 @@ export class ProductosController {
   @Get('plantas/getbyid/:id')
   @ApiTags('Gestion-Productos-Plantas')
   @ApiOperation({
-    summary: 'Obtener una planta por ID',
-    description: 'Devuelve los detalles de una planta específica por su ID',
+    summary: 'Obtener una planta por ID de producto',
+    description:
+      'Devuelve los detalles de una planta específica por el ID del producto',
   })
   @ApiResponse({
     status: 200,
@@ -454,31 +461,31 @@ export class ProductosController {
   })
   @ApiParam({
     name: 'id',
-    description: 'ID de la planta',
+    description: 'ID del producto',
     required: true,
   })
-  async findPlantaById(
+  async findOnePlanta(
     @Param('id', ParseIntPipe) id: number,
     @Res() res: Response,
   ) {
     try {
       const planta = await this.productosService.findPlantaById(id);
-      if (!planta) {
-        return res
-          .status(HttpStatus.NOT_FOUND)
-          .json({ message: 'Planta no encontrada' });
-      }
       res.status(HttpStatus.OK).json(planta);
     } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'Error al obtener la planta.',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      if (error instanceof NotFoundException) {
+        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            error: 'Error al obtener la planta.',
+          },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
   }
+
   @Put('plantas/update/:id')
   @ApiTags('Gestion-Productos-Plantas')
   @ApiOperation({
@@ -578,8 +585,9 @@ export class ProductosController {
   @Get('maceteros/getbyid/:id')
   @ApiTags('Gestion-Productos-Maceteros')
   @ApiOperation({
-    summary: 'Obtener un macetero por ID',
-    description: 'Devuelve los detalles de un macetero específico por su ID',
+    summary: 'Obtener un macetero por ID de producto',
+    description:
+      'Devuelve los detalles de un macetero específico por el ID del producto',
   })
   @ApiResponse({
     status: 200,
@@ -592,7 +600,7 @@ export class ProductosController {
   })
   @ApiParam({
     name: 'id',
-    description: 'ID del macetero',
+    description: 'ID del producto',
     required: true,
   })
   async findOneMacetero(
@@ -601,13 +609,13 @@ export class ProductosController {
   ) {
     try {
       const macetero = await this.productosService.findMaceteroById(id);
-      if (!macetero) {
+      res.status(HttpStatus.OK).json(macetero);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
         return res
           .status(HttpStatus.NOT_FOUND)
           .json({ message: 'Macetero no encontrado' });
       }
-      res.status(HttpStatus.OK).json(macetero);
-    } catch (error) {
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -642,18 +650,20 @@ export class ProductosController {
       res.status(HttpStatus.OK).json(macetero);
     } catch (error) {
       if (error instanceof NotFoundException) {
-        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
-      } else {
-        throw new HttpException(
-          {
-            status: HttpStatus.BAD_REQUEST,
-            error: 'Datos inválidos.',
-          },
-          HttpStatus.BAD_REQUEST,
-        );
+        return res
+          .status(HttpStatus.NOT_FOUND)
+          .json({ message: 'Macetero no encontrado' });
       }
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Error al actualizar el macetero.',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
+
   @Post('fertilizantes/create')
   @ApiTags('Gestion-Productos-Fertilizantes')
   @ApiOperation({
@@ -719,9 +729,9 @@ export class ProductosController {
   @Get('fertilizantes/getbyid/:id')
   @ApiTags('Gestion-Productos-Fertilizantes')
   @ApiOperation({
-    summary: 'Obtener un fertilizante por ID',
+    summary: 'Obtener un fertilizante por ID de producto',
     description:
-      'Devuelve los detalles de un fertilizante específico por su ID',
+      'Devuelve los detalles de un fertilizante específico por el ID del producto',
   })
   @ApiResponse({
     status: 200,
@@ -734,7 +744,7 @@ export class ProductosController {
   })
   @ApiParam({
     name: 'id',
-    description: 'ID del fertilizante',
+    description: 'ID del producto',
     required: true,
   })
   async findOneFertilizante(
@@ -742,21 +752,21 @@ export class ProductosController {
     @Res() res: Response,
   ) {
     try {
-      const fertilizante = await this.productosService.findFertilizanteById(id);
-      if (!fertilizante) {
-        return res
-          .status(HttpStatus.NOT_FOUND)
-          .json({ message: 'Fertilizante no encontrado' });
-      }
+      const fertilizante =
+        await this.productosService.findFertilizanteByProductoId(id);
       res.status(HttpStatus.OK).json(fertilizante);
     } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'Error al obtener el fertilizante.',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      if (error instanceof NotFoundException) {
+        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            error: 'Error al obtener el fertilizante.',
+          },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
   }
 
@@ -863,12 +873,12 @@ export class ProductosController {
       );
     }
   }
-
   @Get('sustratos/getbyid/:id')
   @ApiTags('Gestion-Productos-Sustratos')
   @ApiOperation({
-    summary: 'Obtener un sustrato por ID',
-    description: 'Devuelve los detalles de un sustrato específico por su ID',
+    summary: 'Obtener un sustrato por ID de producto',
+    description:
+      'Devuelve los detalles de un sustrato específico por el ID del producto',
   })
   @ApiResponse({
     status: 200,
@@ -881,29 +891,28 @@ export class ProductosController {
   })
   @ApiParam({
     name: 'id',
-    description: 'ID del sustrato',
+    description: 'ID del producto',
     required: true,
   })
-  async findSustratoById(
+  async findOneSustrato(
     @Param('id', ParseIntPipe) id: number,
     @Res() res: Response,
   ) {
     try {
       const sustrato = await this.productosService.findSustratoById(id);
-      if (!sustrato) {
-        return res
-          .status(HttpStatus.NOT_FOUND)
-          .json({ message: 'Sustrato no encontrado' });
-      }
       res.status(HttpStatus.OK).json(sustrato);
     } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'Error al obtener el sustrato.',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      if (error instanceof NotFoundException) {
+        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            error: 'Error al obtener el sustrato.',
+          },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
   }
 
@@ -1099,9 +1108,7 @@ export class ProductosController {
         producto: {
           id: 1,
           nombre: 'Ejemplo de Producto',
-          imagenes: [
-            // La imagen eliminada ya no aparecerá en el arreglo
-          ],
+          imagenes: [],
         },
       },
     },
@@ -1167,11 +1174,10 @@ export class ProductosController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     if (!file) {
-      console.log('No se recibió archivo');
       throw new BadRequestException('No se ha recibido el archivo.');
     }
     const producto = await this.productosService.uploadProductImage(
-      parseInt(id, 10), // Convertir el id a número
+      parseInt(id, 10),
       file,
     );
     return {
@@ -1183,6 +1189,15 @@ export class ProductosController {
   @Patch(':id/habilitar')
   @ApiTags('Gestion-Productos')
   @ApiOperation({ summary: 'Habilitar un producto' })
+  @ApiResponse({
+    status: 200,
+    description: 'Producto habilitado correctamente',
+    type: Producto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Producto no encontrado',
+  })
   @ApiParam({
     name: 'id',
     description: 'ID del producto que se va a habilitar',
@@ -1213,5 +1228,195 @@ export class ProductosController {
   })
   async deshabilitar(@Param('id') id: number): Promise<Producto> {
     return this.productosService.deshabilitarProducto(id);
+  }
+  @ApiTags('Filtros - Plantas')
+  @Get('plantas/filtropetfriendly')
+  @ApiOperation({
+    summary: 'Filtrar plantas pet friendly',
+    description: 'Devuelve una lista de plantas pet friendly',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Lista de plantas pet friendly obtenida con éxito.',
+    type: [Planta],
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'Error al obtener las plantas pet friendly.',
+  })
+  @ApiQuery({
+    name: 'filtro',
+    description: 'Filtro para obtener plantas pet friendly (true o false)',
+    required: true,
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'Error al obtener las plantas pet friendly.',
+  })
+  @ApiQuery({
+    name: 'filtro',
+    description: 'Filtro para obtener plantas pet friendly (true o false)',
+    required: true,
+    enum: ['true', 'false'],
+  })
+  async filtroPetFriendly(
+    @Query('filtro') filtro: string, // Recibimos el filtro como string
+    @Res() res: Response,
+  ) {
+    try {
+      const filtroBooleano = filtro === 'true' ? 0 : 1;
+      const plantas =
+        await this.productosService.filtroPetFriendly(filtroBooleano);
+      res.status(HttpStatus.OK).json({
+        status: HttpStatus.OK,
+        message: 'Plantas pet friendly obtenidas con éxito',
+        data: plantas,
+      });
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          data: error,
+          error: 'Error al obtener las plantas pet friendly.',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+  @Get('plantas/filtrocuidados')
+  @ApiTags('Filtros - Plantas')
+  @ApiOperation({
+    summary: 'Filtrar plantas segun dificultad de cuidado',
+    description: 'Devuelve una lista de plantas segun dificultad de cuidado',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Lista de plantas obtenida con éxito.',
+    type: [Planta],
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Error al obtener el filtro de cuidados.',
+  })
+  @ApiQuery({
+    name: 'filtro',
+    description: 'Nivel de cuidado permitido para filtrar las plantas',
+    required: true,
+    enum: [
+      'Avanzado',
+      'Difícil',
+      'Experto',
+      'Fácil',
+      'Intermedio',
+      'Maestro',
+      'Moderado',
+      'Muy Difícil',
+      'Principiante',
+      'Profesional',
+    ],
+  })
+  async filtroCuidados(@Query('filtro') filtro: string, @Res() res: Response) {
+    try {
+      const plantas = await this.productosService.filtroCuidados(filtro);
+      res.status(HttpStatus.OK).json({
+        status: HttpStatus.OK,
+        message: 'Plantas obtenidas con éxito',
+        data: plantas,
+      });
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          data: error,
+          error: 'Error al obtener las plantas.',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+  @ApiTags('Gestion-Productos')
+  @Post('/newcreate')
+  @ApiConsumes('multipart/form-data')
+  @ApiOperation({ summary: 'Crear un producto con listado de imagenes' })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'Producto creado con éxito',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Error al crear el producto',
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'Error interno del servidor',
+  })
+  @ApiBody({
+    description: 'Crear un producto con listado de imágenes',
+    type: CreateProd2Dto,
+    required: true,
+    schema: { example: { nombre: 'Producto de prueba', precio: 1000 } },
+  })
+  @UseInterceptors(
+    FilesInterceptor('imagenes', 10, {
+      storage: diskStorage({
+        destination: './uploads/productos',
+        filename: (req, file, callback) => {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const ext = extname(file.originalname);
+          callback(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+        },
+      }),
+      fileFilter: (req, file, callback) => {
+        if (!file.mimetype.match(/image\/*/)) {
+          return callback(
+            new BadRequestException('Solo se permiten imágenes.'),
+            false,
+          );
+        }
+        callback(null, true);
+      },
+    }),
+  )
+  //TODO: METODO PARA CREAR PRODUCTO JUNTO A SU IMAGEN
+  async creaProductoImagen(
+    @Body() CreateProd2Dto: CreateProd2Dto,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    if (!files || files.length === 0) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Se deben subir al menos una imagen',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const rutasImagenes = files.map(
+      (file) => `/uploads/productos/${file.filename}`,
+    );
+
+    try {
+      const producto = await this.productosService.creaProductoImagen(
+        CreateProd2Dto,
+        rutasImagenes,
+      );
+      return {
+        statusCode: HttpStatus.CREATED,
+        message: 'Producto creado exitosamente',
+        data: producto,
+        rutasImagenes,
+      };
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Error al crear el producto',
+          data: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

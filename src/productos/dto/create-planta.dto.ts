@@ -6,6 +6,7 @@ import {
   IsNumber,
   IsArray,
   IsDecimal,
+  IsBoolean,
 } from 'class-validator';
 import { CreateProductoDto } from './create-producto.dto';
 

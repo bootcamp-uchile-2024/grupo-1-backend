@@ -1,13 +1,19 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Usuario } from './usuario.entity';
 
+export enum NombrePerfil {
+  ADMIN = 'ADMIN',
+  USER = 'USER',
+  GUEST = 'GUEST',
+}
+
 @Entity('Perfil')
 export class Perfil {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  descripcion: string;
+  @Column({ type: 'enum', enum: NombrePerfil, nullable: true })
+  nombrePerfil: NombrePerfil;
 
   @Column({ type: 'boolean', nullable: true })
   accesoSistema: boolean;

@@ -29,16 +29,10 @@ export class CreateProductoDto {
   public nombreProducto: string;
 
   @ApiProperty({
-    name: 'imagenProducto',
-    description: 'Lista de URLs de las imágenes de un producto',
-    example: [
-      'https://example.com/imagen_1.jpg',
-      'https://example.com/imagen_1_d.jpg',
-    ],
-    required: false,
-    type: [String],
+    description: 'Lista de imágenes del producto',
+    type: 'string',
+    format: 'binary',
     isArray: true,
-    default: ['https://imagenes/sin_imagen.png'],
   })
   @IsArray({ message: 'El campo debe ser un array de URLs' })
   @ArrayNotEmpty({ message: 'La lista de URLs no puede estar vacía' })

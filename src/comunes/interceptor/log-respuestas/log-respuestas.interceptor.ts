@@ -3,6 +3,7 @@ import {
   NestInterceptor,
   ExecutionContext,
   CallHandler,
+  Logger,
 } from '@nestjs/common';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
@@ -19,7 +20,8 @@ export class LogRespuestasInterceptor implements NestInterceptor {
         next: (data) => {
           const statusCode = response.statusCode;
           if (statusCode >= 200 && statusCode < 300) {
-            console.log(
+            const logger = new Logger(LogRespuestasInterceptor.name);
+            logger.log(
               `✅ Respuesta exitosa [${statusCode}] Interceptor ➡️ 🚀 :`,
               {
                 requestUrl: request.url,
@@ -37,8 +39,15 @@ export class LogRespuestasInterceptor implements NestInterceptor {
           message: err.message || 'Internal Server Error',
           error: err.response || 'Unknown Error',
         };
-
-        // Continuar el error en el flujo sin "caer" la aplicación
+        const logger = new Logger(LogRespuestasInterceptor.name);
+        logger.error(
+          `❌ Error en la respuesta [${statusCode}] Interceptor ➡️ 🚨 :`,
+          {
+            requestUrl: request.url,
+            requestMethod: method,
+            errorResponse,
+          },
+        );
         return throwError(() => err);
       }),
     );

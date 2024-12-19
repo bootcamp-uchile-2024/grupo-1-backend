@@ -10,8 +10,12 @@ services:
     depends_on:
       - mysql
       - flyway
+    restart: on-failure
     networks:
       - plantopia-network
+    volumes:
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
 
   mysql:
     image: mysql:8.0
@@ -25,20 +29,21 @@ services:
       MYSQL_PASSWORD: password_prod
     volumes:
       - mysql-data:/var/lib/mysql
+    restart: always
     networks:
       - plantopia-network
 
   flyway:
-    image: flyway/flyway:10.20.1-alpine
+    image: flyway/flyway
     volumes:
-      - ./scripts:/flyway/sql
+      - ./scripts_db:/flyway/sql
     environment:
       HOST: mysql-prod
       PORT: 3306
       DB_NAME: PlantopiaDB
       DB_USER: user_prod
       DB_PASS: password_prod
-      FLYWAY_BASELINE_ON_MIGRATE: 'true'  # inicializa tabla de historial de esquemas
+      FLYWAY_BASELINE_ON_MIGRATE: 'true'
     command: -url=jdbc:mysql://mysql:3306/PlantopiaDB -user=user_prod -password=password_prod -connectRetries=5 migrate
     depends_on:
       - mysql

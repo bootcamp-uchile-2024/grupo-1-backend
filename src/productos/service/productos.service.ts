@@ -36,8 +36,7 @@ import { UpdateSustratoDto } from '../dto/update-sustrato.dto';
 import * as fsPromises from 'fs/promises';
 import * as path from 'path';
 import * as fs from 'fs';
-import { v4 as uuidv4 } from 'uuid';
-import { join } from 'path';
+import { CreateProd2Dto } from '../dto/create-prod2.dto';
 @Injectable()
 export class ProductosService {
   productos: Producto[] = [];
@@ -95,8 +94,6 @@ export class ProductosService {
     const imageBuffer = Buffer.from(imageBase64, 'base64');
     const imageName = `${productId}-${Date.now()}.jpg`;
     const fullImagePath = path.join(this.imagePath, imageName);
-
-    console.log('RUTA IMAGEN ', fullImagePath);
 
     await fsPromises.mkdir(this.imagePath, { recursive: true });
     await fsPromises.writeFile(fullImagePath, imageBuffer);
@@ -170,12 +167,8 @@ export class ProductosService {
       );
       try {
         await fsPromises.unlink(imagePath);
-        console.log('Imagen eliminada del sistema de archivos:', imagePath);
       } catch (err) {
-        console.error(
-          'Error al eliminar la imagen del sistema de archivos:',
-          err,
-        );
+        throw new Error('Error al eliminar la imagen del sistema de archivos');
       }
     }
     await this.imagenProductoRepository.remove(imagenExistente);
@@ -224,10 +217,6 @@ export class ProductosService {
     return categoria;
   }
   async findCategoriaIdByName(nombreCategoria: string): Promise<Categoria> {
-    console.log(
-      'entro al servicio de categoria findCategoriaIdByName',
-      nombreCategoria,
-    );
     const categoria = await this.categoriaRepository.findOne({
       where: { nombreCategoria },
     });
@@ -242,7 +231,6 @@ export class ProductosService {
   // CATALOGO de productos
   // busca todos los productos
   async findallcatalogo(): Promise<Producto[]> {
-    console.log('entro al servicio catalogo de producto ');
     const productos = await this.productoRepository.find({
       relations: ['categoria', 'imagenes'],
     });
@@ -297,8 +285,6 @@ export class ProductosService {
   }
 
   async findallcatalogo222(categoriaNombre?: string): Promise<Producto[]> {
-    console.log('entro al servicio catalogo de producto ');
-
     let productos: Producto[];
 
     if (categoriaNombre) {
@@ -444,6 +430,7 @@ export class ProductosService {
       humedad: humedadEntity,
       temperaturaIdeal,
       toxicidadMascotas,
+      //      petfriendly,
       tamanoMaximo,
       peso,
       dificultad: dificultadEntity,
@@ -499,19 +486,26 @@ export class ProductosService {
       total,
     };
   }
-
-  async findPlantaById(id: number): Promise<Planta> {
+  async findPlantaById(idProducto: number): Promise<Planta> {
     const planta = await this.plantaRepository.findOne({
-      where: { id },
+      where: {
+        producto: {
+          id: idProducto,
+          categoria: { nombreCategoria: 'Plantas' },
+        },
+      },
       relations: ['producto', 'producto.categoria', 'producto.imagenes'],
     });
 
     if (!planta) {
-      throw new NotFoundException(`Planta con ID ${id} no encontrada`);
+      throw new NotFoundException(
+        `Planta con ID de producto ${idProducto} no encontrada`,
+      );
     }
 
     return planta;
   }
+
   async updatePlanta(
     id: number,
     updatePlantaDto: UpdatePlantaDto,
@@ -647,18 +641,26 @@ export class ProductosService {
     };
   }
 
-  async findMaceteroById(id: number): Promise<Macetero> {
+  async findMaceteroById(productoId: number): Promise<Macetero> {
     const macetero = await this.maceteroRepository.findOne({
-      where: { id },
+      where: {
+        producto: {
+          id: productoId,
+          categoria: { nombreCategoria: 'Maceteros' },
+        },
+      },
       relations: ['producto', 'producto.categoria', 'producto.imagenes'],
     });
 
     if (!macetero) {
-      throw new NotFoundException(`Macetero con ID ${id} no encontrado`);
+      throw new NotFoundException(
+        `Macetero con ID de producto ${productoId} no encontrado`,
+      );
     }
 
     return macetero;
   }
+
   async updateMacetero(
     id: number,
     updateMaceteroDto: UpdateMaceteroDto,
@@ -761,6 +763,28 @@ export class ProductosService {
 
     return fertilizante;
   }
+  //TODO:  METODO BUSCA FERTILIZANTE POR ID PRODUCTO
+  async findFertilizanteByProductoId(
+    idProducto: number,
+  ): Promise<Fertilizante> {
+    const fertilizante = await this.fertilizanteRepository.findOne({
+      where: {
+        producto: {
+          id: idProducto,
+          categoria: { nombreCategoria: 'Fertilizantes' },
+        },
+      },
+      relations: ['producto', 'producto.categoria', 'producto.imagenes'],
+    });
+
+    if (!fertilizante) {
+      throw new NotFoundException(
+        `Fertilizante con ID de producto ${idProducto} no encontrado`,
+      );
+    }
+
+    return fertilizante;
+  }
 
   async updateFertilizante(
     id: number,
@@ -825,14 +849,23 @@ export class ProductosService {
     };
   }
 
-  async findSustratoById(id: number): Promise<Sustrato> {
+  async findSustratoById(idProducto: number): Promise<Sustrato> {
     const sustrato = await this.sustratoRepository.findOne({
-      where: { id },
+      where: {
+        producto: {
+          id: idProducto,
+          categoria: { nombreCategoria: 'Sustratos' },
+        },
+      },
       relations: ['producto', 'producto.categoria', 'producto.imagenes'],
     });
+
     if (!sustrato) {
-      throw new NotFoundException(`Sustrato con ID ${id} no encontrado`);
+      throw new NotFoundException(
+        `Sustrato con ID de producto ${idProducto} no encontrado`,
+      );
     }
+
     return sustrato;
   }
 
@@ -864,15 +897,12 @@ export class ProductosService {
   ): Promise<{ data: T[]; total: number }> {
     const queryBuilder = repository.createQueryBuilder('producto');
 
-    // Añadir la condición donde 'activo' sea 1
     queryBuilder.where('producto.activo = :activo', { activo: 1 });
 
-    // Añadir relaciones si las tienes
     relations.forEach((relation) => {
       queryBuilder.leftJoinAndSelect(`producto.${relation}`, relation);
     });
 
-    // Paginación
     queryBuilder.skip((page - 1) * size);
     queryBuilder.take(size);
 
@@ -886,7 +916,7 @@ export class ProductosService {
 
   async removeImageFromProduct(
     productId: number,
-    imageId: number, // Añadimos el parámetro imageId
+    imageId: number,
   ): Promise<Producto> {
     const producto = await this.productoRepository.findOne({
       where: { id: productId },
@@ -908,7 +938,7 @@ export class ProductosService {
       imagenExistente.urlImagen,
     );
     try {
-      await fsPromises.unlink(imagePath); // Eliminar archivo
+      await fsPromises.unlink(imagePath);
     } catch (err) {
       console.error('Error al eliminar la imagen:', err);
       throw new Error('Error al eliminar la imagen del sistema de archivos');
@@ -918,12 +948,6 @@ export class ProductosService {
     return this.productoRepository.save(producto);
   }
 
-  /**
-   * Carga una imagen y la asocia al producto en la base de datos.
-   * @param productId ID del producto al cual se asocia la imagen.
-   * @param file Archivo de imagen subido.
-   * @returns Producto con la nueva imagen asociada.
-   */
   async uploadProductImage(
     productId: number,
     file: Express.Multer.File,
@@ -983,5 +1007,79 @@ export class ProductosService {
     }
     producto.activo = 0;
     return this.productoRepository.save(producto);
+  }
+  async filtroPetFriendly(filtro: number): Promise<Planta[]> {
+    try {
+      const filtroPlantas: Planta[] = await this.plantaRepository.find({
+        where: { toxicidadMascotas: filtro },
+      });
+      return filtroPlantas;
+    } catch (error) {
+      throw new BadRequestException({
+        status: HttpStatus.BAD_REQUEST,
+        error: 'Error al obtener las plantas',
+        data: error,
+      });
+    }
+  }
+  async filtroCuidados(filtro: string): Promise<Planta[]> {
+    try {
+      const filtrocuidados = await this.dificultadRepository.findOne({
+        where: { descripcion: filtro },
+      });
+      const filtroPlantas: Planta[] = await this.plantaRepository.find({
+        where: { dificultad: filtrocuidados },
+      });
+      return filtroPlantas;
+    } catch (error) {
+      throw new BadRequestException({
+        status: HttpStatus.BAD_REQUEST,
+        error: 'Error al obtener las plantas',
+        data: error,
+      });
+    }
+  }
+
+  //TODO: METODO PARA CREAR UN PRODUCTO JUNTO A LAS IMAGENES
+  async creaProductoImagen(
+    CreateProd2Dto: CreateProd2Dto,
+    rutasImagenes: string[],
+  ): Promise<Producto> {
+    const queryRunner =
+      this.productoRepository.manager.connection.createQueryRunner();
+    await queryRunner.startTransaction();
+    try {
+      const nuevoProducto = this.productoRepository.create({
+        ...CreateProd2Dto,
+        categoria: { id: CreateProd2Dto.idCategoria } as any,
+      });
+
+      const productoGuardado = await queryRunner.manager.save(nuevoProducto);
+
+      if (rutasImagenes && rutasImagenes.length > 0) {
+        const imagenesEntities = rutasImagenes.map((ruta) =>
+          this.imagenProductoRepository.create({
+            urlImagen: ruta,
+            producto: productoGuardado,
+          }),
+        );
+        await queryRunner.manager.save(imagenesEntities);
+      }
+
+      await queryRunner.commitTransaction();
+      return productoGuardado;
+    } catch (error) {
+      console.error(
+        'Error durante la creación del producto con imágenes:',
+        error,
+      );
+      await queryRunner.rollbackTransaction();
+      throw new HttpException(
+        `Error al crear el producto con imágenes: ${error.message}`,
+        HttpStatus.BAD_REQUEST,
+      );
+    } finally {
+      await queryRunner.release();
+    }
   }
 }
