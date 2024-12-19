@@ -1049,7 +1049,6 @@ export class ProductosService {
       this.productoRepository.manager.connection.createQueryRunner();
     await queryRunner.startTransaction();
     try {
-
       const nuevoProducto = this.productoRepository.create({
         ...CreateProd2Dto,
         categoria: { id: CreateProd2Dto.idCategoria } as any,

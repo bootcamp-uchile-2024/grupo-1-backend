@@ -14,7 +14,8 @@ services:
     networks:
       - plantopia-network
     volumes:
-      - ./logs:/app/logs 
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
 
   mysql:
     image: mysql:8.0
