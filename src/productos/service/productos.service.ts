@@ -633,18 +633,26 @@ export class ProductosService {
     };
   }
 
-  async findMaceteroById(id: number): Promise<Macetero> {
+  async findMaceteroById(productoId: number): Promise<Macetero> {
     const macetero = await this.maceteroRepository.findOne({
-      where: { id },
+      where: {
+        producto: {
+          id: productoId,
+          categoria: { nombreCategoria: 'Maceteros' },
+        },
+      },
       relations: ['producto', 'producto.categoria', 'producto.imagenes'],
     });
 
     if (!macetero) {
-      throw new NotFoundException(`Macetero con ID ${id} no encontrado`);
+      throw new NotFoundException(
+        `Macetero con ID de producto ${productoId} no encontrado`,
+      );
     }
 
     return macetero;
   }
+
   async updateMacetero(
     id: number,
     updateMaceteroDto: UpdateMaceteroDto,

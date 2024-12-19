@@ -581,8 +581,9 @@ export class ProductosController {
   @Get('maceteros/getbyid/:id')
   @ApiTags('Gestion-Productos-Maceteros')
   @ApiOperation({
-    summary: 'Obtener un macetero por ID',
-    description: 'Devuelve los detalles de un macetero específico por su ID',
+    summary: 'Obtener un macetero por ID de producto',
+    description:
+      'Devuelve los detalles de un macetero específico por el ID del producto',
   })
   @ApiResponse({
     status: 200,
@@ -595,7 +596,7 @@ export class ProductosController {
   })
   @ApiParam({
     name: 'id',
-    description: 'ID del macetero',
+    description: 'ID del producto',
     required: true,
   })
   async findOneMacetero(
@@ -604,13 +605,13 @@ export class ProductosController {
   ) {
     try {
       const macetero = await this.productosService.findMaceteroById(id);
-      if (!macetero) {
+      res.status(HttpStatus.OK).json(macetero);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
         return res
           .status(HttpStatus.NOT_FOUND)
           .json({ message: 'Macetero no encontrado' });
       }
-      res.status(HttpStatus.OK).json(macetero);
-    } catch (error) {
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -645,18 +646,20 @@ export class ProductosController {
       res.status(HttpStatus.OK).json(macetero);
     } catch (error) {
       if (error instanceof NotFoundException) {
-        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
-      } else {
-        throw new HttpException(
-          {
-            status: HttpStatus.BAD_REQUEST,
-            error: 'Datos inválidos.',
-          },
-          HttpStatus.BAD_REQUEST,
-        );
+        return res
+          .status(HttpStatus.NOT_FOUND)
+          .json({ message: 'Macetero no encontrado' });
       }
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Error al actualizar el macetero.',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
+
   @Post('fertilizantes/create')
   @ApiTags('Gestion-Productos-Fertilizantes')
   @ApiOperation({
