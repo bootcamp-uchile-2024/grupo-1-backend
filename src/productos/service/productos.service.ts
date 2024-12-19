@@ -485,19 +485,26 @@ export class ProductosService {
       total,
     };
   }
-
-  async findPlantaById(id: number): Promise<Planta> {
+  async findPlantaById(idProducto: number): Promise<Planta> {
     const planta = await this.plantaRepository.findOne({
-      where: { id },
+      where: {
+        producto: {
+          id: idProducto,
+          categoria: { nombreCategoria: 'Plantas' },
+        },
+      },
       relations: ['producto', 'producto.categoria', 'producto.imagenes'],
     });
 
     if (!planta) {
-      throw new NotFoundException(`Planta con ID ${id} no encontrada`);
+      throw new NotFoundException(
+        `Planta con ID de producto ${idProducto} no encontrada`,
+      );
     }
 
     return planta;
   }
+
   async updatePlanta(
     id: number,
     updatePlantaDto: UpdatePlantaDto,
@@ -755,6 +762,28 @@ export class ProductosService {
 
     return fertilizante;
   }
+  //TODO:  METODO BUSCA FERTILIZANTE POR ID PRODUCTO
+  async findFertilizanteByProductoId(
+    idProducto: number,
+  ): Promise<Fertilizante> {
+    const fertilizante = await this.fertilizanteRepository.findOne({
+      where: {
+        producto: {
+          id: idProducto,
+          categoria: { nombreCategoria: 'Fertilizantes' },
+        },
+      },
+      relations: ['producto', 'producto.categoria', 'producto.imagenes'],
+    });
+
+    if (!fertilizante) {
+      throw new NotFoundException(
+        `Fertilizante con ID de producto ${idProducto} no encontrado`,
+      );
+    }
+
+    return fertilizante;
+  }
 
   async updateFertilizante(
     id: number,
@@ -819,14 +848,23 @@ export class ProductosService {
     };
   }
 
-  async findSustratoById(id: number): Promise<Sustrato> {
+  async findSustratoById(idProducto: number): Promise<Sustrato> {
     const sustrato = await this.sustratoRepository.findOne({
-      where: { id },
+      where: {
+        producto: {
+          id: idProducto,
+          categoria: { nombreCategoria: 'Sustratos' },
+        },
+      },
       relations: ['producto', 'producto.categoria', 'producto.imagenes'],
     });
+
     if (!sustrato) {
-      throw new NotFoundException(`Sustrato con ID ${id} no encontrado`);
+      throw new NotFoundException(
+        `Sustrato con ID de producto ${idProducto} no encontrado`,
+      );
     }
+
     return sustrato;
   }
 

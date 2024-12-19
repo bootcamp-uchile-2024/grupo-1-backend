@@ -443,8 +443,9 @@ export class ProductosController {
   @Get('plantas/getbyid/:id')
   @ApiTags('Gestion-Productos-Plantas')
   @ApiOperation({
-    summary: 'Obtener una planta por ID',
-    description: 'Devuelve los detalles de una planta específica por su ID',
+    summary: 'Obtener una planta por ID de producto',
+    description:
+      'Devuelve los detalles de una planta específica por el ID del producto',
   })
   @ApiResponse({
     status: 200,
@@ -457,31 +458,31 @@ export class ProductosController {
   })
   @ApiParam({
     name: 'id',
-    description: 'ID de la planta',
+    description: 'ID del producto',
     required: true,
   })
-  async findPlantaById(
+  async findOnePlanta(
     @Param('id', ParseIntPipe) id: number,
     @Res() res: Response,
   ) {
     try {
       const planta = await this.productosService.findPlantaById(id);
-      if (!planta) {
-        return res
-          .status(HttpStatus.NOT_FOUND)
-          .json({ message: 'Planta no encontrada' });
-      }
       res.status(HttpStatus.OK).json(planta);
     } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'Error al obtener la planta.',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      if (error instanceof NotFoundException) {
+        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            error: 'Error al obtener la planta.',
+          },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
   }
+
   @Put('plantas/update/:id')
   @ApiTags('Gestion-Productos-Plantas')
   @ApiOperation({
@@ -725,9 +726,9 @@ export class ProductosController {
   @Get('fertilizantes/getbyid/:id')
   @ApiTags('Gestion-Productos-Fertilizantes')
   @ApiOperation({
-    summary: 'Obtener un fertilizante por ID',
+    summary: 'Obtener un fertilizante por ID de producto',
     description:
-      'Devuelve los detalles de un fertilizante específico por su ID',
+      'Devuelve los detalles de un fertilizante específico por el ID del producto',
   })
   @ApiResponse({
     status: 200,
@@ -740,7 +741,7 @@ export class ProductosController {
   })
   @ApiParam({
     name: 'id',
-    description: 'ID del fertilizante',
+    description: 'ID del producto',
     required: true,
   })
   async findOneFertilizante(
@@ -748,21 +749,21 @@ export class ProductosController {
     @Res() res: Response,
   ) {
     try {
-      const fertilizante = await this.productosService.findFertilizanteById(id);
-      if (!fertilizante) {
-        return res
-          .status(HttpStatus.NOT_FOUND)
-          .json({ message: 'Fertilizante no encontrado' });
-      }
+      const fertilizante =
+        await this.productosService.findFertilizanteByProductoId(id);
       res.status(HttpStatus.OK).json(fertilizante);
     } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'Error al obtener el fertilizante.',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      if (error instanceof NotFoundException) {
+        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            error: 'Error al obtener el fertilizante.',
+          },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
   }
 
@@ -869,12 +870,12 @@ export class ProductosController {
       );
     }
   }
-
   @Get('sustratos/getbyid/:id')
   @ApiTags('Gestion-Productos-Sustratos')
   @ApiOperation({
-    summary: 'Obtener un sustrato por ID',
-    description: 'Devuelve los detalles de un sustrato específico por su ID',
+    summary: 'Obtener un sustrato por ID de producto',
+    description:
+      'Devuelve los detalles de un sustrato específico por el ID del producto',
   })
   @ApiResponse({
     status: 200,
@@ -887,29 +888,28 @@ export class ProductosController {
   })
   @ApiParam({
     name: 'id',
-    description: 'ID del sustrato',
+    description: 'ID del producto',
     required: true,
   })
-  async findSustratoById(
+  async findOneSustrato(
     @Param('id', ParseIntPipe) id: number,
     @Res() res: Response,
   ) {
     try {
       const sustrato = await this.productosService.findSustratoById(id);
-      if (!sustrato) {
-        return res
-          .status(HttpStatus.NOT_FOUND)
-          .json({ message: 'Sustrato no encontrado' });
-      }
       res.status(HttpStatus.OK).json(sustrato);
     } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'Error al obtener el sustrato.',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      if (error instanceof NotFoundException) {
+        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            error: 'Error al obtener el sustrato.',
+          },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
   }
 
