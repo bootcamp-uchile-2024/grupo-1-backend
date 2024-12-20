@@ -9,14 +9,20 @@ export async function gestionPaginacion<T>(
   size: number,
   relations: string[] = [],
 ): Promise<{ data: T[]; total: number }> {
-  logger.log(`Iniciando paginación: página ${page}, tamaño ${size}`);
-  logger.debug(`Relaciones solicitadas: ${relations.join(', ') || 'Ninguna'}`);
+  logger.log({
+    message: `Iniciando paginación: página ${page}, tamaño ${size}`,
+    context: 'GestionPaginacion',
+  });
+  logger.debug({
+    message: `Relaciones solicitadas: ${relations.join(', ') || 'Ninguna'}`,
+    context: 'GestionPaginacion',
+  });
 
-  // Validaciones iniciales
   if (page <= 0 || size <= 0) {
-    logger.warn(
-      `Parámetros de paginación inválidos: página ${page}, tamaño ${size}`,
-    );
+    logger.warn({
+      message: `Parámetros de paginación inválidos: página ${page}, tamaño ${size}`,
+      context: 'GestionPaginacion',
+    });
     throw new HttpException(
       {
         status: HttpStatus.BAD_REQUEST,
@@ -31,35 +37,46 @@ export async function gestionPaginacion<T>(
 
   try {
     queryBuilder.where('producto.activo = :activo', { activo: 1 });
-    logger.debug('Filtrando productos activos');
+    logger.debug({
+      message: 'Filtrando productos activos',
+      context: 'GestionPaginacion',
+    });
 
     relations.forEach((relation) => {
       queryBuilder.leftJoinAndSelect(`producto.${relation}`, relation);
-      logger.debug(`Uniendo relación: ${relation}`);
+      logger.debug({
+        message: `Uniendo relación: ${relation}`,
+        context: 'GestionPaginacion',
+      });
     });
 
     queryBuilder.skip((page - 1) * size);
     queryBuilder.take(size);
-    logger.debug(
-      `Aplicando paginación: skip ${(page - 1) * size}, take ${size}`,
-    );
+    logger.debug({
+      message: `Aplicando paginación: skip ${(page - 1) * size}, take ${size}`,
+      context: 'GestionPaginacion',
+    });
 
     const [result, total] = await queryBuilder.getManyAndCount();
-    logger.log(
-      `Paginación completada: ${result.length} resultados encontrados, total de registros: ${total}`,
-    );
-    logger.debug(`Datos retornados: ${JSON.stringify(result, null, 2)}`);
+    logger.log({
+      message: `Paginación completada: ${result.length} resultados encontrados, total de registros: ${total}`,
+      context: 'GestionPaginacion',
+    });
+    logger.debug({
+      message: `Datos retornados: ${JSON.stringify(result, null, 2)}`,
+      context: 'GestionPaginacion',
+    });
 
     return {
       data: result,
       total,
     };
   } catch (error) {
-    // Control de errores con mensajes claros
-    logger.error(
-      `Error durante la ejecución de la consulta de paginación: página ${page}, tamaño ${size}`,
-      error.stack,
-    );
+    logger.error({
+      message: `Error durante la ejecución de la consulta de paginación: página ${page}, tamaño ${size}`,
+      context: 'GestionPaginacion',
+      stack: error.stack,
+    });
 
     throw new HttpException(
       {

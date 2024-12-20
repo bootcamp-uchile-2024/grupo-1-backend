@@ -598,39 +598,33 @@ export class ProductosController {
       'Devuelve los detalles de un macetero específico por el ID del producto',
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Detalles del macetero encontrado',
     type: Macetero,
   })
   @ApiResponse({
-    status: 404,
+    status: HttpStatus.NOT_FOUND,
     description: 'Macetero no encontrado',
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'Error al obtener el macetero.',
   })
   @ApiParam({
     name: 'id',
     description: 'ID del producto',
     required: true,
   })
-  async findOneMacetero(
-    @Param('id', ParseIntPipe) id: number,
-    @Res() res: Response,
-  ) {
+  async findOneMacetero(@Param('id', ParseIntPipe) id: number): Promise<any> {
     try {
       const macetero = await this.MaceterosService.findMaceteroById(id);
-      res.status(HttpStatus.OK).json(macetero);
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Macetero encontrado exitosamente',
+        data: macetero,
+      };
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        return res
-          .status(HttpStatus.NOT_FOUND)
-          .json({ message: 'Macetero no encontrado' });
-      }
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'Error al obtener el macetero.',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      return this.handleException(error);
     }
   }
 
@@ -640,8 +634,14 @@ export class ProductosController {
     summary: 'Actualizar un macetero',
     description: 'Actualiza los detalles de un macetero existente',
   })
-  @ApiResponse({ status: 200, description: 'Macetero actualizado con éxito.' })
-  @ApiResponse({ status: 404, description: 'Macetero no encontrado.' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Macetero actualizado con éxito.',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Macetero no encontrado.',
+  })
   @ApiBody({ type: UpdateMaceteroDto })
   @ApiParam({ name: 'id', description: 'ID del macetero', required: true })
   async updateMacetero(
@@ -1268,7 +1268,7 @@ export class ProductosController {
     enum: ['true', 'false'],
   })
   async filtroPetFriendly(
-    @Query('filtro') filtro: string, // Recibimos el filtro como string
+    @Query('filtro') filtro: string,
     @Res() res: Response,
   ) {
     try {
@@ -1426,5 +1426,16 @@ export class ProductosController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+  private handleException(error: any) {
+    const status = error.getStatus
+      ? error.getStatus()
+      : HttpStatus.INTERNAL_SERVER_ERROR;
+    const message = error.message || 'Error interno del servidor';
+    return {
+      statusCode: status,
+      message,
+      error: error.response || null,
+    };
   }
 }

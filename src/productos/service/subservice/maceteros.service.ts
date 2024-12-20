@@ -32,16 +32,20 @@ export class MaceterosService {
   async createMacetero(
     createMaceteroDto: CreateMaceteroDto,
   ): Promise<Macetero> {
-    this.logger.log(
-      `Creando un nuevo macetero: ${JSON.stringify(createMaceteroDto)}`,
-    );
+    this.logger.log({
+      message: `Creando un nuevo macetero: ${JSON.stringify(createMaceteroDto)}`,
+      context: 'MaceterosService',
+    });
     try {
       const categoriaMacetero = await this.categoriaRepository.findOne({
         where: { nombreCategoria: 'Maceteros' },
       });
 
       if (!categoriaMacetero) {
-        this.logger.warn('Categoría de maceteros no encontrada');
+        this.logger.warn({
+          message: 'Categoría de maceteros no encontrada',
+          context: 'MaceterosService',
+        });
         throw new NotFoundException('Categoría de maceteros no encontrada');
       }
 
@@ -59,12 +63,17 @@ export class MaceterosService {
       });
 
       const savedMacetero = await this.maceteroRepository.save(nuevoMacetero);
-      this.logger.log(
-        `Macetero creado exitosamente con ID ${savedMacetero.id}`,
-      );
+      this.logger.log({
+        message: `Macetero creado exitosamente con ID ${savedMacetero.id}`,
+        context: 'MaceterosService',
+      });
       return savedMacetero;
     } catch (error) {
-      this.logger.error('Error al crear el macetero', error.stack);
+      this.logger.error({
+        message: 'Error al crear el macetero',
+        context: 'MaceterosService',
+        stack: error.stack,
+      });
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
@@ -77,13 +86,15 @@ export class MaceterosService {
     }
   }
 
-  async getMaceterosPaginados2(
+  async NewGetMaceterosPaginados(
     page: number,
     size: number,
   ): Promise<{ data: Macetero[]; total: number }> {
-    this.logger.log(
-      `Consultando maceteros paginados: página ${page}, tamaño ${size}`,
-    );
+    this.logger.log({
+      message: `Consultando maceteros paginados: página ${page}, tamaño ${size}`,
+      context: 'MaceterosService',
+    });
+
     try {
       const result = await gestionPaginacion(
         this.maceteroRepository,
@@ -91,69 +102,97 @@ export class MaceterosService {
         size,
         ['producto', 'producto.categoria', 'producto.imagenes'],
       );
-      this.logger.log(
-        `Maceteros obtenidos: ${result.data.length}, Total: ${result.total}`,
-      );
-      return result;
-    } catch (error) {
-      this.logger.error('Error al consultar maceteros paginados', error.stack);
-      throw new BadRequestException(
-        `Error al consultar maceteros: ${error.message}. Verifique los parámetros.`,
-      );
-    }
-  }
 
-  async findMaceteroById(productoId: number): Promise<Macetero> {
-    this.logger.log(`Buscando macetero con producto ID ${productoId}`);
-    try {
-      const macetero = await this.maceteroRepository.findOne({
-        where: {
-          producto: {
-            id: productoId,
-            categoria: { nombreCategoria: 'Maceteros' },
-          },
-        },
-        relations: ['producto', 'producto.categoria', 'producto.imagenes'],
+      this.logger.log({
+        message: `Maceteros obtenidos: ${result.data.length}, Total: ${result.total}`,
+        context: 'MaceterosService',
       });
 
-      if (!macetero) {
-        this.logger.warn(
-          `Macetero con producto ID ${productoId} no encontrado`,
-        );
-        throw new NotFoundException(
-          `Macetero con producto ID ${productoId} no encontrado`,
-        );
-      }
-
-      this.logger.log(`Macetero encontrado: ${JSON.stringify(macetero)}`);
-      return macetero;
+      return result;
     } catch (error) {
-      this.logger.error(
-        `Error al buscar macetero con producto ID ${productoId}`,
-        error.stack,
-      );
+      this.logger.error({
+        message: 'Error al consultar maceteros paginados',
+        context: 'MaceterosService',
+        stack: error.stack,
+      });
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: `Error inesperado al buscar macetero.`,
+          message: `Error al consultar maceteros: ${error.message}. Verifique los parámetros.`,
           details: error.message,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
+  async findMaceteroById(productoId: number): Promise<Macetero> {
+    this.logger.log({
+      message: `Buscando macetero con producto ID ${productoId}`,
+      context: 'MaceterosService',
+    });
 
+    try {
+      const macetero = await this.maceteroRepository.findOne({
+        where: {
+          producto: {
+            id: productoId,
+          },
+        },
+        relations: ['producto', 'producto.categoria', 'producto.imagenes'],
+      });
+
+      if (!macetero) {
+        this.logger.warn({
+          message: `Macetero con producto ID ${productoId} no encontrado`,
+          context: 'MaceterosService',
+        });
+        throw new NotFoundException(
+          `Macetero con producto ID ${productoId} no encontrado`,
+        );
+      }
+
+      this.logger.log({
+        message: `Macetero encontrado: ${JSON.stringify(macetero)}`,
+        context: 'MaceterosService',
+      });
+
+      return macetero;
+    } catch (error) {
+      this.logger.error({
+        message: `Error al buscar macetero con producto ID ${productoId}`,
+        context: 'MaceterosService',
+        stack: error.stack,
+      });
+
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: `Error al obtener el macetero con ID ${productoId}.`,
+          details: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
   async updateMacetero(
     id: number,
     updateMaceteroDto: UpdateMaceteroDto,
   ): Promise<Macetero> {
-    this.logger.log(
-      `Actualizando macetero con ID ${id}: ${JSON.stringify(updateMaceteroDto)}`,
-    );
+    this.logger.log({
+      message: `Actualizando macetero con ID ${id}: ${JSON.stringify(updateMaceteroDto)}`,
+      context: 'MaceterosService',
+    });
     try {
       const macetero = await this.maceteroRepository.findOneBy({ id });
       if (!macetero) {
-        this.logger.warn(`Macetero con ID ${id} no encontrado`);
+        this.logger.warn({
+          message: `Macetero con ID ${id} no encontrado`,
+          context: 'MaceterosService',
+        });
         throw new NotFoundException(`Macetero con ID ${id} no encontrado`);
       }
 
@@ -161,9 +200,10 @@ export class MaceterosService {
         id: macetero.producto.id,
       });
       if (!producto) {
-        this.logger.warn(
-          `Producto asociado con ID ${macetero.producto.id} no encontrado`,
-        );
+        this.logger.warn({
+          message: `Producto asociado con ID ${macetero.producto.id} no encontrado`,
+          context: 'MaceterosService',
+        });
         throw new NotFoundException(
           `Producto asociado con ID ${macetero.producto.id} no encontrado`,
         );
@@ -174,52 +214,80 @@ export class MaceterosService {
 
       Object.assign(macetero, updateMaceteroDto);
       const updatedMacetero = await this.maceteroRepository.save(macetero);
-      this.logger.log(`Macetero con ID ${id} actualizado exitosamente`);
+      this.logger.log({
+        message: `Macetero con ID ${id} actualizado exitosamente`,
+        context: 'MaceterosService',
+      });
       return updatedMacetero;
     } catch (error) {
-      this.logger.error(
-        `Error al actualizar macetero con ID ${id}`,
-        error.stack,
+      this.logger.error({
+        message: `Error al actualizar macetero con ID ${id}`,
+        context: 'MaceterosService',
+        stack: error.stack,
+      });
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: `Error al actualizar el macetero con ID ${id}.`,
+          details: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
-      throw error;
     }
   }
 
   async deleteMacetero(id: number): Promise<void> {
-    this.logger.log(`Eliminando macetero con ID ${id}`);
+    this.logger.log({
+      message: `Eliminando macetero con ID ${id}`,
+      context: 'MaceterosService',
+    });
     try {
       const result = await this.maceteroRepository.delete(id);
       if (result.affected === 0) {
-        this.logger.warn(`Macetero con ID ${id} no encontrado`);
+        this.logger.warn({
+          message: `Macetero con ID ${id} no encontrado`,
+          context: 'MaceterosService',
+        });
         throw new NotFoundException(`Macetero con ID ${id} no encontrado`);
       }
-      this.logger.log(`Macetero con ID ${id} eliminado exitosamente`);
+      this.logger.log({
+        message: `Macetero con ID ${id} eliminado exitosamente`,
+        context: 'MaceterosService',
+      });
     } catch (error) {
-      this.logger.error(`Error al eliminar macetero con ID ${id}`, error.stack);
-      throw error;
+      this.logger.error({
+        message: `Error al eliminar macetero con ID ${id}`,
+        context: 'MaceterosService',
+        stack: error.stack,
+      });
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: `Error al eliminar el macetero con ID ${id}.`,
+          details: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
-  //todo: Paginacion de maceteros - ANTERIOR
+
+  // Paginación de maceteros - ANTERIOR
   async getMaceterosPaginados(
     page: number,
     size: number,
   ): Promise<{ data: Macetero[]; total: number }> {
     const queryBuilder = this.maceteroRepository.createQueryBuilder('macetero');
 
-    // Añadir condición para filtrar por 'activo = 1' en la entidad Producto
     queryBuilder
       .innerJoinAndSelect('macetero.producto', 'producto')
       .where('producto.activo = :activo', { activo: 1 });
 
-    // Añadir las relaciones adicionales
     queryBuilder.leftJoinAndSelect('producto.categoria', 'categoria');
     queryBuilder.leftJoinAndSelect('producto.imagenes', 'imagenes');
 
-    // Paginación
     queryBuilder.skip((page - 1) * size);
     queryBuilder.take(size);
 
-    // Ejecutar la consulta y contar los resultados
     const [result, total] = await queryBuilder.getManyAndCount();
 
     return {
