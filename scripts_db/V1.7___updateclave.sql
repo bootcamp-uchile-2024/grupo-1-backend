@@ -1,0 +1,10 @@
+UPDATE Usuario SET clave = '$2a$10$bNHrQONW5hFQyZMdvnY0qO28jogcCUdQm4hgqDftH6ciVQ8zkkXjK' WHERE id = 1;
+UPDATE Usuario SET clave = '$2a$10$nfgtAJA4OOF/xbYOr5LEGe4IQWwcE5/w0L9.SRws7tPGVVii11dfe' WHERE id = 2;
+UPDATE Usuario SET clave = '$2a$10$kT032zjDN916R54FTViPe.RBhEPr07V2LtIeS/RnlzuhzLLElayP.' WHERE id = 3;
+UPDATE Usuario SET clave = '$2a$10$4odVQcz4Jxkxdw7SiHXtcuOhOF0/gxJsPRoxXYVkuR3EwFCVrJCua' WHERE id = 4;
+UPDATE Usuario SET clave = '$2a$10$rPasdowjfX8zoSBMYILRiOmGp.x9SahqYB1dEihebqY3kN62alzMq' WHERE id = 5;
+UPDATE Usuario SET clave = '$2a$10$4EfmKDveVGKwbxvPQzF6aubVQdkzGhv9GBisfafItMCte9oqRPS1a' WHERE id = 6;
+UPDATE Usuario SET clave = '$2a$10$U10X2QjvQ12UmtLrBwyy3.Fv3VQnlm/hhDewduNEKlonCHDbdCjlC' WHERE id = 7;
+UPDATE Usuario SET clave = '$2a$10$TMhDOip1.J64pmamYr8tL.Pqf8t/opVVx3e6eyosWoIP5XguVVcxe' WHERE id = 8;
+UPDATE Usuario SET clave = '$2a$10$AaFuZGT1fY0StQGrwoRTYO6HPWdyXgUFrzUlp6lZvE6xsoA2q562W' WHERE id = 9;
+UPDATE Usuario SET clave = '$2a$10$r1DjfKlfX26Ij8EYCble6eExcqoK9gmHRwHo8JxCTl7EzOLUQ7S56' WHERE id = 10;
