@@ -25,9 +25,8 @@ import { LoggingMiddleware } from './comunes/middleware/loggin.middleware';
     VentasModule,
     EquipoModule,
     ConfigModule.forRoot({
+      envFilePath: '.env',
       isGlobal: true,
-      envFilePath:
-        process.env.AMBIENTE === 'production' ? '.env.productivo' : '.env',
     }),
     ServeStaticModule.forRoot({
       rootPath: '/uploads',
@@ -62,6 +61,13 @@ import { LoggingMiddleware } from './comunes/middleware/loggin.middleware';
   ],
 })
 export class AppModule implements NestModule {
+  constructor() {
+    // Log para asegurarte de que las variables de entorno se están cargando correctamente
+    console.log('DB_USER:', process.env.DB_USER); // Debería mostrar "user_dev"
+    console.log('DB_PASS:', process.env.DB_PASS); // Debería mostrar "password_dev"
+    console.log('DB_HOST:', process.env.DB_HOST); // Debería mostrar "mysql"
+    console.log('DB_DATABASE:', process.env.DB_DATABASE); // Debería mostrar "PlantopiaDB"
+  }
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(LoggingMiddleware, GlobalMiddlewareMiddleware) // Middleware global

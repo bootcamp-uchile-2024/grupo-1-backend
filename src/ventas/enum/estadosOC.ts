@@ -1,9 +1,10 @@
 export enum EstadoOrden {
   CREADA = 'Creada',
   ANULADA = 'Anulada',
-  PROCESANDO = 'Procesamdo',
+  PROCESANDO = 'Procesando',
   ESPERA_PAGO = 'Espera_Pago',
   VENTA_ANULADA = 'Venta Anulada',
+  COMPLETADO = 'Completado',
 }
 /*
 INSERT INTO EstadosOC (descripcion) VALUES
