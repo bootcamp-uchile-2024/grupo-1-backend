@@ -26,11 +26,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const context = 'Exception';
     const requestId = uuidv4();
     const clientIp = request.ip;
-    const userAgent = request.get('user-agent') || '';
     const stack = exception instanceof Error ? exception.stack : '';
 
     logger.error(
-      `ID: ${requestId} - ${request.method} ${request.url} ${status} - ${JSON.stringify(message)} - IP: ${clientIp} - User-Agent: ${userAgent} - Stack: ${stack}`,
+      `ID: ${requestId} - ${request.method} ${request.url} ${status} - ${JSON.stringify(message)} - IP: ${clientIp} - Stack: ${stack}`,
       { context },
     );
 
@@ -41,7 +40,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
       path: request.url,
       message,
       clientIp,
-      userAgent,
     });
   }
 }

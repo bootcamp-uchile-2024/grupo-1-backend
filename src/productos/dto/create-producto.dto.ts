@@ -36,7 +36,7 @@ export class CreateProductoDto {
   })
   @IsArray({ message: 'El campo debe ser un array de URLs' })
   @ArrayNotEmpty({ message: 'La lista de URLs no puede estar vacía' })
-  @IsUrl({}, { each: true, message: 'Cada URL debe ser válida' })
+  //  @IsUrl({}, { each: true, message: 'Cada URL debe ser válida' })
   public imagenProducto: string[];
 
   @ApiProperty({

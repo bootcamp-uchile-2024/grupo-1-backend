@@ -1,3 +1,4 @@
+import { FiltrosService } from '../service/subservice/filtros.service';
 import {
   Controller,
   Get,
@@ -52,10 +53,23 @@ import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { CreateProd2Dto } from '../dto/create-prod2.dto';
+import { PlantaService } from '../service/subservice/plantas.service';
+import { MaceterosService } from '../service/subservice/maceteros.service';
+import { FertilizantesService } from '../service/subservice/fertilizantes.service';
+import { SustratosService } from '../service/subservice/sustratos.service';
+import { CategoriasService } from '../service/subservice/categorias.service';
 
 @Controller('productos')
 export class ProductosController {
-  constructor(private readonly productosService: ProductosService) {}
+  constructor(
+    private readonly productosService: ProductosService,
+    private readonly PlantaService: PlantaService,
+    private readonly MaceterosService: MaceterosService,
+    private readonly FertilizantesService: FertilizantesService,
+    private readonly SustratosService: SustratosService,
+    private readonly FiltrosService: FiltrosService,
+    private readonly CategoriasService: CategoriasService,
+  ) {}
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   @Post('/create')
   @ApiTags('Gestion-Productos')
@@ -217,7 +231,7 @@ export class ProductosController {
   ) {
     try {
       const categoria =
-        await this.productosService.createCategoria(createCategoriaDto);
+        await this.CategoriasService.createCategoria(createCategoriaDto);
       res.status(HttpStatus.CREATED).json(categoria);
     } catch (error) {
       throw new HttpException(
@@ -249,7 +263,7 @@ export class ProductosController {
     @Res() res: Response,
   ) {
     try {
-      const categorias = await this.productosService.findAllCategorias(
+      const categorias = await this.CategoriasService.findAllCategorias(
         page,
         size,
       );
@@ -285,7 +299,7 @@ export class ProductosController {
     @Res() res: Response,
   ) {
     try {
-      const categoria = await this.productosService.findCategoriaById(id);
+      const categoria = await this.CategoriasService.findCategoriaById(id);
       if (!categoria) {
         return res
           .status(HttpStatus.NOT_FOUND)
@@ -330,7 +344,7 @@ export class ProductosController {
   ) {
     try {
       const categoria =
-        await this.productosService.findCategoriaIdByName(nombrecategoria);
+        await this.CategoriasService.findCategoriaIdByName(nombrecategoria);
       if (!categoria) {
         return res
           .status(HttpStatus.NOT_FOUND)
@@ -364,7 +378,7 @@ export class ProductosController {
     @Res() res: Response,
   ) {
     try {
-      const categoria = await this.productosService.updateCategoria(
+      const categoria = await this.CategoriasService.updateCategoria(
         id,
         updateCategoriaDto,
       );
@@ -399,7 +413,7 @@ export class ProductosController {
     @Res() res: Response,
   ) {
     try {
-      const planta = await this.productosService.createPlanta(createPlantaDto);
+      const planta = await this.PlantaService.createPlanta(createPlantaDto);
       res.status(HttpStatus.CREATED).json(planta);
     } catch (error) {
       throw new HttpException(
@@ -428,10 +442,7 @@ export class ProductosController {
     @Res() res: Response,
   ) {
     try {
-      const plantas = await this.productosService.getPlantasPaginadas(
-        page,
-        size,
-      );
+      const plantas = await this.PlantaService.getPlantasPaginadas(page, size);
       res.status(HttpStatus.OK).json(plantas);
     } catch (error) {
       throw new HttpException(
@@ -469,7 +480,7 @@ export class ProductosController {
     @Res() res: Response,
   ) {
     try {
-      const planta = await this.productosService.findPlantaById(id);
+      const planta = await this.PlantaService.findPlantaById(id);
       res.status(HttpStatus.OK).json(planta);
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -503,10 +514,7 @@ export class ProductosController {
     @Res() res: Response,
   ) {
     try {
-      const planta = await this.productosService.updatePlanta(
-        id,
-        updatePlantaDto,
-      );
+      const planta = await this.PlantaService.updatePlanta(id, updatePlantaDto);
       res.status(HttpStatus.OK).json(planta);
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -538,7 +546,7 @@ export class ProductosController {
   ) {
     try {
       const macetero =
-        await this.productosService.createMacetero(createMaceteroDto);
+        await this.MaceterosService.createMacetero(createMaceteroDto);
       res.status(HttpStatus.CREATED).json(macetero);
     } catch (error) {
       throw new HttpException(
@@ -567,7 +575,7 @@ export class ProductosController {
     @Res() res: Response,
   ) {
     try {
-      const maceteros = await this.productosService.getMaceterosPaginados(
+      const maceteros = await this.MaceterosService.getMaceterosPaginados(
         page,
         size,
       );
@@ -608,7 +616,7 @@ export class ProductosController {
     @Res() res: Response,
   ) {
     try {
-      const macetero = await this.productosService.findMaceteroById(id);
+      const macetero = await this.MaceterosService.findMaceteroById(id);
       res.status(HttpStatus.OK).json(macetero);
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -643,7 +651,7 @@ export class ProductosController {
     @Res() res: Response,
   ) {
     try {
-      const macetero = await this.productosService.updateMacetero(
+      const macetero = await this.MaceterosService.updateMacetero(
         id,
         updateMaceteroDto,
       );
@@ -679,7 +687,7 @@ export class ProductosController {
     @Res() res: Response,
   ) {
     try {
-      const fertilizante = await this.productosService.createFertilizante(
+      const fertilizante = await this.FertilizantesService.createFertilizante(
         createFertilizanteDto,
       );
       res.status(HttpStatus.CREATED).json(fertilizante);
@@ -714,7 +722,7 @@ export class ProductosController {
   ) {
     try {
       const fertilizantes =
-        await this.productosService.getFertilizantesPaginados(page, size);
+        await this.FertilizantesService.getFertilizantesPaginados(page, size);
       res.status(HttpStatus.OK).json(fertilizantes);
     } catch (error) {
       throw new HttpException(
@@ -753,7 +761,7 @@ export class ProductosController {
   ) {
     try {
       const fertilizante =
-        await this.productosService.findFertilizanteByProductoId(id);
+        await this.FertilizantesService.findFertilizanteByProductoId(id);
       res.status(HttpStatus.OK).json(fertilizante);
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -790,7 +798,7 @@ export class ProductosController {
     @Res() res: Response,
   ) {
     try {
-      const fertilizante = await this.productosService.updateFertilizante(
+      const fertilizante = await this.FertilizantesService.updateFertilizante(
         id,
         updateFertilizanteDto,
       );
@@ -826,7 +834,7 @@ export class ProductosController {
   ) {
     try {
       const sustrato =
-        await this.productosService.createSustrato(createSustratoDto);
+        await this.SustratosService.createSustrato(createSustratoDto);
       res.status(HttpStatus.CREATED).json(sustrato);
     } catch (error) {
       throw new HttpException(
@@ -858,7 +866,7 @@ export class ProductosController {
     @Res() res: Response,
   ) {
     try {
-      const sustratos = await this.productosService.findAllSustratos(
+      const sustratos = await this.SustratosService.findAllSustratos(
         page,
         size,
       );
@@ -899,7 +907,7 @@ export class ProductosController {
     @Res() res: Response,
   ) {
     try {
-      const sustrato = await this.productosService.findSustratoById(id);
+      const sustrato = await this.SustratosService.findSustratoById(id);
       res.status(HttpStatus.OK).json(sustrato);
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -933,7 +941,7 @@ export class ProductosController {
     @Res() res: Response,
   ) {
     try {
-      const sustrato = await this.productosService.updateSustrato(
+      const sustrato = await this.SustratosService.updateSustrato(
         id,
         updateSustratoDto,
       );
@@ -1266,7 +1274,7 @@ export class ProductosController {
     try {
       const filtroBooleano = filtro === 'true' ? 0 : 1;
       const plantas =
-        await this.productosService.filtroPetFriendly(filtroBooleano);
+        await this.FiltrosService.filtroPetFriendly(filtroBooleano);
       res.status(HttpStatus.OK).json({
         status: HttpStatus.OK,
         message: 'Plantas pet friendly obtenidas con éxito',
@@ -1317,7 +1325,7 @@ export class ProductosController {
   })
   async filtroCuidados(@Query('filtro') filtro: string, @Res() res: Response) {
     try {
-      const plantas = await this.productosService.filtroCuidados(filtro);
+      const plantas = await this.FiltrosService.filtroCuidados(filtro);
       res.status(HttpStatus.OK).json({
         status: HttpStatus.OK,
         message: 'Plantas obtenidas con éxito',

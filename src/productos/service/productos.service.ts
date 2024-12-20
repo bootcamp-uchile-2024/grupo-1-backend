@@ -6,10 +6,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateMaceteroDto } from '../dto/create-macetero.dto';
-import { CreatePlantaDto } from '../dto/create-planta.dto';
 import { Producto } from 'src/productos/entities/producto.entity';
-import { CreateFertilizanteDto } from '../dto/create-fertilizante.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DificultadDeCuidado } from '../entities/dificultad_de_cuidado.entity';
@@ -28,18 +25,14 @@ import { UpdateCategoriaDto } from '../dto/update-categoria.dto';
 import { Categoria } from '../entities/categoria.entity';
 import { ImagenProducto } from '../entities/imagen_producto.entity';
 import { Macetero } from '../entities/macetero.entity';
-import { UpdateFertilizanteDto } from '../dto/update-fertilizante.dto';
-import { UpdateMaceteroDto } from '../dto/update-macetero.dto';
-import { UpdatePlantaDto } from '../dto/update-planta.dto';
-import { CreateSustratoDto } from '../dto/create-sustrato.dto';
-import { UpdateSustratoDto } from '../dto/update-sustrato.dto';
 import * as fsPromises from 'fs/promises';
 import * as path from 'path';
 import * as fs from 'fs';
 import { CreateProd2Dto } from '../dto/create-prod2.dto';
+import { gestionPaginacion } from 'src/comunes/paginacion/gestion-paginacion';
+
 @Injectable()
 export class ProductosService {
-  productos: Producto[] = [];
   constructor(
     @InjectRepository(Producto)
     private readonly productoRepository: Repository<Producto>,
@@ -72,13 +65,6 @@ export class ProductosService {
     //private readonly imagePath: string,
     @Inject('IMAGE_PATH') private readonly imagePath: string, // Token registrado
   ) {}
-  // METODOS DE CATEGORIA
-  async createCategoria(
-    createCategoriaDto: CreateCategoriaDto,
-  ): Promise<Categoria> {
-    const nuevaCategoria = this.categoriaRepository.create(createCategoriaDto);
-    return await this.categoriaRepository.save(nuevaCategoria);
-  }
 
   async addImageToProduct(
     productId: number,
@@ -175,57 +161,15 @@ export class ProductosService {
     producto.imagenes = producto.imagenes.filter((img) => img.id !== +imageId);
     return await this.productoRepository.save(producto);
   }
-  async updateCategoria(
-    id: number,
-    updateCategoriaDto: UpdateCategoriaDto,
-  ): Promise<Categoria> {
-    const categoria = await this.categoriaRepository.findOneBy({ id });
-    if (!categoria) {
-      throw new NotFoundException(`Categoría con ID ${id} no encontrada`);
-    }
-    Object.assign(categoria, updateCategoriaDto);
-    return await this.categoriaRepository.save(categoria);
-  }
-  async deleteCategoria(id: number): Promise<void> {
-    const result = await this.categoriaRepository.delete(id);
-    if (result.affected === 0) {
-      throw new NotFoundException(`Categoría con ID ${id} no encontrada`);
-    }
-  }
+
   async findAllCatalogoPaginado(
     page: number,
     size: number,
   ): Promise<{ data: Producto[]; total: number }> {
-    return this.gestionPaginacion(this.productoRepository, page, size, [
+    return gestionPaginacion(this.productoRepository, page, size, [
       'categoria',
       'imagenes',
     ]);
-  }
-
-  async findAllCategorias(
-    page: number,
-    size: number,
-  ): Promise<{ data: Categoria[]; total: number }> {
-    return this.gestionPaginacion(this.categoriaRepository, page, size);
-  }
-
-  async findCategoriaById(id: number): Promise<Categoria> {
-    const categoria = await this.categoriaRepository.findOneBy({ id });
-    if (!categoria) {
-      throw new NotFoundException(`Categoría con ID ${id} no encontrada`);
-    }
-    return categoria;
-  }
-  async findCategoriaIdByName(nombreCategoria: string): Promise<Categoria> {
-    const categoria = await this.categoriaRepository.findOne({
-      where: { nombreCategoria },
-    });
-    if (!categoria) {
-      throw new NotFoundException(
-        `Categoría con nombre ${nombreCategoria} no encontrada`,
-      );
-    }
-    return categoria;
   }
 
   // CATALOGO de productos
@@ -342,200 +286,46 @@ export class ProductosService {
     Object.assign(producto, updateProductoDto);
     return await this.productoRepository.save(producto);
   }
+  //TODO: METODO PARA CREAR UN PRODUCTO JUNTO A LAS IMAGENES
+  async creaProductoImagen(
+    CreateProd2Dto: CreateProd2Dto,
+    rutasImagenes: string[],
+  ): Promise<Producto> {
+    const queryRunner =
+      this.productoRepository.manager.connection.createQueryRunner();
+    await queryRunner.startTransaction();
+    try {
+      const nuevoProducto = this.productoRepository.create({
+        ...CreateProd2Dto,
+        categoria: { id: CreateProd2Dto.idCategoria } as any,
+      });
 
-  async createPlanta(createPlantaDto: CreatePlantaDto): Promise<Planta> {
-    const {
-      nombrePlanta,
-      nombreCientifico,
-      habitat,
-      luz,
-      frecuenciaDeRiego,
-      humedadIdeal,
-      temperaturaIdeal,
-      toxicidadMascotas,
-      tamanoMaximo,
-      peso,
-      dificultadDeCuidado,
-      estacion,
-      fertilizantesSugeridos,
-      sustratosSugeridos,
-      tipoSuelo,
-      imagenProducto,
-      ...productoData
-    } = createPlantaDto;
+      const productoGuardado = await queryRunner.manager.save(nuevoProducto);
 
-    const categoriaPlanta = await this.categoriaRepository.findOne({
-      where: { nombreCategoria: 'Plantas' },
-    });
+      if (rutasImagenes && rutasImagenes.length > 0) {
+        const imagenesEntities = rutasImagenes.map((ruta) =>
+          this.imagenProductoRepository.create({
+            urlImagen: ruta,
+            producto: productoGuardado,
+          }),
+        );
+        await queryRunner.manager.save(imagenesEntities);
+      }
 
-    if (!categoriaPlanta) {
-      throw new NotFoundException('Categoría de plantas no encontrada');
-    }
-
-    const createProductoDto: CreateProductoDto = {
-      ...productoData,
-      nombreProducto: nombrePlanta,
-      descripcionProducto: `Planta: ${nombrePlanta}`,
-      idCategoria: categoriaPlanta.id, // Asigna la categoría de planta (ID número 1)
-      imagenProducto,
-    };
-
-    const producto = await this.createProducto(createProductoDto);
-
-    const habitatEntity = await this.habitatRepository.findOneBy({
-      id: habitat,
-    });
-    if (!habitatEntity) {
-      throw new NotFoundException(`Hábitat con ID ${habitat} no encontrado`);
-    }
-
-    const luzEntity = await this.luzRepository.findOneBy({ id: luz });
-    if (!luzEntity) {
-      throw new NotFoundException(`Luz requerida con ID ${luz} no encontrada`);
-    }
-
-    const humedadEntity = await this.humedadRepository.findOneBy({
-      id: humedadIdeal,
-    });
-    if (!humedadEntity) {
-      throw new NotFoundException(
-        `Nivel de humedad con ID ${humedadIdeal} no encontrado`,
+      await queryRunner.commitTransaction();
+      return productoGuardado;
+    } catch (error) {
+      console.error(
+        'Error durante la creación del producto con imágenes:',
+        error,
       );
-    }
-
-    const dificultadEntity = await this.dificultadRepository.findOneBy({
-      id: dificultadDeCuidado,
-    });
-    if (!dificultadEntity) {
-      throw new NotFoundException(
-        `Dificultad de cuidado con ID ${dificultadDeCuidado} no encontrada`,
+      await queryRunner.rollbackTransaction();
+      throw new HttpException(
+        `Error al crear el producto con imágenes: ${error.message}`,
+        HttpStatus.BAD_REQUEST,
       );
-    }
-
-    const frecuenciaEntity = await this.frecuenciaRepository.findOneBy({
-      id: frecuenciaDeRiego,
-    });
-    if (!frecuenciaEntity) {
-      throw new NotFoundException(
-        `Frecuencia de riego con ID ${frecuenciaDeRiego} no encontrada`,
-      );
-    }
-
-    const nuevaPlanta = this.plantaRepository.create({
-      nombrePlanta,
-      nombreCientifico,
-      producto,
-      habitat: habitatEntity,
-      luz: luzEntity,
-      humedad: humedadEntity,
-      temperaturaIdeal,
-      toxicidadMascotas,
-      //      petfriendly,
-      tamanoMaximo,
-      peso,
-      dificultad: dificultadEntity,
-      frecuencia: frecuenciaEntity,
-    });
-
-    if (fertilizantesSugeridos) {
-      nuevaPlanta.fertilizantes = await this.fertilizanteRepository.findByIds(
-        fertilizantesSugeridos,
-      );
-    }
-
-    if (sustratosSugeridos) {
-      nuevaPlanta.sustratos =
-        await this.sustratoRepository.findByIds(sustratosSugeridos);
-    }
-
-    if (estacion) {
-      nuevaPlanta.estaciones =
-        await this.estacionRepository.findByIds(estacion);
-    }
-
-    if (tipoSuelo) {
-      nuevaPlanta.suelos = await this.sueloRepository.findByIds(tipoSuelo);
-    }
-
-    return await this.plantaRepository.save(nuevaPlanta);
-  }
-  async getPlantasPaginadas(
-    page: number,
-    size: number,
-  ): Promise<{ data: Planta[]; total: number }> {
-    const queryBuilder = this.plantaRepository.createQueryBuilder('planta');
-
-    // Añadir condición para filtrar por 'activo = 1' en la entidad Producto
-    queryBuilder
-      .innerJoinAndSelect('planta.producto', 'producto')
-      .where('producto.activo = :activo', { activo: 1 });
-
-    // Añadir las relaciones adicionales
-    queryBuilder.leftJoinAndSelect('producto.categoria', 'categoria');
-    queryBuilder.leftJoinAndSelect('producto.imagenes', 'imagenes');
-
-    // Paginación
-    queryBuilder.skip((page - 1) * size);
-    queryBuilder.take(size);
-
-    // Ejecutar la consulta y contar los resultados
-    const [result, total] = await queryBuilder.getManyAndCount();
-
-    return {
-      data: result,
-      total,
-    };
-  }
-  async findPlantaById(idProducto: number): Promise<Planta> {
-    const planta = await this.plantaRepository.findOne({
-      where: {
-        producto: {
-          id: idProducto,
-          categoria: { nombreCategoria: 'Plantas' },
-        },
-      },
-      relations: ['producto', 'producto.categoria', 'producto.imagenes'],
-    });
-
-    if (!planta) {
-      throw new NotFoundException(
-        `Planta con ID de producto ${idProducto} no encontrada`,
-      );
-    }
-
-    return planta;
-  }
-
-  async updatePlanta(
-    id: number,
-    updatePlantaDto: UpdatePlantaDto,
-  ): Promise<Planta> {
-    const planta = await this.plantaRepository.findOneBy({ id });
-    if (!planta) {
-      throw new NotFoundException(`Planta con ID ${id} no encontrada`);
-    }
-
-    const producto = await this.productoRepository.findOneBy({
-      id: planta.producto.id,
-    });
-    if (!producto) {
-      throw new NotFoundException(
-        `Producto asociado con ID ${planta.producto.id} no encontrado`,
-      );
-    }
-
-    // Actualizar el producto asociado
-    Object.assign(producto, updatePlantaDto);
-    await this.productoRepository.save(producto);
-
-    // Actualizar la planta
-    Object.assign(planta, updatePlantaDto);
-    return await this.plantaRepository.save(planta);
-  }
-  async deletePlanta(id: number): Promise<void> {
-    const result = await this.plantaRepository.delete(id);
-    if (result.affected === 0) {
-      throw new NotFoundException(`Planta con ID ${id} no encontrada`);
+    } finally {
+      await queryRunner.release();
     }
   }
   async createProducto(
@@ -588,330 +378,6 @@ export class ProductosService {
       .getRawOne();
 
     return (maxProducto?.max || 0) + 1;
-  }
-  async createMacetero(
-    createMaceteroDto: CreateMaceteroDto,
-  ): Promise<Macetero> {
-    const categoriaMacetero = await this.categoriaRepository.findOne({
-      where: { nombreCategoria: 'Maceteros' },
-    });
-    if (!categoriaMacetero) {
-      throw new NotFoundException('Categoría de maceteros no encontrada');
-    }
-    const createProductoDto: CreateProductoDto = {
-      ...createMaceteroDto,
-      idCategoria: categoriaMacetero.id,
-    };
-
-    const producto = await this.createProducto(createProductoDto);
-
-    const nuevoMacetero = this.maceteroRepository.create({
-      ...createMaceteroDto,
-      producto,
-      formamacetero: { id: createMaceteroDto.idForma } as any,
-    });
-
-    return await this.maceteroRepository.save(nuevoMacetero);
-  }
-  async getMaceterosPaginados(
-    page: number,
-    size: number,
-  ): Promise<{ data: Macetero[]; total: number }> {
-    const queryBuilder = this.maceteroRepository.createQueryBuilder('macetero');
-
-    // Añadir condición para filtrar por 'activo = 1' en la entidad Producto
-    queryBuilder
-      .innerJoinAndSelect('macetero.producto', 'producto')
-      .where('producto.activo = :activo', { activo: 1 });
-
-    // Añadir las relaciones adicionales
-    queryBuilder.leftJoinAndSelect('producto.categoria', 'categoria');
-    queryBuilder.leftJoinAndSelect('producto.imagenes', 'imagenes');
-
-    // Paginación
-    queryBuilder.skip((page - 1) * size);
-    queryBuilder.take(size);
-
-    // Ejecutar la consulta y contar los resultados
-    const [result, total] = await queryBuilder.getManyAndCount();
-
-    return {
-      data: result,
-      total,
-    };
-  }
-
-  async findMaceteroById(productoId: number): Promise<Macetero> {
-    const macetero = await this.maceteroRepository.findOne({
-      where: {
-        producto: {
-          id: productoId,
-          categoria: { nombreCategoria: 'Maceteros' },
-        },
-      },
-      relations: ['producto', 'producto.categoria', 'producto.imagenes'],
-    });
-
-    if (!macetero) {
-      throw new NotFoundException(
-        `Macetero con ID de producto ${productoId} no encontrado`,
-      );
-    }
-
-    return macetero;
-  }
-
-  async updateMacetero(
-    id: number,
-    updateMaceteroDto: UpdateMaceteroDto,
-  ): Promise<Macetero> {
-    const macetero = await this.maceteroRepository.findOneBy({ id });
-    if (!macetero) {
-      throw new NotFoundException(`Macetero con ID ${id} no encontrado`);
-    }
-
-    const producto = await this.productoRepository.findOneBy({
-      id: macetero.producto.id,
-    });
-    if (!producto) {
-      throw new NotFoundException(
-        `Producto asociado con ID ${macetero.producto.id} no encontrado`,
-      );
-    }
-
-    // Actualizar el producto asociado
-    Object.assign(producto, updateMaceteroDto);
-    await this.productoRepository.save(producto);
-
-    // Actualizar el macetero
-    Object.assign(macetero, updateMaceteroDto);
-    return await this.maceteroRepository.save(macetero);
-  }
-
-  async deleteMacetero(id: number): Promise<void> {
-    const result = await this.maceteroRepository.delete(id);
-    if (result.affected === 0) {
-      throw new NotFoundException(`Macetero con ID ${id} no encontrado`);
-    }
-  }
-  async createFertilizante(
-    createFertilizanteDto: CreateFertilizanteDto,
-  ): Promise<Fertilizante> {
-    const createProductoDto: CreateProductoDto = {
-      ...createFertilizanteDto,
-      idCategoria: 5,
-    };
-
-    const producto = await this.createProducto(createProductoDto);
-
-    const tipoFertilizante = await this.fertilizanteRepository.findOneBy({
-      id: createFertilizanteDto.idTipoFertilizante,
-    });
-    if (!tipoFertilizante) {
-      throw new NotFoundException(
-        `Tipo de fertilizante con ID ${createFertilizanteDto.idTipoFertilizante} no encontrado`,
-      );
-    }
-
-    const nuevoFertilizante = this.fertilizanteRepository.create({
-      producto,
-      tipo: tipoFertilizante,
-      composicion: createFertilizanteDto.composicion,
-      presentacion: createFertilizanteDto.presentacion,
-    });
-
-    return await this.fertilizanteRepository.save(nuevoFertilizante);
-  }
-  async getFertilizantesPaginados(
-    page: number,
-    size: number,
-  ): Promise<{ data: Fertilizante[]; total: number }> {
-    const queryBuilder =
-      this.fertilizanteRepository.createQueryBuilder('fertilizante');
-
-    // Añadir condición para filtrar por 'activo = 1' en la entidad Producto
-    queryBuilder
-      .innerJoinAndSelect('fertilizante.producto', 'producto')
-      .where('producto.activo = :activo', { activo: 1 });
-
-    // Añadir las relaciones adicionales
-    queryBuilder.leftJoinAndSelect('producto.categoria', 'categoria');
-    queryBuilder.leftJoinAndSelect('producto.imagenes', 'imagenes');
-
-    // Paginación
-    queryBuilder.skip((page - 1) * size);
-    queryBuilder.take(size);
-
-    // Ejecutar la consulta y contar los resultados
-    const [result, total] = await queryBuilder.getManyAndCount();
-
-    return {
-      data: result,
-      total,
-    };
-  }
-
-  async findFertilizanteById(id: number): Promise<Fertilizante> {
-    const fertilizante = await this.fertilizanteRepository.findOne({
-      where: { id },
-      relations: ['producto', 'producto.categoria', 'producto.imagenes'],
-    });
-
-    if (!fertilizante) {
-      throw new NotFoundException(`Fertilizante con ID ${id} no encontrado`);
-    }
-
-    return fertilizante;
-  }
-  //TODO:  METODO BUSCA FERTILIZANTE POR ID PRODUCTO
-  async findFertilizanteByProductoId(
-    idProducto: number,
-  ): Promise<Fertilizante> {
-    const fertilizante = await this.fertilizanteRepository.findOne({
-      where: {
-        producto: {
-          id: idProducto,
-          categoria: { nombreCategoria: 'Fertilizantes' },
-        },
-      },
-      relations: ['producto', 'producto.categoria', 'producto.imagenes'],
-    });
-
-    if (!fertilizante) {
-      throw new NotFoundException(
-        `Fertilizante con ID de producto ${idProducto} no encontrado`,
-      );
-    }
-
-    return fertilizante;
-  }
-
-  async updateFertilizante(
-    id: number,
-    updateFertilizanteDto: UpdateFertilizanteDto,
-  ): Promise<Fertilizante> {
-    const fertilizante = await this.fertilizanteRepository.findOneBy({ id });
-    if (!fertilizante) {
-      throw new NotFoundException(`Fertilizante con ID ${id} no encontrado`);
-    }
-    Object.assign(fertilizante, updateFertilizanteDto);
-    return await this.fertilizanteRepository.save(fertilizante);
-  }
-
-  async deleteFertilizante(id: number): Promise<void> {
-    const result = await this.fertilizanteRepository.delete(id);
-    if (result.affected === 0) {
-      throw new NotFoundException(`Fertilizante con ID ${id} no encontrado`);
-    }
-  }
-
-  async createSustrato(
-    createSustratoDto: CreateSustratoDto,
-  ): Promise<Sustrato> {
-    const categoriaSustrato = await this.categoriaRepository.findOne({
-      where: { nombreCategoria: 'Sustratos' },
-    });
-    if (!categoriaSustrato) {
-      throw new NotFoundException('Categoría de sustratos no encontrada');
-    }
-    const createProductoDto: CreateProductoDto = {
-      nombreProducto: createSustratoDto.nombre,
-      descripcionProducto: createSustratoDto.descripcion,
-      idCategoria: categoriaSustrato.id,
-      imagenProducto: createSustratoDto.imagenProducto,
-      precioNormal: createSustratoDto.precioNormal,
-      stock: createSustratoDto.stock,
-      activo: 1,
-    };
-    const producto = await this.createProducto(createProductoDto);
-
-    const nuevoSustrato = this.sustratoRepository.create({
-      ...createSustratoDto,
-      producto,
-    });
-
-    return await this.sustratoRepository.save(nuevoSustrato);
-  }
-
-  async findAllSustratos(
-    page: number,
-    size: number,
-  ): Promise<{ data: Sustrato[]; total: number }> {
-    const [result, total] = await this.sustratoRepository.findAndCount({
-      relations: ['producto', 'producto.categoria', 'producto.imagenes'],
-      skip: (page - 1) * size,
-      take: size,
-    });
-
-    return {
-      data: result,
-      total,
-    };
-  }
-
-  async findSustratoById(idProducto: number): Promise<Sustrato> {
-    const sustrato = await this.sustratoRepository.findOne({
-      where: {
-        producto: {
-          id: idProducto,
-          categoria: { nombreCategoria: 'Sustratos' },
-        },
-      },
-      relations: ['producto', 'producto.categoria', 'producto.imagenes'],
-    });
-
-    if (!sustrato) {
-      throw new NotFoundException(
-        `Sustrato con ID de producto ${idProducto} no encontrado`,
-      );
-    }
-
-    return sustrato;
-  }
-
-  async updateSustrato(
-    id: number,
-    updateSustratoDto: UpdateSustratoDto,
-  ): Promise<Sustrato> {
-    const sustrato = await this.sustratoRepository.findOneBy({ id });
-    if (!sustrato) {
-      throw new NotFoundException(`Sustrato con ID ${id} no encontrado`);
-    }
-
-    Object.assign(sustrato, updateSustratoDto);
-    return await this.sustratoRepository.save(sustrato);
-  }
-
-  async deleteSustrato(id: number): Promise<void> {
-    const result = await this.sustratoRepository.delete(id);
-    if (result.affected === 0) {
-      throw new NotFoundException(`Sustrato con ID ${id} no encontrado`);
-    }
-  }
-  //METODO UNICO PARA EL CONTROL DE PAGINACION
-  async gestionPaginacion<T>(
-    repository: Repository<T>,
-    page: number,
-    size: number,
-    relations: string[] = [],
-  ): Promise<{ data: T[]; total: number }> {
-    const queryBuilder = repository.createQueryBuilder('producto');
-
-    queryBuilder.where('producto.activo = :activo', { activo: 1 });
-
-    relations.forEach((relation) => {
-      queryBuilder.leftJoinAndSelect(`producto.${relation}`, relation);
-    });
-
-    queryBuilder.skip((page - 1) * size);
-    queryBuilder.take(size);
-
-    const [result, total] = await queryBuilder.getManyAndCount();
-
-    return {
-      data: result,
-      total,
-    };
   }
 
   async removeImageFromProduct(
@@ -1007,80 +473,6 @@ export class ProductosService {
     }
     producto.activo = 0;
     return this.productoRepository.save(producto);
-  }
-  async filtroPetFriendly(filtro: number): Promise<Planta[]> {
-    try {
-      const filtroPlantas: Planta[] = await this.plantaRepository.find({
-        where: { toxicidadMascotas: filtro },
-      });
-      return filtroPlantas;
-    } catch (error) {
-      throw new BadRequestException({
-        status: HttpStatus.BAD_REQUEST,
-        error: 'Error al obtener las plantas',
-        data: error,
-      });
-    }
-  }
-  async filtroCuidados(filtro: string): Promise<Planta[]> {
-    try {
-      const filtrocuidados = await this.dificultadRepository.findOne({
-        where: { descripcion: filtro },
-      });
-      const filtroPlantas: Planta[] = await this.plantaRepository.find({
-        where: { dificultad: filtrocuidados },
-      });
-      return filtroPlantas;
-    } catch (error) {
-      throw new BadRequestException({
-        status: HttpStatus.BAD_REQUEST,
-        error: 'Error al obtener las plantas',
-        data: error,
-      });
-    }
-  }
-
-  //TODO: METODO PARA CREAR UN PRODUCTO JUNTO A LAS IMAGENES
-  async creaProductoImagen(
-    CreateProd2Dto: CreateProd2Dto,
-    rutasImagenes: string[],
-  ): Promise<Producto> {
-    const queryRunner =
-      this.productoRepository.manager.connection.createQueryRunner();
-    await queryRunner.startTransaction();
-    try {
-      const nuevoProducto = this.productoRepository.create({
-        ...CreateProd2Dto,
-        categoria: { id: CreateProd2Dto.idCategoria } as any,
-      });
-
-      const productoGuardado = await queryRunner.manager.save(nuevoProducto);
-
-      if (rutasImagenes && rutasImagenes.length > 0) {
-        const imagenesEntities = rutasImagenes.map((ruta) =>
-          this.imagenProductoRepository.create({
-            urlImagen: ruta,
-            producto: productoGuardado,
-          }),
-        );
-        await queryRunner.manager.save(imagenesEntities);
-      }
-
-      await queryRunner.commitTransaction();
-      return productoGuardado;
-    } catch (error) {
-      console.error(
-        'Error durante la creación del producto con imágenes:',
-        error,
-      );
-      await queryRunner.rollbackTransaction();
-      throw new HttpException(
-        `Error al crear el producto con imágenes: ${error.message}`,
-        HttpStatus.BAD_REQUEST,
-      );
-    } finally {
-      await queryRunner.release();
-    }
   }
 
   async validaStock(id: number, stockCompra: number): Promise<number> {
