@@ -9,10 +9,12 @@ import { Repository } from 'typeorm';
 import { Categoria } from 'src/productos/entities/categoria.entity';
 import { CreateCategoriaDto } from 'src/productos/dto/create-categoria.dto';
 import { UpdateCategoriaDto } from 'src/productos/dto/update-categoria.dto';
-
+import logger from 'src/logger';
+import { Logger } from 'winston';
 
 @Injectable()
 export class CategoriasService {
+  private readonly logger = new Logger({ level: 'info' });
   constructor(
     @InjectRepository(Categoria)
     private readonly categoriaRepository: Repository<Categoria>,
