@@ -28,7 +28,7 @@ import { UpdatePlantaDto } from 'src/productos/dto/update-planta.dto';
 
 @Injectable()
 export class PlantaService {
-  logger: any;
+  private readonly logger = new Logger(PlantaService.name);
   constructor(
     @InjectRepository(Producto)
     private readonly productoRepository: Repository<Producto>,
@@ -259,65 +259,147 @@ export class PlantaService {
     };
   }
   async findPlantaById(idProducto: number): Promise<Planta> {
-    const planta = await this.plantaRepository.findOne({
-      where: {
-        producto: {
-          id: idProducto,
-          categoria: { nombreCategoria: 'Plantas' },
-        },
-      },
-      relations: ['producto', 'producto.categoria', 'producto.imagenes'],
+    this.logger.log({
+      message: `Buscando planta con producto ID ${idProducto}`,
+      context: PlantaService.name,
     });
-    if (!planta) {
-      this.logger.warn('Planta con ID de producto ${idProducto} no encontrada');
-      throw new NotFoundException(
-        `Planta con ID de producto ${idProducto} no encontrada`,
+
+    try {
+      const planta = await this.plantaRepository.findOne({
+        where: {
+          producto: {
+            id: idProducto,
+          },
+        },
+        relations: ['producto', 'producto.categoria', 'producto.imagenes'],
+      });
+
+      if (!planta) {
+        this.logger.warn({
+          message: `Planta con ID de producto ${idProducto} no encontrada`,
+          context: PlantaService.name,
+        });
+        throw new NotFoundException(
+          `Planta con ID de producto ${idProducto} no encontrada`,
+        );
+      }
+
+      this.logger.log({
+        message: `Planta encontrada: ${JSON.stringify(planta)}`,
+        context: PlantaService.name,
+      });
+
+      return planta;
+    } catch (error) {
+      this.logger.error({
+        message: `Error al buscar planta con producto ID ${idProducto}`,
+        context: PlantaService.name,
+        stack: error.stack,
+      });
+
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: `Error inesperado al buscar planta.`,
+          details: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-
-    return planta;
   }
 
   async updatePlanta(
     id: number,
     updatePlantaDto: UpdatePlantaDto,
   ): Promise<Planta> {
+    this.logger.log({
+      message: `Buscando planta con ID: ${id}`,
+      context: PlantaService.name,
+    });
+
     const planta = await this.plantaRepository.findOneBy({ id });
     if (!planta) {
+      this.logger.warn({
+        message: `Planta con ID ${id} no encontrada`,
+        context: PlantaService.name,
+      });
       throw new NotFoundException(`Planta con ID ${id} no encontrada`);
     }
+
+    this.logger.log({
+      message: `Buscando producto asociado con ID: ${planta.producto.id}`,
+      context: PlantaService.name,
+    });
 
     const producto = await this.productoRepository.findOneBy({
       id: planta.producto.id,
     });
     if (!producto) {
+      this.logger.warn({
+        message: `Producto asociado con ID ${planta.producto.id} no encontrado`,
+        context: PlantaService.name,
+      });
       throw new NotFoundException(
         `Producto asociado con ID ${planta.producto.id} no encontrado`,
       );
     }
 
-    // Actualizar el producto asociado
+    this.logger.log({
+      message: `Actualizando producto asociado con ID: ${producto.id}`,
+      context: PlantaService.name,
+    });
+
     Object.assign(producto, updatePlantaDto);
     await this.productoRepository.save(producto);
 
-    // Actualizar la planta
+    this.logger.log({
+      message: `Actualizando planta con ID: ${id}`,
+      context: PlantaService.name,
+    });
+
     Object.assign(planta, updatePlantaDto);
-    return await this.plantaRepository.save(planta);
+    const updatedPlanta = await this.plantaRepository.save(planta);
+
+    this.logger.log({
+      message: `Planta con ID ${id} actualizada exitosamente`,
+      context: PlantaService.name,
+    });
+
+    return updatedPlanta;
   }
+
   async deletePlanta(id: number): Promise<void> {
-    this.logger.log(`Eliminando planta con ID: ${id}`, PlantaService.name);
+    this.logger.log({
+      message: `Eliminando planta con ID: ${id}`,
+      context: PlantaService.name,
+    });
+
+    const planta = await this.plantaRepository.findOne({ where: { id } });
+
+    if (!planta) {
+      this.logger.warn({
+        message: `Planta con ID ${id} no encontrada`,
+        context: PlantaService.name,
+      });
+      throw new NotFoundException(`Planta con ID ${id} no encontrada`);
+    }
+
     try {
-      const result = await this.plantaRepository.delete(id);
-      if (result.affected === 0) {
-        throw new NotFoundException(`Planta con ID ${id} no encontrada`);
-      }
-      this.logger.log(`Planta eliminada con ID: ${id}`, PlantaService.name);
+      await this.plantaRepository.delete(id);
+      this.logger.log({
+        message: `Planta con ID ${id} eliminada correctamente`,
+        context: PlantaService.name,
+      });
     } catch (error) {
-      this.logger.error(
-        `Error al eliminar planta: ${error.message}`,
-        error.stack,
-        PlantaService.name,
-      );
+      this.logger.error({
+        message: `Error al eliminar planta con ID ${id}: ${error.message}`,
+        stack: error.stack,
+        context: PlantaService.name,
+      });
       throw error;
     }
   }

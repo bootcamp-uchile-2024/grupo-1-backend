@@ -20,6 +20,7 @@ import {
   Patch,
   BadRequestException,
   UploadedFiles,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -69,6 +70,7 @@ export class ProductosController {
     private readonly SustratosService: SustratosService,
     private readonly FiltrosService: FiltrosService,
     private readonly CategoriasService: CategoriasService,
+    private readonly plantasService: PlantaService,
   ) {}
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   @Post('/create')
@@ -462,38 +464,33 @@ export class ProductosController {
       'Devuelve los detalles de una planta específica por el ID del producto',
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Detalles de la planta encontrada',
     type: Planta,
   })
   @ApiResponse({
-    status: 404,
+    status: HttpStatus.NOT_FOUND,
     description: 'Planta no encontrada',
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'Error al obtener la planta.',
   })
   @ApiParam({
     name: 'id',
     description: 'ID del producto',
     required: true,
   })
-  async findOnePlanta(
-    @Param('id', ParseIntPipe) id: number,
-    @Res() res: Response,
-  ) {
+  async findOnePlanta(@Param('id', ParseIntPipe) id: number): Promise<any> {
     try {
       const planta = await this.PlantaService.findPlantaById(id);
-      res.status(HttpStatus.OK).json(planta);
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Planta encontrada exitosamente',
+        data: planta,
+      };
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
-      } else {
-        throw new HttpException(
-          {
-            status: HttpStatus.INTERNAL_SERVER_ERROR,
-            error: 'Error al obtener la planta.',
-          },
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
+      return this.handleException(error);
     }
   }
 
@@ -678,8 +675,14 @@ export class ProductosController {
     summary: 'Crear un nuevo fertilizante',
     description: 'Crea un nuevo fertilizante en el sistema',
   })
-  @ApiResponse({ status: 201, description: 'Fertilizante creado con éxito.' })
-  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'Fertilizante creado con éxito.',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Datos inválidos.',
+  })
   @ApiBody({ type: CreateFertilizanteDto })
   async createFertilizante(
     @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
