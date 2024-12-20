@@ -33,12 +33,24 @@ import { CreatePerfilDto } from '../dto/create-perfil.dto';
 import { ValidaForamteEmailPipe } from 'src/comunes/pipes/validaFormatoEmail.pipe';
 import { RolesAutorizados } from 'src/comunes/decorator/rol.decorator';
 import { Rol } from 'src/enum/rol.enum';
+import { CredencialesDto } from '../dto/credenciales.dto';
+import { JwtDto } from 'src/jwt/jwt.dto';
 
 @Controller('usuarios')
 @UsePipes(new ValidationPipe({ transform: true }))
 export class UsuariosController {
   perfilRepository: any;
   constructor(private readonly usuariosService: UsuariosService) {}
+  
+  @ApiTags('Login')
+  @Post('login')
+  async login(@Body() credencialesDto:CredencialesDto): Promise<JwtDto>{
+    console.log("entre")
+    console.log('JWT_SECRET:', process.env.JWT_SECRET); // Esto debería imprimir la clave secreta en consola.
+
+     return this.usuariosService.login(credencialesDto)
+  }
+
 
   @ApiTags('Gestion - Customer')
   @RolesAutorizados(Rol.INVITADO)

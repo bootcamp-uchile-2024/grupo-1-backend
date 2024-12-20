@@ -5,9 +5,11 @@ import { UsuariosController } from './controller/usuarios.controller';
 import { UsuariosService } from './service/usuarios.service';
 import { Comuna } from 'src/localizaciones/entities/comuna.entity';
 import { Perfil } from './entities/perfil.entity';
+import { JwtModule, JwtService } from '@nestjs/jwt';
+
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Usuario, Comuna, Perfil])],
+  imports: [TypeOrmModule.forFeature([Usuario, Comuna, Perfil]),JwtModule],
   controllers: [UsuariosController],
   providers: [UsuariosService],
   exports: [UsuariosService],
