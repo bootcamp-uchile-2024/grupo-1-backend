@@ -289,7 +289,7 @@ export class UsuariosService {
   try {
     // Generar el token utilizando la configuración global de JwtService
     
-    const token = this.jwtService.sign(payload);
+    const token = this.jwtService.sign(payload, { secret: `${process.env.JWT_SECRET}` });
   
     jwt.token = token;
 
