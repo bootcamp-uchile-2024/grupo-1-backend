@@ -7,7 +7,6 @@ import { ConfigService } from '@nestjs/config';
 import * as express from 'express';
 import * as fs from 'fs';
 import { resolve } from 'path';
-import { LoggingInterceptor } from './comunes/interceptor/loggin.interceptor';
 import { setupSwagger } from './swagger.config';
 import rateLimit from 'express-rate-limit';
 
@@ -26,7 +25,6 @@ async function bootstrap() {
     }),
   );
   app.useGlobalInterceptors(new LogRespuestasInterceptor());
-  app.useGlobalInterceptors(new LoggingInterceptor());
 
   setupSwagger(app, ambiente);
 

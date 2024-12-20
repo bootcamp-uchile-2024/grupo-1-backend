@@ -22,6 +22,7 @@ import { MaceterosService } from './service/subservice/maceteros.service';
 import { FertilizantesService } from './service/subservice/fertilizantes.service';
 import { SustratosService } from './service/subservice/sustratos.service';
 import { FiltrosService } from './service/subservice/filtros.service';
+import { CategoriasService } from './service/subservice/categorias.service';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { FiltrosService } from './service/subservice/filtros.service';
     FertilizantesService,
     SustratosService,
     FiltrosService,
+    CategoriasService,
     {
       provide: 'IMAGE_PATH', // Un token para identificar el valor
       useValue: path.join(__dirname, '..', 'public', 'images'),

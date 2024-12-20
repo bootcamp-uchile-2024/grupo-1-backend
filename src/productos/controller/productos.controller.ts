@@ -57,6 +57,7 @@ import { PlantaService } from '../service/subservice/plantas.service';
 import { MaceterosService } from '../service/subservice/maceteros.service';
 import { FertilizantesService } from '../service/subservice/fertilizantes.service';
 import { SustratosService } from '../service/subservice/sustratos.service';
+import { CategoriasService } from '../service/subservice/categorias.service';
 
 @Controller('productos')
 export class ProductosController {
@@ -67,6 +68,7 @@ export class ProductosController {
     private readonly FertilizantesService: FertilizantesService,
     private readonly SustratosService: SustratosService,
     private readonly FiltrosService: FiltrosService,
+    private readonly CategoriasService: CategoriasService,
   ) {}
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   @Post('/create')
@@ -229,7 +231,7 @@ export class ProductosController {
   ) {
     try {
       const categoria =
-        await this.productosService.createCategoria(createCategoriaDto);
+        await this.CategoriasService.createCategoria(createCategoriaDto);
       res.status(HttpStatus.CREATED).json(categoria);
     } catch (error) {
       throw new HttpException(
@@ -261,7 +263,7 @@ export class ProductosController {
     @Res() res: Response,
   ) {
     try {
-      const categorias = await this.productosService.findAllCategorias(
+      const categorias = await this.CategoriasService.findAllCategorias(
         page,
         size,
       );
@@ -297,7 +299,7 @@ export class ProductosController {
     @Res() res: Response,
   ) {
     try {
-      const categoria = await this.productosService.findCategoriaById(id);
+      const categoria = await this.CategoriasService.findCategoriaById(id);
       if (!categoria) {
         return res
           .status(HttpStatus.NOT_FOUND)
@@ -342,7 +344,7 @@ export class ProductosController {
   ) {
     try {
       const categoria =
-        await this.productosService.findCategoriaIdByName(nombrecategoria);
+        await this.CategoriasService.findCategoriaIdByName(nombrecategoria);
       if (!categoria) {
         return res
           .status(HttpStatus.NOT_FOUND)
@@ -376,7 +378,7 @@ export class ProductosController {
     @Res() res: Response,
   ) {
     try {
-      const categoria = await this.productosService.updateCategoria(
+      const categoria = await this.CategoriasService.updateCategoria(
         id,
         updateCategoriaDto,
       );

@@ -6,7 +6,7 @@ import logger from 'src/logger';
 export class LoggingMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const { method, originalUrl, body, query } = req;
-    const userAgent = req.get('user-agent') || '';
+    const userAgent = '';
     const context = 'HTTP';
 
     const sanitizedBody = { ...body };

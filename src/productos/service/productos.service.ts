@@ -29,9 +29,8 @@ import * as fsPromises from 'fs/promises';
 import * as path from 'path';
 import * as fs from 'fs';
 import { CreateProd2Dto } from '../dto/create-prod2.dto';
-import { UpdateMaceteroDto } from '../dto/update-macetero.dto';
-import { CreateFertilizanteDto } from '../dto/create-fertilizante.dto';
-import { UpdateFertilizanteDto } from '../dto/update-fertilizante.dto';
+import { gestionPaginacion } from 'src/comunes/paginacion/gestion-paginacion';
+
 @Injectable()
 export class ProductosService {
   constructor(
@@ -66,13 +65,6 @@ export class ProductosService {
     //private readonly imagePath: string,
     @Inject('IMAGE_PATH') private readonly imagePath: string, // Token registrado
   ) {}
-  // METODOS DE CATEGORIA
-  async createCategoria(
-    createCategoriaDto: CreateCategoriaDto,
-  ): Promise<Categoria> {
-    const nuevaCategoria = this.categoriaRepository.create(createCategoriaDto);
-    return await this.categoriaRepository.save(nuevaCategoria);
-  }
 
   async addImageToProduct(
     productId: number,
@@ -169,57 +161,15 @@ export class ProductosService {
     producto.imagenes = producto.imagenes.filter((img) => img.id !== +imageId);
     return await this.productoRepository.save(producto);
   }
-  async updateCategoria(
-    id: number,
-    updateCategoriaDto: UpdateCategoriaDto,
-  ): Promise<Categoria> {
-    const categoria = await this.categoriaRepository.findOneBy({ id });
-    if (!categoria) {
-      throw new NotFoundException(`Categoría con ID ${id} no encontrada`);
-    }
-    Object.assign(categoria, updateCategoriaDto);
-    return await this.categoriaRepository.save(categoria);
-  }
-  async deleteCategoria(id: number): Promise<void> {
-    const result = await this.categoriaRepository.delete(id);
-    if (result.affected === 0) {
-      throw new NotFoundException(`Categoría con ID ${id} no encontrada`);
-    }
-  }
+
   async findAllCatalogoPaginado(
     page: number,
     size: number,
   ): Promise<{ data: Producto[]; total: number }> {
-    return this.gestionPaginacion(this.productoRepository, page, size, [
+    return gestionPaginacion(this.productoRepository, page, size, [
       'categoria',
       'imagenes',
     ]);
-  }
-
-  async findAllCategorias(
-    page: number,
-    size: number,
-  ): Promise<{ data: Categoria[]; total: number }> {
-    return this.gestionPaginacion(this.categoriaRepository, page, size);
-  }
-
-  async findCategoriaById(id: number): Promise<Categoria> {
-    const categoria = await this.categoriaRepository.findOneBy({ id });
-    if (!categoria) {
-      throw new NotFoundException(`Categoría con ID ${id} no encontrada`);
-    }
-    return categoria;
-  }
-  async findCategoriaIdByName(nombreCategoria: string): Promise<Categoria> {
-    const categoria = await this.categoriaRepository.findOne({
-      where: { nombreCategoria },
-    });
-    if (!categoria) {
-      throw new NotFoundException(
-        `Categoría con nombre ${nombreCategoria} no encontrada`,
-      );
-    }
-    return categoria;
   }
 
   // CATALOGO de productos
@@ -428,32 +378,6 @@ export class ProductosService {
       .getRawOne();
 
     return (maxProducto?.max || 0) + 1;
-  }
-
-  //METODO UNICO PARA EL CONTROL DE PAGINACION
-  async gestionPaginacion<T>(
-    repository: Repository<T>,
-    page: number,
-    size: number,
-    relations: string[] = [],
-  ): Promise<{ data: T[]; total: number }> {
-    const queryBuilder = repository.createQueryBuilder('producto');
-
-    queryBuilder.where('producto.activo = :activo', { activo: 1 });
-
-    relations.forEach((relation) => {
-      queryBuilder.leftJoinAndSelect(`producto.${relation}`, relation);
-    });
-
-    queryBuilder.skip((page - 1) * size);
-    queryBuilder.take(size);
-
-    const [result, total] = await queryBuilder.getManyAndCount();
-
-    return {
-      data: result,
-      total,
-    };
   }
 
   async removeImageFromProduct(
