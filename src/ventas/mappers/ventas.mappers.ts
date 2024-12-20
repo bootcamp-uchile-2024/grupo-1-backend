@@ -8,6 +8,8 @@ import { CreateDetalleOrdenCompraDto } from '../dto/create-detalle-orden-compra.
 import { ProductosService } from 'src/productos/service/productos.service';
 import { VerDetalleOrdenCompraDto } from '../dto/verDetalleOrden.dto';
 import { GetOrdenCompraConDetalleDto } from '../dto/verOrdenCompra.dto';
+import { Venta } from '../entities/venta.entity';
+import { GetVentaDto } from '../dto/getVenta-dto';
 export class VentaMappers {
   constructor(private readonly productoService: ProductosService) {}
   static async dtotoEntityOrden(
@@ -31,11 +33,14 @@ export class VentaMappers {
     detalleOc.idOrdenCompra = dto.idOrden;
     detalleOc.idProducto = dto.idProducto;
     detalleOc.cantidad = dto.cantidad;
+    console.log('detalleOc : ', detalleOc);
     const producto = await productoService.findOneOC(dto.idProducto);
     detalleOc.precio = producto.precioNormal;
     detalleOc.descuento = producto.descuento * dto.cantidad;
     detalleOc.totalProducto =
       dto.cantidad * producto.precioNormal - detalleOc.descuento;
+    detalleOc.cantidadVenta = 0;
+    console.log(detalleOc);
     return detalleOc;
   }
 
@@ -58,6 +63,7 @@ export class VentaMappers {
     dto.cantidad = entity.cantidad;
     dto.descuento = entity.descuento;
     dto.totalProducto = entity.totalProducto;
+
     return dto;
   }
   static buscarOrden(orden: OrdenCompra): GetOrdenCompraConDetalleDto {
@@ -76,5 +82,15 @@ export class VentaMappers {
         totalProducto: detalle.totalProducto,
       })) as VerDetalleOrdenCompraDto[],
     };
+  }
+
+  static buscarVenta(venta: Venta): GetVentaDto {
+    return {
+      id: venta.id,
+      totalBruto: venta.totalBruto,
+      iva: venta.iva,
+      totalPago: venta.totalPago,
+      nroComprobantePago: venta.nroComprobantePago,
+    } as GetVentaDto;
   }
 }

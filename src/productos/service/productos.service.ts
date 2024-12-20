@@ -984,4 +984,18 @@ export class ProductosService {
     producto.activo = 0;
     return this.productoRepository.save(producto);
   }
+
+  async validaStock(id: number, stockCompra: number): Promise<number> {
+    const producto = await this.productoRepository.findOneBy({ id });
+    if (!producto) {
+      throw new NotFoundException(`Producto con ID ${id} no encontrada`);
+    }
+    console.log('id: ', id);
+    console.log('stockcompra: ', stockCompra);
+    console.log('prodicto: ', producto);
+    if (stockCompra > producto.stock) {
+      return null;
+    }
+    return stockCompra;
+  }
 }

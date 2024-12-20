@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateOrdenCompraDto } from '../dto/create-orden-compra.dto';
 import { OrdenCompra } from '../entities/orden_compra.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,6 +11,8 @@ import { GetOrdenDto } from '../dto/getOrden.dto';
 import { VentaMappers } from '../mappers/ventas.mappers';
 import { EstadoOrden } from '../enum/estadosOC';
 import { GetOrdenCompraConDetalleDto } from '../dto/verOrdenCompra.dto';
+import { Producto } from 'src/productos/entities/producto.entity';
+import { ProductosService } from 'src/productos/service/productos.service';
 @Injectable()
 export class OrdenComprasService {
   ordenesCompras: OrdenCompra[] = [];
@@ -20,6 +26,8 @@ export class OrdenComprasService {
   constructor(
     @InjectRepository(OrdenCompra)
     private readonly ordencompraRepository: Repository<OrdenCompra>,
+
+    private readonly productoServices: ProductosService,
   ) {}
   async create(
     createOrdenCompraDto: CreateOrdenCompraDto,
@@ -38,9 +46,7 @@ export class OrdenComprasService {
     return VentaMappers.entityToDtoOrden(carritoGuardado);
   }
   async findOneOC(id: number): Promise<OrdenCompra> {
-    console.log('Buscando orden con id:', id);
     const orden = await this.ordencompraRepository.findOneBy({ id });
-    console.log('Resultado de la búsqueda:', orden);
     if (!orden) {
       return null;
     }
@@ -65,6 +71,56 @@ export class OrdenComprasService {
       relations: ['detallesOrden'],
     });
 
+    return ordenCompra.map((orden) => VentaMappers.buscarOrden(orden));
+  }
+
+  async finalizaCarrito(idOc: number): Promise<GetOrdenCompraConDetalleDto[]> {
+    const query = this.ordencompraRepository
+      .createQueryBuilder('ordenCompra')
+      .leftJoinAndSelect('ordenCompra.detallesOrden', 'detallesOrden');
+
+    if (idOc) {
+      query.orWhere('ordenCompra.id = :idOc', { idOc });
+    }
+    query.andWhere('ordenCompra.estado = :estado', {
+      estado: EstadoOrden.CREADA,
+    });
+
+    const ordenCompra = await query.getMany();
+    if (ordenCompra.length == 0) {
+      throw new BadRequestException(
+        `Carrito con ID ${idOc} no puede ser procesado`,
+      );
+    }
+    for (const orden of ordenCompra) {
+      for (const detalle of orden.detallesOrden) {
+        try {
+          const hayStock = await this.productoServices.validaStock(
+            detalle.idProducto,
+            detalle.cantidad,
+          );
+
+          if (!hayStock) {
+            throw new BadRequestException(
+              `El producto con ID ${detalle.idProducto} no tiene suficiente stock para cubrir la cantidad solicitada (${detalle.cantidad}).`,
+            );
+          }
+        } catch (error) {
+          console.error('Error validando stock:', error.message);
+
+          if (error instanceof NotFoundException) {
+            throw new BadRequestException(
+              `El producto con ID ${detalle.idProducto} no existe.`,
+            );
+          }
+
+          throw error; // Relanzar otros errores
+        }
+      }
+    }
+    await this.ordencompraRepository.update(idOc, {
+      estado: EstadoOrden.PROCESANDO,
+    });
     return ordenCompra.map((orden) => VentaMappers.buscarOrden(orden));
   }
 }
