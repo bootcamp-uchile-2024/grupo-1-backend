@@ -47,6 +47,6 @@ import { PlantaService } from './service/subservicios/plantas.service';
       useValue: path.join(__dirname, '..', 'public', 'images'),
     },
   ],
-  exports: [ProductosService], // Exporta el ProductosService
+  exports: [TypeOrmModule, ProductosService], // Exporta el ProductosService
 })
 export class ProductosModule {}

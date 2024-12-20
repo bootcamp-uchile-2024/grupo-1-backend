@@ -21,4 +21,6 @@ export class DetalleOrdenCompra {
   descuento: number;
   @Column({ type: 'int', nullable: true })
   totalProducto: number;
+  @Column({ type: 'int', nullable: true })
+  cantidadVenta: number;
 }

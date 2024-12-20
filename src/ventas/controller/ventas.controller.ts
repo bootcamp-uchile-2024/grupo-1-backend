@@ -28,6 +28,8 @@ import { ValidaProductoCarritoPipe } from 'src/comunes/pipes/ValidaProductoCarri
 import { ValidaEliminaProductoCarroPipe } from 'src/comunes/pipes/validaEliminaProductoCarro.pipe';
 import { QuitarProductoCarritoDto } from '../dto/quitarProductoCarrito.dto';
 import { ValidaBuscaCarritoPipe } from 'src/comunes/pipes/validaBuscaCarrito.pipe';
+import { CreateVentaDto } from '../dto/create-venta-dto';
+import { VentasService } from '../service/ventas.service';
 @ApiTags('ventas')
 @Controller('ventas')
 //@UsePipes(new ValidationPipe({ transform: true }))
@@ -35,7 +37,9 @@ export class VentasController {
   constructor(
     private readonly ordenComprasService: OrdenComprasService,
     private readonly detalleOrdenCompraService: DetalleOrdenComprasService,
+    private readonly ventaService: VentasService,
   ) {}
+  @ApiTags('Gestion-Ventas')
   @ApiOperation({
     summary: 'Historia Usuario H005: Carrito Compras',
     description:
@@ -72,7 +76,6 @@ export class VentasController {
       CreateDetalleOrdenCompraDto,
     );
   }
-
   @ApiOperation({
     summary: 'Historia Usuario H005: Carrito Compras',
     description: 'Esta funcionalidad permite quitar producto del carro compras',
@@ -84,6 +87,7 @@ export class VentasController {
   @ApiResponse({ status: 400, description: 'Producto  no eliminado' })
   @ApiBody({ type: QuitarProductoCarritoDto })
   @Delete('/carrito/removeItem/')
+  @ApiTags('Gestion-Ventas')
   //@UsePipes(ValidaEliminaProductoCarroPipe)
   async quitaProductoCarrito(
     @Body(ValidaEliminaProductoCarroPipe)
@@ -112,6 +116,7 @@ export class VentasController {
   @ApiResponse({ status: 400, description: 'Producto  no actualizado' })
   @ApiBody({ type: CreateDetalleOrdenCompraDto })
   @Put('/carrito/updateItem/')
+  @ApiTags('Gestion-Ventas')
   //@UsePipes(ValidaEliminaProductoCarroPipe)
   async modificaCantidadProductoCarrito(
     @Body(ValidaProductoCarritoPipe)
@@ -150,6 +155,7 @@ export class VentasController {
   })
   @UsePipes(ValidaBuscaCarritoPipe)
   @Get('/carrito/creado/')
+  @ApiTags('Gestion-Ventas')
   async findOne(@Query() query: any) {
     const { emailComprador, idUsuario } = query;
     console.log(
@@ -163,5 +169,47 @@ export class VentasController {
       idUsuario,
     );
     return carrito;
+  }
+
+  @ApiOperation({
+    summary: 'Historia Usuario H005: Carrito Compras',
+    description:
+      'Esta funcionalidad permite pasar carrito compra a portal pagos',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Carrito enviado a Portal Pago',
+  })
+  @ApiResponse({ status: 400, description: 'No existe carrito' })
+  @ApiQuery({
+    name: 'idOC',
+    required: false,
+    type: Number,
+    description: 'El ID orden de compra para buscar su carrito.',
+  })
+  @Put('/carrito/finaliza/')
+  @ApiTags('Gestion-Ventas')
+  async finalizaCarrito(@Query() query: any) {
+    const { idOC } = query;
+
+    const carrito = await this.ordenComprasService.finalizaCarrito(idOC);
+    return idOC;
+  }
+
+  @ApiOperation({
+    summary: 'Historia Usuario : Completa Venta',
+    description:
+      'Esta funcionalidad crea la venta segun el pago realizado para el carrito compras',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Venta realizada',
+  })
+  @ApiResponse({ status: 400, description: 'Venta no completada' })
+  @ApiBody({ type: CreateVentaDto })
+  @Post('/carrito/pagado/')
+  @ApiTags('Gestion-Ventas')
+  async createVenta(@Body() CreateVentaDto: CreateVentaDto) {
+    return await this.ventaService.createVenta(CreateVentaDto);
   }
 }

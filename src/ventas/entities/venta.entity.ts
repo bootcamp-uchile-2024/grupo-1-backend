@@ -15,17 +15,6 @@ import { Despacho } from 'src/despachos/entities/despacho.entity';
 export class Venta {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @OneToOne(() => OrdenCompra, (ordenCompra) => ordenCompra.venta)
-  @JoinColumn({ name: 'idOrdenCompra' })
-  ordenCompra: OrdenCompra;
-
-  @Column({ type: 'varchar', length: 10 })
-  rutUsuario: string;
-
-  @Column({ type: 'varchar', length: 255 })
-  formaIdentificacion: string;
-
   @Column({ type: 'int' })
   totalBruto: number;
 
@@ -37,13 +26,14 @@ export class Venta {
 
   @Column({ type: 'int' })
   totalPago: number;
-
+  @Column({ type: 'varchar', length: 255 })
+  nroComprobantePago: string;
+  @OneToOne(() => OrdenCompra, (ordenCompra) => ordenCompra.venta)
+  @JoinColumn({ name: 'idOrdenCompra' })
+  ordenCompra: OrdenCompra;
   @ManyToOne(() => FormaPago, (formaPago) => formaPago.ventas)
   @JoinColumn({ name: 'idFormaPago' })
   formaPago: FormaPago;
-
-  @Column({ type: 'varchar', length: 255 })
-  nroComprobantePago: string;
 
   @ManyToOne(() => EstadosVenta, (estadoVenta) => estadoVenta.ventas)
   @JoinColumn({ name: 'idEstadoVenta' })
