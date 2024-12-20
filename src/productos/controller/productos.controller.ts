@@ -52,10 +52,14 @@ import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { CreateProd2Dto } from '../dto/create-prod2.dto';
+import { PlantaService } from '../service/subservicios/plantas.service';
 
 @Controller('productos')
 export class ProductosController {
-  constructor(private readonly productosService: ProductosService) {}
+  constructor(
+    private readonly productosService: ProductosService,
+    private readonly PlantaService: PlantaService,
+  ) {}
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   @Post('/create')
   @ApiTags('Gestion-Productos')
@@ -399,7 +403,7 @@ export class ProductosController {
     @Res() res: Response,
   ) {
     try {
-      const planta = await this.productosService.createPlanta(createPlantaDto);
+      const planta = await this.PlantaService.createPlanta(createPlantaDto);
       res.status(HttpStatus.CREATED).json(planta);
     } catch (error) {
       throw new HttpException(
@@ -428,10 +432,7 @@ export class ProductosController {
     @Res() res: Response,
   ) {
     try {
-      const plantas = await this.productosService.getPlantasPaginadas(
-        page,
-        size,
-      );
+      const plantas = await this.PlantaService.getPlantasPaginadas(page, size);
       res.status(HttpStatus.OK).json(plantas);
     } catch (error) {
       throw new HttpException(
@@ -469,7 +470,7 @@ export class ProductosController {
     @Res() res: Response,
   ) {
     try {
-      const planta = await this.productosService.findPlantaById(id);
+      const planta = await this.PlantaService.findPlantaById(id);
       res.status(HttpStatus.OK).json(planta);
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -503,10 +504,7 @@ export class ProductosController {
     @Res() res: Response,
   ) {
     try {
-      const planta = await this.productosService.updatePlanta(
-        id,
-        updatePlantaDto,
-      );
+      const planta = await this.PlantaService.updatePlanta(id, updatePlantaDto);
       res.status(HttpStatus.OK).json(planta);
     } catch (error) {
       if (error instanceof NotFoundException) {

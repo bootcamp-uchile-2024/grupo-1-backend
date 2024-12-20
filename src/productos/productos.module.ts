@@ -17,6 +17,7 @@ import { Categoria } from './entities/categoria.entity';
 import { ImagenProducto } from './entities/imagen_producto.entity';
 import { Macetero } from './entities/macetero.entity';
 import * as path from 'path';
+import { PlantaService } from './service/subservicios/plantas.service';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import * as path from 'path';
   controllers: [ProductosController],
   providers: [
     ProductosService,
+    PlantaService,
     {
       provide: 'IMAGE_PATH', // Un token para identificar el valor
       useValue: path.join(__dirname, '..', 'public', 'images'),
