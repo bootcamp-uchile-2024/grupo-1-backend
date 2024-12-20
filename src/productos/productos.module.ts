@@ -17,7 +17,11 @@ import { Categoria } from './entities/categoria.entity';
 import { ImagenProducto } from './entities/imagen_producto.entity';
 import { Macetero } from './entities/macetero.entity';
 import * as path from 'path';
-import { PlantaService } from './service/subservicios/plantas.service';
+import { PlantaService } from './service/subservice/plantas.service';
+import { MaceterosService } from './service/subservice/maceteros.service';
+import { FertilizantesService } from './service/subservice/fertilizantes.service';
+import { SustratosService } from './service/subservice/sustratos.service';
+import { FiltrosService } from './service/subservice/filtros.service';
 
 @Module({
   imports: [
@@ -42,6 +46,10 @@ import { PlantaService } from './service/subservicios/plantas.service';
   providers: [
     ProductosService,
     PlantaService,
+    MaceterosService,
+    FertilizantesService,
+    SustratosService,
+    FiltrosService,
     {
       provide: 'IMAGE_PATH', // Un token para identificar el valor
       useValue: path.join(__dirname, '..', 'public', 'images'),
