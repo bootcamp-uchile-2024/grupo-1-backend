@@ -39,6 +39,7 @@ export class VentasController {
     private readonly detalleOrdenCompraService: DetalleOrdenComprasService,
     private readonly ventaService: VentasService,
   ) {}
+  @ApiTags('Gestion-Ventas')
   @ApiOperation({
     summary: 'Historia Usuario H005: Carrito Compras',
     description:
@@ -75,7 +76,6 @@ export class VentasController {
       CreateDetalleOrdenCompraDto,
     );
   }
-
   @ApiOperation({
     summary: 'Historia Usuario H005: Carrito Compras',
     description: 'Esta funcionalidad permite quitar producto del carro compras',
@@ -87,6 +87,7 @@ export class VentasController {
   @ApiResponse({ status: 400, description: 'Producto  no eliminado' })
   @ApiBody({ type: QuitarProductoCarritoDto })
   @Delete('/carrito/removeItem/')
+  @ApiTags('Gestion-Ventas')
   //@UsePipes(ValidaEliminaProductoCarroPipe)
   async quitaProductoCarrito(
     @Body(ValidaEliminaProductoCarroPipe)
@@ -115,6 +116,7 @@ export class VentasController {
   @ApiResponse({ status: 400, description: 'Producto  no actualizado' })
   @ApiBody({ type: CreateDetalleOrdenCompraDto })
   @Put('/carrito/updateItem/')
+  @ApiTags('Gestion-Ventas')
   //@UsePipes(ValidaEliminaProductoCarroPipe)
   async modificaCantidadProductoCarrito(
     @Body(ValidaProductoCarritoPipe)
@@ -153,6 +155,7 @@ export class VentasController {
   })
   @UsePipes(ValidaBuscaCarritoPipe)
   @Get('/carrito/creado/')
+  @ApiTags('Gestion-Ventas')
   async findOne(@Query() query: any) {
     const { emailComprador, idUsuario } = query;
     console.log(
@@ -185,6 +188,7 @@ export class VentasController {
     description: 'El ID orden de compra para buscar su carrito.',
   })
   @Put('/carrito/finaliza/')
+  @ApiTags('Gestion-Ventas')
   async finalizaCarrito(@Query() query: any) {
     const { idOC } = query;
 
@@ -204,6 +208,7 @@ export class VentasController {
   @ApiResponse({ status: 400, description: 'Venta no completada' })
   @ApiBody({ type: CreateVentaDto })
   @Post('/carrito/pagado/')
+  @ApiTags('Gestion-Ventas')
   async createVenta(@Body() CreateVentaDto: CreateVentaDto) {
     return await this.ventaService.createVenta(CreateVentaDto);
   }
