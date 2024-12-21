@@ -14,6 +14,7 @@ import {
   NotFoundException,
   Put,
   BadRequestException,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -21,6 +22,7 @@ import {
   ApiResponse,
   ApiBody,
   ApiParam,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { UsuariosService } from '../service/usuarios.service';
 import { CreateUsuarioDto } from '../dto/create-usuario.dto';
@@ -35,12 +37,18 @@ import { RolesAutorizados } from 'src/comunes/decorator/rol.decorator';
 import { Rol } from 'src/enum/rol.enum';
 import { CredencialesDto } from '../dto/credenciales.dto';
 import { JwtDto } from 'src/jwt/jwt.dto';
+import * as bcrypt from 'bcryptjs';
+import { JwtGuard } from 'src/jwt/jwt.guard';
+
 
 @Controller('usuarios')
 @UsePipes(new ValidationPipe({ transform: true }))
 export class UsuariosController {
   perfilRepository: any;
   constructor(private readonly usuariosService: UsuariosService) {}
+
+
+
   
   @ApiTags('Login')
   @Post('login')
@@ -53,7 +61,6 @@ export class UsuariosController {
 
 
   @ApiTags('Gestion - Customer')
-  @RolesAutorizados(Rol.INVITADO)
   @Post('gestion/insert')
   @ApiOperation({
     summary: 'Crear un nuevo usuario',
@@ -87,7 +94,10 @@ export class UsuariosController {
     }
   }
 
+
   @ApiTags('Gestion - Customer')
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
   @RolesAutorizados(Rol.ADMIN)
   @Get('/gestion/list')
   @ApiOperation({
@@ -100,6 +110,9 @@ export class UsuariosController {
   })
   @ApiResponse({ status: 500, description: 'Error interno del servidor.' })
   async findAll(@Res() res: Response) {
+  
+    
+    
     try {
       const usuarios = await this.usuariosService.findAll();
       res.status(HttpStatus.OK).json(usuarios);

@@ -285,24 +285,15 @@ export class UsuariosService {
  
   const jwt = new JwtDto();
 
+ console.log("antes del try")
 
-  try {
-    // Generar el token utilizando la configuración global de JwtService
-    
-    const token = this.jwtService.sign(payload, { secret: `${process.env.JWT_SECRET}` });
-  
-    jwt.token = token;
+    jwt.token =await this.jwtService.sign(payload, { secret: process.env.JWT_SECRET });
 
     console.log("Login exitoso");
     console.log(usuario);
     console.log("Token generado:", jwt.token);
 
-
-  } catch (error) {
-    console.error('Error al generar el JWT:', error);
-    throw new HttpException('Error al generar el token', HttpStatus.INTERNAL_SERVER_ERROR);
-  }
-
   return jwt; 
 }
+
 }

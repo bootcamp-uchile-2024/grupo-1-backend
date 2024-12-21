@@ -34,6 +34,15 @@ import { JwtModule } from '@nestjs/jwt';
       rootPath: '/uploads',
       serveRoot: '/uploads',
     }),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        global: true,
+        secret: configService.get<string>('JWT_SECRET'), // Leer el JWT_SECRET desde el archivo .env
+        signOptions: { expiresIn: '1h' },
+      }),
+    }),
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'localhost',
@@ -45,18 +54,6 @@ import { JwtModule } from '@nestjs/jwt';
       entities: [__dirname + '/../**/*.entity{.ts,.js}'],
       synchronize: false,
       logging: ['warn', 'error'],
-    }),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => {
-        const secretKey = process.env.JWT_SECRET
-        console.log('JWT_SECRET desde ConfigService:', secretKey);  // Asegúrate de que se esté imprimiendo
-        return {
-          secret: secretKey,
-          signOptions: { expiresIn: '1h' },
-        };
-      },
     }),
     MulterModule.register({
       dest: './uploads',
