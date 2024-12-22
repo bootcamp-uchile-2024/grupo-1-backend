@@ -14,6 +14,7 @@ import {
   NotFoundException,
   Put,
   BadRequestException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -101,23 +102,23 @@ export class UsuariosController {
 
   @ApiTags('Gestion - Customer')
   @RolesAutorizados(Rol.ADMIN)
-  @Get('/gestion/listbyrut/:rut')
+  @Get('/gestion/listbyrut/:identifier')
   @ApiOperation({
     summary: 'Obtener un usuario por ID o RUT',
     description:
       'Devuelve los detalles de un usuario específico por su ID o RUT',
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Detalles del usuario encontrado',
     type: Usuario,
   })
   @ApiResponse({
-    status: 404,
+    status: HttpStatus.NOT_FOUND,
     description: 'Usuario no encontrado',
   })
   @ApiResponse({
-    status: 500,
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
     description: 'Error interno del servidor',
   })
   @ApiParam({
@@ -125,34 +126,29 @@ export class UsuariosController {
     description: 'ID o RUT del usuario',
     required: true,
   })
-  async findOne(@Param('identifier') identifier: string, @Res() res: Response) {
+  async findOne(@Param('identifier') identifier: string) {
+    if (!identifier) {
+      throw new BadRequestException('Identificador no proporcionado');
+    }
+
     try {
-      let usuario;
-      if (isNaN(Number(identifier))) {
-        usuario = await this.usuariosService.findUsuarioByRut(identifier);
-      } else {
-        usuario = await this.usuariosService.findOne(Number(identifier));
-      }
+      const usuario = isNaN(Number(identifier))
+        ? await this.usuariosService.findUsuarioByRut(identifier)
+        : await this.usuariosService.findOne(Number(identifier));
 
-      if (!usuario) {
-        return res
-          .status(HttpStatus.NOT_FOUND)
-          .json({ message: 'Usuario no encontrado' });
-      }
-
-      res.status(HttpStatus.OK).json(usuario);
+      return usuario;
     } catch (error) {
       if (error instanceof NotFoundException) {
-        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
-      } else {
-        throw new HttpException(
-          {
-            status: HttpStatus.INTERNAL_SERVER_ERROR,
-            error: 'Error al obtener el usuario.',
-          },
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+        throw new NotFoundException(error.message);
       }
+
+      if (error instanceof BadRequestException) {
+        throw new BadRequestException(error.message);
+      }
+
+      throw new InternalServerErrorException(
+        'Error interno del servidor al obtener el usuario.',
+      );
     }
   }
   @ApiTags('Gestion - Customer')
@@ -165,10 +161,16 @@ export class UsuariosController {
     schema: { type: 'string' },
   })
   @ApiOperation({ summary: 'Eliminar un usuario por ID o RUT' })
-  @ApiResponse({ status: 200, description: 'Usuario eliminado con éxito.' })
-  @ApiResponse({ status: 404, description: 'Usuario no encontrado.' })
   @ApiResponse({
-    status: 500,
+    status: HttpStatus.OK,
+    description: 'Usuario eliminado con éxito.',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Usuario no encontrado.',
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
     description: 'Error interno del servidor.',
   })
   async remove(
