@@ -1512,6 +1512,17 @@ export class ProductosController {
     };
   }
   @ApiTags('Filtros - Plantas')
+  @ApiOperation({
+    summary: 'Filtrar plantas mas valoradas por los compradores',
+    description:
+      'Devuelve una lista de plantas mas valoradas por los compradores',
+  })
+  @ApiQuery({
+    name: 'categoria',
+    description: 'Categoria de la planta',
+    required: true,
+    enum: ['Plantas', 'Maceteros', 'Fertilizantes', 'Sustratos'],
+  })
   @Get('plantas/masvaloradas')
   async filtroPlantasMasValoradas(
     @Query('categoria') categoria: string,
