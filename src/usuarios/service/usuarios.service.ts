@@ -234,19 +234,7 @@ export class UsuariosService {
     );
 
     try {
-      let usuario: Usuario;
-      try {
-        if (isNaN(Number(identificador))) {
-          usuario = await this.findUsuarioByRut(identificador);
-        } else {
-          usuario = await this.findOne(Number(identificador));
-        }
-      } catch (error) {
-        this.logger.error(`Error al buscar usuario: ${error.message}`);
-        throw new NotFoundException(
-          `Usuario no encontrado con identificador: ${identificador}`,
-        );
-      }
+      const usuario = await this.findByIdOrRut(identificador);
 
       if (!usuario) {
         this.logger.warn(
@@ -255,12 +243,9 @@ export class UsuariosService {
         throw new NotFoundException(`Usuario no encontrado`);
       }
 
-      // Intentamos eliminar primero las relaciones
       try {
-        // Comenzar transacción
         await this.usuarioRepository.manager.transaction(
           async (transactionalEntityManager) => {
-            // Eliminar preferencias relacionadas
             await transactionalEntityManager
               .createQueryBuilder()
               .delete()
@@ -268,9 +253,6 @@ export class UsuariosService {
               .where('usuarioId = :id', { id: usuario.id })
               .execute();
 
-            // Eliminar otras posibles relaciones aquí...
-
-            // Finalmente eliminar el usuario
             await transactionalEntityManager
               .createQueryBuilder()
               .delete()
@@ -421,7 +403,7 @@ export class UsuariosService {
       // Validar y actualizar comuna si se proporciona
       if (updateUsuarioDto.idComuna) {
         const comuna = await this.comunaRepository.findOneBy({
-          id:   updateUsuarioDto.idComuna,
+          id: updateUsuarioDto.idComuna,
         });
         if (!comuna) {
           throw new NotFoundException(
