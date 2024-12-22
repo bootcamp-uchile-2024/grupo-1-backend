@@ -60,6 +60,7 @@ export class UsuariosController {
   }
 
 
+  
   @ApiTags('Gestion - Customer')
   @Post('gestion/insert')
   @ApiOperation({
@@ -124,8 +125,10 @@ export class UsuariosController {
     }
   }
 
-  @ApiTags('Gestion - Customer')
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
   @RolesAutorizados(Rol.ADMIN)
+  @ApiTags('Gestion - Customer')
   @Get('/gestion/listbyrut/:rut')
   @ApiOperation({
     summary: 'Obtener un usuario por ID o RUT',
@@ -231,6 +234,9 @@ export class UsuariosController {
     }
   }
   @ApiTags('Gestion - Customer')
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN)
   @Put('/gestion/update/:identificador')
   @ApiOperation({
     summary: 'Actualizar un usuario',
@@ -282,8 +288,11 @@ export class UsuariosController {
       }
     }
   }
-  @ApiTags('Gestion-Perfiles')
+
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
   @RolesAutorizados(Rol.ADMIN)
+  @ApiTags('Gestion-Perfiles')
   @Post('perfil/create')
   @ApiOperation({
     summary: 'Crear un nuevo perfil',
@@ -314,8 +323,11 @@ export class UsuariosController {
     }
   }
 
-  @ApiTags('Gestion-Perfiles')
+
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
   @RolesAutorizados(Rol.ADMIN)
+  @ApiTags('Gestion-Perfiles')
   @Get('perfil/get')
   @ApiOperation({ summary: 'Obtener todos los perfiles' })
   @ApiResponse({
@@ -342,8 +354,10 @@ export class UsuariosController {
     }
   }
 
-  @ApiTags('Gestion-Perfiles')
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
   @RolesAutorizados(Rol.ADMIN)
+  @ApiTags('Gestion-Perfiles')
   @Get('perfil/getbyid/:id')
   @ApiOperation({
     summary: 'Obtener un perfil por ID',
@@ -394,8 +408,10 @@ export class UsuariosController {
     }
   }
 
-  @ApiTags('Gestion-Perfiles')
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
   @RolesAutorizados(Rol.ADMIN)
+  @ApiTags('Gestion-Perfiles')
   @Put('perfil/update/:id')
   @ApiOperation({
     summary: 'Actualizar un perfil',
@@ -476,7 +492,9 @@ export class UsuariosController {
   }
 
   @ApiTags('Gestion - Customer')
-  @RolesAutorizados(Rol.INVITADO)
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN,Rol.USUARIO)
   @Get('findPasswordByEmail/:email')
   @ApiOperation({
     summary: 'HU010-Recuperar Clave por Email',

@@ -9,6 +9,7 @@ import {
   Delete,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -17,6 +18,7 @@ import {
   ApiParam,
   ApiBody,
   ApiQuery,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { Response } from 'express';
 import { OrdenComprasService } from '../service/orden-compras.service';
@@ -30,6 +32,9 @@ import { QuitarProductoCarritoDto } from '../dto/quitarProductoCarrito.dto';
 import { ValidaBuscaCarritoPipe } from 'src/comunes/pipes/validaBuscaCarrito.pipe';
 import { CreateVentaDto } from '../dto/create-venta-dto';
 import { VentasService } from '../service/ventas.service';
+import { JwtGuard } from 'src/jwt/jwt.guard';
+import { RolesAutorizados } from 'src/comunes/decorator/rol.decorator';
+import { Rol } from 'src/enum/rol.enum';
 @ApiTags('ventas')
 @Controller('ventas')
 //@UsePipes(new ValidationPipe({ transform: true }))
@@ -66,6 +71,9 @@ export class VentasController {
   })
   @ApiResponse({ status: 400, description: 'Producto  no Añadido' })
   @ApiBody({ type: CreateDetalleOrdenCompraDto })
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN,Rol.USUARIO,Rol.INVITADO)
   @Post('/carrito/addItem/')
   //@UsePipes(ValidaProductoCarritoPipe)
   async agregaProductoCarrito(
@@ -86,6 +94,9 @@ export class VentasController {
   })
   @ApiResponse({ status: 400, description: 'Producto  no eliminado' })
   @ApiBody({ type: QuitarProductoCarritoDto })
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN,Rol.USUARIO,Rol.INVITADO)
   @Delete('/carrito/removeItem/')
   @ApiTags('Gestion-Ventas')
   //@UsePipes(ValidaEliminaProductoCarroPipe)
@@ -115,6 +126,9 @@ export class VentasController {
   })
   @ApiResponse({ status: 400, description: 'Producto  no actualizado' })
   @ApiBody({ type: CreateDetalleOrdenCompraDto })
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN,Rol.USUARIO,Rol.INVITADO)
   @Put('/carrito/updateItem/')
   @ApiTags('Gestion-Ventas')
   //@UsePipes(ValidaEliminaProductoCarroPipe)
@@ -153,6 +167,10 @@ export class VentasController {
     type: Number,
     description: 'El ID usuario para buscar su carrito.',
   })
+
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN,Rol.USUARIO,Rol.INVITADO)
   @UsePipes(ValidaBuscaCarritoPipe)
   @Get('/carrito/creado/')
   @ApiTags('Gestion-Ventas')
