@@ -113,7 +113,7 @@ export class ProductosController {
 
   @ApiBearerAuth()
   @UseGuards(JwtGuard)
-  @RolesAutorizados(Rol.ADMIN,Rol.USUARIO,Rol.INVITADO)
+  @RolesAutorizados(Rol.ADMIN, Rol.USUARIO, Rol.INVITADO)
   @Get('/catalogo')
   @ApiResponse({
     status: 200,
@@ -154,7 +154,7 @@ export class ProductosController {
 
   @ApiBearerAuth()
   @UseGuards(JwtGuard)
-  @RolesAutorizados(Rol.ADMIN,Rol.USUARIO,Rol.INVITADO)
+  @RolesAutorizados(Rol.ADMIN, Rol.USUARIO, Rol.INVITADO)
   @Get('/catalogobyid/:id')
   @ApiTags('Gestion-Productos')
   @ApiOperation({
@@ -236,7 +236,6 @@ export class ProductosController {
       }
     }
   }
-
 
   @ApiBearerAuth()
   @UseGuards(JwtGuard)
@@ -593,10 +592,9 @@ export class ProductosController {
     }
   }
 
-
   @ApiBearerAuth()
   @UseGuards(JwtGuard)
-  @RolesAutorizados(Rol.ADMIN,Rol.USUARIO,Rol.INVITADO)
+  @RolesAutorizados(Rol.ADMIN, Rol.USUARIO, Rol.INVITADO)
   @Get('maceteros/get')
   @ApiTags('Gestion-Productos-Maceteros')
   @ApiOperation({
@@ -631,7 +629,7 @@ export class ProductosController {
 
   @ApiBearerAuth()
   @UseGuards(JwtGuard)
-  @RolesAutorizados(Rol.ADMIN,Rol.USUARIO,Rol.INVITADO)
+  @RolesAutorizados(Rol.ADMIN, Rol.USUARIO, Rol.INVITADO)
   @Get('maceteros/getbyid/:id')
   @ApiTags('Gestion-Productos-Maceteros')
   @ApiOperation({
@@ -1233,7 +1231,6 @@ export class ProductosController {
       },
     }),
   )
-
   @ApiBearerAuth()
   @UseGuards(JwtGuard)
   @RolesAutorizados(Rol.ADMIN)
@@ -1513,5 +1510,29 @@ export class ProductosController {
       message,
       error: error.response || null,
     };
+  }
+  @ApiTags('Filtros - Plantas')
+  @ApiOperation({
+    summary: 'Filtrar plantas mas valoradas por los compradores',
+    description:
+      'Devuelve una lista de plantas mas valoradas por los compradores',
+  })
+  @ApiQuery({
+    name: 'categoria',
+    description: 'Categoria de la planta',
+    required: true,
+    enum: ['Plantas', 'Maceteros', 'Fertilizantes', 'Sustratos'],
+  })
+  @Get('plantas/masvaloradas')
+  async filtroPlantasMasValoradas(
+    @Query('categoria') categoria: string,
+    @Res() res: Response,
+  ) {
+    const filtro = await this.FiltrosService.filtroMasValorados(categoria);
+    res.status(HttpStatus.OK).json({
+      status: HttpStatus.OK,
+      message: 'Plantas obtenidas con éxito',
+      data: filtro,
+    });
   }
 }

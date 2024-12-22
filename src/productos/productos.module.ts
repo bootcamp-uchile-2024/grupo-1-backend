@@ -23,7 +23,7 @@ import { FertilizantesService } from './service/subservice/fertilizantes.service
 import { SustratosService } from './service/subservice/sustratos.service';
 import { FiltrosService } from './service/subservice/filtros.service';
 import { CategoriasService } from './service/subservice/categorias.service';
-
+import { JwtService } from '@nestjs/jwt';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -52,6 +52,7 @@ import { CategoriasService } from './service/subservice/categorias.service';
     SustratosService,
     FiltrosService,
     CategoriasService,
+    JwtService,
     {
       provide: 'IMAGE_PATH', // Un token para identificar el valor
       useValue: path.join(__dirname, '..', 'public', 'images'),

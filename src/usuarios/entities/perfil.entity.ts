@@ -3,8 +3,8 @@ import { Usuario } from './usuario.entity';
 
 export enum NombrePerfil {
   ADMIN = 'ADMIN',
-  USER = 'USER',
-  GUEST = 'GUEST',
+  USER = 'USUARIO',
+  GUEST = 'INVITADO',
 }
 
 @Entity('Perfil')

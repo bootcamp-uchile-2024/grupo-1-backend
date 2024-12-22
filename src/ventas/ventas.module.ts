@@ -18,6 +18,7 @@ import { EstadosVenta } from './entities/estados_venta.entity';
 import { JardinVirtual } from 'src/usuarios/entities/jardin_virtual.entity';
 import { DetalleJardinVirtual } from 'src/usuarios/entities/detalle_jardin_virtual.entity';
 import { Producto } from 'src/productos/entities/producto.entity';
+import { JwtModule } from '@nestjs/jwt';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -32,6 +33,10 @@ import { Producto } from 'src/productos/entities/producto.entity';
     ]),
     ProductosModule,
     UsuariosModule,
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '1h' },
+    }),
   ],
   controllers: [VentasController],
   providers: [
