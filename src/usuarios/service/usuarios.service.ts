@@ -4,9 +4,10 @@ import {
   BadRequestException,
   ConflictException,
   Logger,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Not } from 'typeorm';
 import { Usuario } from '../entities/usuario.entity';
 import { CreateUsuarioDto } from '../dto/create-usuario.dto';
 import { Comuna } from 'src/localizaciones/entities/comuna.entity';
@@ -14,9 +15,8 @@ import { NombrePerfil, Perfil } from '../entities/perfil.entity';
 import { UpdateUsuarioDto } from '../dto/update-usuario.dto';
 import { UpdatePerfilDto } from '../dto/update-perfil.dto';
 import { CreatePerfilDto } from '../dto/create-perfil.dto';
-import { Planta } from 'src/productos/entities/planta.entity';
-import { http } from 'winston';
 import { Preferencias } from '../entities/preferencias.entity';
+import { UsuarioResponseDto } from '../dto/response-usuario.dto';
 
 @Injectable()
 export class UsuariosService {
@@ -131,25 +131,84 @@ export class UsuariosService {
   }
 
   async findAll(): Promise<Usuario[]> {
-    this.logger.log('Consultando todos los usuarios');
-    try {
-      const usuarios = await this.usuarioRepository.find();
-      this.logger.log(`Se encontraron ${usuarios.length} usuarios`);
-      return usuarios;
-    } catch (error) {
-      this.logger.error('Error al obtener usuarios:', error.stack);
-      throw new BadRequestException('Error al obtener los usuarios');
-    }
+    const usuarios = await this.usuarioRepository.find({
+      relations: ['comuna', 'perfil', 'Preferencias'],
+    });
+
+    return usuarios;
   }
 
   async findOne(id: number): Promise<Usuario> {
     this.logger.log(`Buscando usuario con ID: ${id}`);
     try {
-      const usuario = await this.usuarioRepository.findOneOrFail({
-        where: { id },
-      });
+      const usuario = await this.usuarioRepository
+        .createQueryBuilder('usuario')
+        .leftJoin('usuario.comuna', 'comuna')
+        .leftJoin('usuario.perfil', 'perfil')
+        .leftJoin('usuario.preferencias', 'preferencias')
+        .select([
+          'usuario.rutUsuario',
+          'usuario.nombres',
+          'usuario.apellidos',
+          'usuario.email',
+          'usuario.clave',
+          'usuario.telefono',
+          'usuario.direccion',
+          'usuario.codigoPostal',
+          'comuna.id',
+          'perfil.id',
+          'preferencias.respuesta1',
+          'preferencias.respuesta2',
+          'preferencias.respuesta3',
+          'preferencias.respuesta4',
+          'preferencias.respuesta5',
+          'preferencias.respuesta6',
+          'preferencias.respuesta7',
+          'preferencias.respuesta8',
+          'preferencias.respuesta9',
+        ])
+        .where('usuario.id = :id', { id })
+        .getOne();
+
+      if (!usuario) {
+        throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
+      }
+
+      const response = {
+        rutUsuario: usuario.rutUsuario,
+        nombres: usuario.nombres,
+        apellidos: usuario.apellidos,
+        email: usuario.email,
+        clave: usuario.clave,
+        telefono: usuario.telefono,
+        direccion: usuario.direccion,
+        codigoPostal: usuario.codigoPostal,
+        idComuna: usuario.comuna?.id,
+        idPerfil: usuario.perfil?.id,
+        respuesta1: usuario.Preferencias?.respuesta1,
+        respuesta2: usuario.Preferencias?.respuesta2,
+        respuesta3: usuario.Preferencias?.respuesta3,
+        respuesta4: usuario.Preferencias?.respuesta4,
+        respuesta5: usuario.Preferencias?.respuesta5,
+        respuesta6: usuario.Preferencias?.respuesta6,
+        respuesta7: usuario.Preferencias?.respuesta7,
+        respuesta8: usuario.Preferencias?.respuesta8,
+        respuesta9: usuario.Preferencias?.respuesta9,
+      };
+      const usuarioResponse: Usuario = {
+        ...response,
+        id: usuario.id,
+        comuna: usuario.comuna,
+        perfil: usuario.perfil,
+        jardin: usuario.jardin,
+        Preferencias: usuario.Preferencias,
+        servicios: [],
+        jardinVirtual: null,
+        orden: [],
+      };
+
       this.logger.log(`Usuario encontrado con ID: ${id}`);
-      return usuario;
+      return usuarioResponse;
     } catch (error) {
       this.logger.error(`Usuario con ID ${id} no encontrado`, error.stack);
       throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
@@ -169,44 +228,84 @@ export class UsuariosService {
       return null;
     }
   }
-  async remove(identificador: string): Promise<Usuario> {
+  async remove(identificador: string): Promise<void> {
     this.logger.log(
       `Iniciando eliminación de usuario con identificador: ${identificador}`,
     );
 
-    let usuario: Usuario;
-    if (isNaN(Number(identificador))) {
-      usuario = await this.findUsuarioByRut(identificador);
-    } else {
-      usuario = await this.findOne(Number(identificador));
-    }
-    if (!usuario) {
-      this.logger.warn(
-        `No se encontró usuario para eliminar con ID ${identificador}`,
-      );
-      throw new NotFoundException(
-        `Usuario con ID ${identificador} no encontrado`,
-      );
-    }
     try {
-      const result = await this.usuarioRepository.delete(usuario.id);
-      if (result.affected === 0) {
-        this.logger.warn(
-          `No se encontró usuario para eliminar con ID ${identificador}`,
-        );
+      let usuario: Usuario;
+      try {
+        if (isNaN(Number(identificador))) {
+          usuario = await this.findUsuarioByRut(identificador);
+        } else {
+          usuario = await this.findOne(Number(identificador));
+        }
+      } catch (error) {
+        this.logger.error(`Error al buscar usuario: ${error.message}`);
         throw new NotFoundException(
-          `Usuario con ID ${identificador} no encontrado`,
+          `Usuario no encontrado con identificador: ${identificador}`,
         );
       }
-      this.logger.log(`Usuario eliminado exitosamente: ${identificador}`);
+
+      if (!usuario) {
+        this.logger.warn(
+          `Usuario no encontrado con identificador: ${identificador}`,
+        );
+        throw new NotFoundException(`Usuario no encontrado`);
+      }
+
+      // Intentamos eliminar primero las relaciones
+      try {
+        // Comenzar transacción
+        await this.usuarioRepository.manager.transaction(
+          async (transactionalEntityManager) => {
+            // Eliminar preferencias relacionadas
+            await transactionalEntityManager
+              .createQueryBuilder()
+              .delete()
+              .from('preferencias')
+              .where('usuarioId = :id', { id: usuario.id })
+              .execute();
+
+            // Eliminar otras posibles relaciones aquí...
+
+            // Finalmente eliminar el usuario
+            await transactionalEntityManager
+              .createQueryBuilder()
+              .delete()
+              .from(Usuario)
+              .where('id = :id', { id: usuario.id })
+              .execute();
+          },
+        );
+
+        this.logger.log(`Usuario eliminado exitosamente: ${identificador}`);
+      } catch (error) {
+        this.logger.error(
+          `Error en la transacción de eliminación: ${error.message}`,
+        );
+        if (error.code === 'ER_ROW_IS_REFERENCED_2') {
+          throw new BadRequestException(
+            'No se puede eliminar el usuario porque tiene registros relacionados',
+          );
+        }
+        throw error;
+      }
     } catch (error) {
-      this.logger.error(
-        `Error al eliminar usuario: ${error.message}`,
-        error.stack,
+      this.logger.error(`Error al eliminar usuario: ${error.message}`);
+
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException(
+        'Error interno del servidor al eliminar el usuario',
       );
-      throw new BadRequestException('Error al eliminar el usuario');
     }
-    return usuario;
   }
   async findUsuarioByRut(rut: string): Promise<Usuario> {
     this.logger.log(`Buscando usuario por RUT: ${rut}`);
@@ -216,17 +315,73 @@ export class UsuariosService {
       throw new BadRequestException('El RUT es requerido');
     }
 
-    const usuario = await this.usuarioRepository.findOne({
-      where: { rutUsuario: rut },
-    });
+    try {
+      const usuario = await this.usuarioRepository
+        .createQueryBuilder('usuario')
+        .leftJoin('usuario.comuna', 'comuna')
+        .leftJoin('usuario.perfil', 'perfil')
+        .leftJoin('usuario.preferencias', 'preferencias')
+        .select([
+          'usuario.rutUsuario',
+          'usuario.nombres',
+          'usuario.apellidos',
+          'usuario.email',
+          'usuario.clave',
+          'usuario.telefono',
+          'usuario.direccion',
+          'usuario.codigoPostal',
+          'comuna.id',
+          'perfil.id',
+          'preferencias.respuesta1',
+          'preferencias.respuesta2',
+          'preferencias.respuesta3',
+          'preferencias.respuesta4',
+          'preferencias.respuesta5',
+          'preferencias.respuesta6',
+          'preferencias.respuesta7',
+          'preferencias.respuesta8',
+          'preferencias.respuesta9',
+        ])
+        .where('usuario.rutUsuario = :rut', { rut })
+        .getOne();
 
-    if (!usuario) {
-      this.logger.warn(`No se encontró usuario con RUT: ${rut}`);
-      throw new NotFoundException(`Usuario con RUT ${rut} no encontrado`);
+      if (!usuario) {
+        throw new NotFoundException(`Usuario con RUT ${rut} no encontrado`);
+      }
+
+      const response = {
+        rutUsuario: usuario.rutUsuario,
+        nombres: usuario.nombres,
+        apellidos: usuario.apellidos,
+        email: usuario.email,
+        clave: usuario.clave,
+        telefono: usuario.telefono,
+        direccion: usuario.direccion,
+        codigoPostal: usuario.codigoPostal,
+        idComuna: usuario.comuna?.id,
+        idPerfil: usuario.perfil?.id,
+        respuesta1: usuario.Preferencias?.respuesta1,
+        respuesta2: usuario.Preferencias?.respuesta2,
+        respuesta3: usuario.Preferencias?.respuesta3,
+        respuesta4: usuario.Preferencias?.respuesta4,
+        respuesta5: usuario.Preferencias?.respuesta5,
+        respuesta6: usuario.Preferencias?.respuesta6,
+        respuesta7: usuario.Preferencias?.respuesta7,
+        respuesta8: usuario.Preferencias?.respuesta8,
+        respuesta9: usuario.Preferencias?.respuesta9,
+      };
+      const usuarioResponse = new Usuario();
+      Object.assign(usuarioResponse, response);
+
+      this.logger.log(`Usuario encontrado exitosamente con RUT: ${rut}`);
+      return usuarioResponse;
+    } catch (error) {
+      this.logger.error(`Error al buscar usuario por RUT: ${error.message}`);
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Error al buscar el usuario');
     }
-
-    this.logger.log(`Usuario encontrado exitosamente con RUT: ${rut}`);
-    return usuario;
   }
   async updateUsuario(
     identificador: string,
@@ -238,6 +393,7 @@ export class UsuariosService {
     let usuario: Usuario;
 
     try {
+      // Buscar usuario por RUT o ID
       if (isNaN(Number(identificador))) {
         this.logger.debug(`Buscando usuario por RUT: ${identificador}`);
         usuario = await this.findUsuarioByRut(identificador);
@@ -246,16 +402,129 @@ export class UsuariosService {
         usuario = await this.findOne(Number(identificador));
       }
 
-      Object.assign(usuario, updateUsuarioDto);
-      const usuarioActualizado = await this.usuarioRepository.save(usuario);
-      this.logger.log(`Usuario actualizado exitosamente: ${identificador}`);
+      // Validar si hay cambios en el email
+      if (updateUsuarioDto.email && updateUsuarioDto.email !== usuario.email) {
+        const emailExistente = await this.usuarioRepository.findOne({
+          where: {
+            email: updateUsuarioDto.email,
+            id: Not(usuario.id), // Excluir el usuario actual de la búsqueda
+          },
+        });
+        if (emailExistente) {
+          this.logger.warn(`Email ${updateUsuarioDto.email} ya está en uso`);
+          throw new BadRequestException(
+            `El email ${updateUsuarioDto.email} ya está registrado`,
+          );
+        }
+      }
+
+      // Validar y actualizar comuna si se proporciona
+      if (updateUsuarioDto.idComuna) {
+        const comuna = await this.comunaRepository.findOneBy({
+          id:   updateUsuarioDto.idComuna,
+        });
+        if (!comuna) {
+          throw new NotFoundException(
+            `Comuna con ID ${updateUsuarioDto.idComuna} no encontrada`,
+          );
+        }
+        usuario.comuna = comuna;
+      }
+
+      // Validar y actualizar perfil si se proporciona
+      if (updateUsuarioDto.idPerfil) {
+        const perfil = await this.perfilRepository.findOneBy({
+          id: updateUsuarioDto.idPerfil,
+        });
+        if (!perfil) {
+          throw new NotFoundException(
+            `Perfil con ID ${updateUsuarioDto.idPerfil} no encontrado`,
+          );
+        }
+        usuario.perfil = perfil;
+      }
+
+      // Actualizar usuario usando transacción
+      const usuarioActualizado =
+        await this.usuarioRepository.manager.transaction(
+          async (transactionalEntityManager) => {
+            // Actualizar datos del usuario
+            Object.assign(usuario, updateUsuarioDto);
+
+            // Si hay preferencias para actualizar
+            if (
+              usuario.Preferencias &&
+              (updateUsuarioDto.respuesta1 !== undefined ||
+                updateUsuarioDto.respuesta2 !== undefined ||
+                updateUsuarioDto.respuesta3 !== undefined ||
+                updateUsuarioDto.respuesta4 !== undefined ||
+                updateUsuarioDto.respuesta5 !== undefined ||
+                updateUsuarioDto.respuesta6 !== undefined ||
+                updateUsuarioDto.respuesta7 !== undefined ||
+                updateUsuarioDto.respuesta8 !== undefined ||
+                updateUsuarioDto.respuesta9 !== undefined)
+            ) {
+              const preferencias = await this.preferenciasRepository.findOne({
+                where: { usuario: { id: usuario.id } },
+              });
+
+              if (preferencias) {
+                Object.assign(preferencias, {
+                  respuesta1:
+                    updateUsuarioDto.respuesta1 ?? preferencias.respuesta1,
+                  respuesta2:
+                    updateUsuarioDto.respuesta2 ?? preferencias.respuesta2,
+                  respuesta3:
+                    updateUsuarioDto.respuesta3 ?? preferencias.respuesta3,
+                  respuesta4:
+                    updateUsuarioDto.respuesta4 ?? preferencias.respuesta4,
+                  respuesta5:
+                    updateUsuarioDto.respuesta5 ?? preferencias.respuesta5,
+                  respuesta6:
+                    updateUsuarioDto.respuesta6 ?? preferencias.respuesta6,
+                  respuesta7:
+                    updateUsuarioDto.respuesta7 ?? preferencias.respuesta7,
+                  respuesta8:
+                    updateUsuarioDto.respuesta8 ?? preferencias.respuesta8,
+                  respuesta9:
+                    updateUsuarioDto.respuesta9 ?? preferencias.respuesta9,
+                });
+                await transactionalEntityManager.save(
+                  Preferencias,
+                  preferencias,
+                );
+              }
+            }
+
+            const savedUsuario = await transactionalEntityManager.save(
+              Usuario,
+              usuario,
+            );
+            this.logger.log(
+              `Usuario actualizado exitosamente: ${identificador}`,
+            );
+
+            return savedUsuario;
+          },
+        );
+
       return usuarioActualizado;
     } catch (error) {
       this.logger.error(
         `Error al actualizar usuario: ${error.message}`,
         error.stack,
       );
-      throw new BadRequestException('Error al actualizar el usuario');
+
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException(
+        `Error al actualizar el usuario: ${error.message}`,
+      );
     }
   }
   async createPerfil(createPerfilDto: CreatePerfilDto): Promise<Perfil> {
@@ -309,18 +578,70 @@ export class UsuariosService {
     updatePerfilDto: UpdatePerfilDto,
   ): Promise<Perfil> {
     this.logger.log(`Iniciando actualización de perfil con ID: ${id}`);
+
     try {
-      const perfil = await this.findOnePerfil(id);
-      Object.assign(perfil, updatePerfilDto);
-      const perfilActualizado = await this.perfilRepository.save(perfil);
-      this.logger.log(`Perfil actualizado exitosamente: ${id}`);
+      // Verificar si el perfil existe
+      const perfilExistente = await this.findOnePerfil(id);
+
+      // Validar si es perfil ADMIN
+      if (perfilExistente.nombrePerfil === NombrePerfil.ADMIN) {
+        this.logger.warn(`Intento de modificar perfil ADMIN rechazado`);
+        throw new BadRequestException(
+          'No se puede modificar el perfil de administrador',
+        );
+      }
+
+      // Validar nombre de perfil único si se está actualizando
+      if (updatePerfilDto.nombrePerfil) {
+        const perfilDuplicado = await this.perfilRepository.findOne({
+          where: {
+            nombrePerfil: updatePerfilDto.nombrePerfil,
+            id: Not(id),
+          },
+        });
+
+        if (perfilDuplicado) {
+          this.logger.warn(
+            `Nombre de perfil duplicado: ${updatePerfilDto.nombrePerfil}`,
+          );
+          throw new BadRequestException(
+            `Ya existe un perfil con el nombre ${updatePerfilDto.nombrePerfil}`,
+          );
+        }
+      }
+
+      // Actualizar perfil usando transacción
+      const perfilActualizado = await this.perfilRepository.manager.transaction(
+        async (transactionalEntityManager) => {
+          Object.assign(perfilExistente, updatePerfilDto);
+
+          const savedPerfil = await transactionalEntityManager.save(
+            Perfil,
+            perfilExistente,
+          );
+          this.logger.log(`Perfil actualizado exitosamente: ${id}`);
+
+          return savedPerfil;
+        },
+      );
+
       return perfilActualizado;
     } catch (error) {
       this.logger.error(
         `Error al actualizar perfil: ${error.message}`,
         error.stack,
       );
-      throw new BadRequestException('Error al actualizar el perfil');
+
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException(
+        `Error al actualizar el perfil: ${error.message}`,
+      );
     }
   }
 
@@ -384,6 +705,62 @@ export class UsuariosService {
         error.stack,
       );
       throw new NotFoundException(`Usuario con email ${email} no encontrado`);
+    }
+  }
+
+  async findByIdOrRut(identificador: string | number): Promise<any> {
+    this.logger.log(`Buscando usuario con identificador: ${identificador}`);
+
+    try {
+      const query = this.usuarioRepository
+        .createQueryBuilder('usuario')
+        .leftJoinAndSelect('usuario.comuna', 'comuna')
+        .leftJoinAndSelect('usuario.perfil', 'perfil')
+        .leftJoinAndSelect('usuario.Preferencias', 'preferencias');
+
+      if (typeof identificador === 'number' || !isNaN(Number(identificador))) {
+        query.where('usuario.id = :identificador', {
+          identificador: Number(identificador),
+        });
+      } else {
+        query.where('usuario.rutUsuario = :identificador', { identificador });
+      }
+
+      const usuario = await query.getOne();
+
+      if (!usuario) {
+        throw new NotFoundException(
+          `Usuario no encontrado con identificador: ${identificador}`,
+        );
+      }
+      const resUsuario: UsuarioResponseDto = {
+        rutUsuario: usuario.rutUsuario,
+        nombres: usuario.nombres,
+        apellidos: usuario.apellidos,
+        email: usuario.email,
+        clave: usuario.clave,
+        telefono: usuario.telefono,
+        direccion: usuario.direccion,
+        idComuna: usuario.comuna?.id,
+        codigoPostal: usuario.codigoPostal,
+        idPerfil: usuario.perfil?.id,
+        respuesta1: usuario.Preferencias[0]?.respuesta1,
+        respuesta2: usuario.Preferencias[0]?.respuesta2,
+        respuesta3: usuario.Preferencias[0]?.respuesta3,
+        respuesta4: usuario.Preferencias[0]?.respuesta4,
+        respuesta5: usuario.Preferencias[0]?.respuesta5,
+        respuesta6: usuario.Preferencias[0]?.respuesta6,
+        respuesta7: usuario.Preferencias[0]?.respuesta7,
+        respuesta8: usuario.Preferencias[0]?.respuesta8,
+        respuesta9: usuario.Preferencias[0]?.respuesta9,
+      };
+      return resUsuario;
+    } catch (error) {
+      this.logger.error(`Error al buscar usuario: ${error.message}`);
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Error al buscar el usuario');
     }
   }
 }

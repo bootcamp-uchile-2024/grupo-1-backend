@@ -15,6 +15,7 @@ import {
   Put,
   BadRequestException,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -38,7 +39,8 @@ import { Rol } from 'src/enum/rol.enum';
 @Controller('usuarios')
 @UsePipes(new ValidationPipe({ transform: true }))
 export class UsuariosController {
-  perfilRepository: any;
+  private readonly logger = new Logger(UsuariosController.name);
+
   constructor(private readonly usuariosService: UsuariosService) {}
 
   @ApiTags('Gestion - Customer')
@@ -57,22 +59,20 @@ export class UsuariosController {
   async create(
     @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
     createUserDto: CreateUsuarioDto,
-    @Res() res: Response,
   ) {
+    this.logger.log(
+      `Iniciando creación de usuario: ${createUserDto.rutUsuario}`,
+    );
     try {
       const usuario = await this.usuariosService.create(createUserDto);
-      res.status(HttpStatus.CREATED).json(usuario);
+      this.logger.log(`Usuario creado exitosamente: ${usuario.rutUsuario}`);
+      return usuario;
     } catch (error) {
+      this.logger.error(`Error al crear usuario: ${error.message}`);
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'Error al crear el usuario.',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      throw new InternalServerErrorException('Error al crear el usuario.');
     }
   }
 
@@ -88,21 +88,23 @@ export class UsuariosController {
     description: 'Lista de usuarios obtenida con éxito.',
   })
   @ApiResponse({ status: 500, description: 'Error interno del servidor.' })
-  async findAll(@Res() res: Response) {
+  async findAll() {
+    this.logger.log('Consultando lista de usuarios');
     try {
       const usuarios = await this.usuariosService.findAll();
-      res.status(HttpStatus.OK).json(usuarios);
+      this.logger.log(`Se encontraron ${usuarios.length} usuarios`);
+      return usuarios;
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-        error: 'Error al obtener la lista de usuarios.',
-      });
+      this.logger.error(`Error al obtener usuarios: ${error.message}`);
+      throw new InternalServerErrorException(
+        'Error al obtener la lista de usuarios.',
+      );
     }
   }
 
   @ApiTags('Gestion - Customer')
   @RolesAutorizados(Rol.ADMIN)
-  @Get('/gestion/listbyrut/:identifier')
+  @Get('/gestion/listbyrut/:identificador')
   @ApiOperation({
     summary: 'Obtener un usuario por ID o RUT',
     description:
@@ -122,89 +124,71 @@ export class UsuariosController {
     description: 'Error interno del servidor',
   })
   @ApiParam({
-    name: 'identifier',
+    name: 'identificador',
     description: 'ID o RUT del usuario',
     required: true,
   })
-  async findOne(@Param('identifier') identifier: string) {
-    if (!identifier) {
-      throw new BadRequestException('Identificador no proporcionado');
-    }
-
+  async findByIdOrRut(@Param('identificador') identificador: string) {
+    this.logger.log(`Buscando usuario con identificador: ${identificador}`);
     try {
-      const usuario = isNaN(Number(identifier))
-        ? await this.usuariosService.findUsuarioByRut(identifier)
-        : await this.usuariosService.findOne(Number(identifier));
-
-      return usuario;
+      const usuario = await this.usuariosService.findByIdOrRut(identificador);
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Usuario encontrado exitosamente',
+        responseData: usuario,
+      };
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw new NotFoundException(error.message);
-      }
-
-      if (error instanceof BadRequestException) {
-        throw new BadRequestException(error.message);
-      }
-
-      throw new InternalServerErrorException(
-        'Error interno del servidor al obtener el usuario.',
-      );
+      this.logger.error(`Error al buscar usuario: ${error.message}`);
+      throw error;
     }
   }
+
   @ApiTags('Gestion - Customer')
   @RolesAutorizados(Rol.ADMIN)
   @Delete('/gestion/delete/:identificador')
-  @ApiParam({
-    name: 'identificador',
-    description: 'ID o Rut del usuario a eliminar',
-    required: true,
-    schema: { type: 'string' },
-  })
   @ApiOperation({ summary: 'Eliminar un usuario por ID o RUT' })
+  @ApiResponse({ status: 200, description: 'Usuario eliminado con éxito.' })
   @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'Usuario eliminado con éxito.',
+    status: 400,
+    description:
+      'No se puede eliminar el usuario porque tiene registros relacionados.',
   })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: 'Usuario no encontrado.',
-  })
-  @ApiResponse({
-    status: HttpStatus.INTERNAL_SERVER_ERROR,
-    description: 'Error interno del servidor.',
-  })
-  async remove(
-    @Param('identificador') identificador: string,
-    @Res() res: Response,
-  ): Promise<any> {
+  @ApiResponse({ status: 404, description: 'Usuario no encontrado.' })
+  @ApiResponse({ status: 500, description: 'Error interno del servidor.' })
+  async remove(@Param('identificador') identificador: string) {
+    this.logger.log(`Iniciando eliminación de usuario: ${identificador}`);
     try {
       await this.usuariosService.remove(identificador);
-      res
-        .status(HttpStatus.OK)
-        .json({ message: 'Usuario eliminado con éxito.', data: identificador });
+      this.logger.log(`Usuario eliminado exitosamente: ${identificador}`);
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Usuario eliminado con éxito.',
+        data: identificador,
+      };
     } catch (error) {
+      this.logger.error(`Error al eliminar usuario: ${error.message}`);
+
       if (error instanceof NotFoundException) {
-        res.status(HttpStatus.NOT_FOUND).json({
+        throw new NotFoundException({
           statusCode: HttpStatus.NOT_FOUND,
           message: error.message,
-          timestamp: new Date().toISOString(),
-          path: `/usuarios/gestion/delete/${identificador}`,
-        });
-      } else if (error instanceof BadRequestException) {
-        res.status(HttpStatus.BAD_REQUEST).json({
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: error.message,
-          timestamp: new Date().toISOString(),
-          path: `/usuarios/gestion/delete/${identificador}`,
-        });
-      } else {
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: 'Error interno del servidor.',
-          timestamp: new Date().toISOString(),
-          path: `/usuarios/gestion/delete/${identificador}`,
+          error: 'Not Found',
         });
       }
+
+      if (error instanceof BadRequestException) {
+        throw new BadRequestException({
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: error.message,
+          error: 'Bad Request',
+        });
+      }
+
+      throw new InternalServerErrorException({
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Error interno del servidor al eliminar el usuario.',
+        error: 'Internal Server Error',
+      });
     }
   }
   @ApiTags('Gestion - Customer')
@@ -229,11 +213,18 @@ export class UsuariosController {
     @Res() res: Response,
   ) {
     try {
+      await this.usuariosService.findByIdOrRut(identificador);
+
       const usuario = await this.usuariosService.updateUsuario(
         identificador,
         updateUsuarioDto,
       );
-      res.status(HttpStatus.OK).json(usuario);
+
+      return res.status(HttpStatus.OK).json({
+        statusCode: HttpStatus.OK,
+        message: 'Usuario actualizado exitosamente',
+        responseData: usuario,
+      });
     } catch (error) {
       if (error instanceof NotFoundException) {
         res.status(HttpStatus.NOT_FOUND).json({
@@ -274,20 +265,19 @@ export class UsuariosController {
     @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
     createPerfilDto: CreatePerfilDto,
   ): Promise<Perfil> {
+    this.logger.log(
+      `Iniciando creación de perfil: ${createPerfilDto.nombrePerfil}`,
+    );
     try {
-      return await this.usuariosService.createPerfil(createPerfilDto);
+      const perfil = await this.usuariosService.createPerfil(createPerfilDto);
+      this.logger.log(`Perfil creado exitosamente: ${perfil.nombrePerfil}`);
+      return perfil;
     } catch (error) {
+      this.logger.error(`Error al crear perfil: ${error.message}`);
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'Error al crear el perfil.',
-          data: error,
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      throw new InternalServerErrorException('Error al crear el perfil.');
     }
   }
 

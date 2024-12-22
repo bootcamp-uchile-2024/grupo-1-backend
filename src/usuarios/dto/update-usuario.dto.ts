@@ -60,7 +60,7 @@ export class UpdateUsuarioDto {
     example: '987654321',
   })
   @IsInt({ message: 'El teléfono del usuario debe ser un número entero' })
-  @IsOptional({ message: ' Telefono del usuario ' })
+  @IsOptional()
   telefono: number;
 
   @ApiProperty({
@@ -73,6 +73,22 @@ export class UpdateUsuarioDto {
     message: 'La dirección del usuario no puede exceder los 255 caracteres',
   })
   direccion: string;
+
+  @ApiProperty({
+    description: 'ID de la comuna',
+    example: 1,
+  })
+  @IsInt({ message: 'El ID de la comuna debe ser un número entero' })
+  @IsOptional()
+  idComuna?: number;
+
+  @ApiProperty({
+    description: 'ID del perfil',
+    example: 1,
+  })
+  @IsInt({ message: 'El ID del perfil debe ser un número entero' })
+  @IsOptional()
+  idPerfil?: number;
 
   @ApiProperty({
     description: 'Código postal del usuario',
@@ -94,7 +110,7 @@ export class UpdateUsuarioDto {
   @MaxLength(255, {
     message: 'La respuesta 1 no puede exceder los 255 caracteres',
   })
-  respuesta1: string;
+  respuesta1?: string;
 
   @ApiProperty({
     description: 'Respuesta 2 de las preferencias del usuario',
@@ -105,7 +121,7 @@ export class UpdateUsuarioDto {
   @MaxLength(255, {
     message: 'La respuesta 2 no puede exceder los 255 caracteres',
   })
-  respuesta2: string;
+  respuesta2?: string;
 
   @ApiProperty({
     description: 'Respuesta 3 de las preferencias del usuario',
@@ -116,7 +132,7 @@ export class UpdateUsuarioDto {
   @MaxLength(255, {
     message: 'La respuesta 3 no puede exceder los 255 caracteres',
   })
-  respuesta3: string;
+  respuesta3?: string;
 
   @ApiProperty({
     description: 'Respuesta 4 de las preferencias del usuario',
@@ -127,7 +143,7 @@ export class UpdateUsuarioDto {
   @MaxLength(255, {
     message: 'La respuesta 4 no puede exceder los 255 caracteres',
   })
-  respuesta4: string;
+  respuesta4?: string;
 
   @ApiProperty({
     description: 'Respuesta 5 de las preferencias del usuario',
@@ -138,7 +154,7 @@ export class UpdateUsuarioDto {
   @MaxLength(255, {
     message: 'La respuesta 5 no puede exceder los 255 caracteres',
   })
-  respuesta5: string;
+  respuesta5?: string;
 
   @ApiProperty({
     description: 'Respuesta 6 de las preferencias del usuario',
@@ -149,7 +165,7 @@ export class UpdateUsuarioDto {
   @MaxLength(255, {
     message: 'La respuesta 6 no puede exceder los 255 caracteres',
   })
-  respuesta6: string;
+  respuesta6?: string;
 
   @ApiProperty({
     description: 'Respuesta 7 de las preferencias del usuario',
@@ -160,7 +176,7 @@ export class UpdateUsuarioDto {
   @MaxLength(255, {
     message: 'La respuesta 7 no puede exceder los 255 caracteres',
   })
-  respuesta7: string;
+  respuesta7?: string;
 
   @ApiProperty({
     description: 'Respuesta 8 de las preferencias del usuario',
@@ -171,7 +187,7 @@ export class UpdateUsuarioDto {
   @MaxLength(255, {
     message: 'La respuesta 8 no puede exceder los 255 caracteres',
   })
-  respuesta8: string;
+  respuesta8?: string;
 
   @ApiProperty({
     description: 'Respuesta 9 de las preferencias del usuario',
@@ -182,5 +198,5 @@ export class UpdateUsuarioDto {
   @MaxLength(255, {
     message: 'La respuesta 9 no puede exceder los 255 caracteres',
   })
-  respuesta9: string;
+  respuesta9?: string;
 }
