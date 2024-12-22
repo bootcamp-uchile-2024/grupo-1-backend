@@ -3,7 +3,6 @@ import {
   NotFoundException,
   BadRequestException,
   ConflictException,
-  HttpStatus,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -16,6 +15,7 @@ import { UpdatePerfilDto } from '../dto/update-perfil.dto';
 import { CreatePerfilDto } from '../dto/create-perfil.dto';
 import { Planta } from 'src/productos/entities/planta.entity';
 import { http } from 'winston';
+import { Preferencias } from '../entities/preferencias.entity';
 
 @Injectable()
 export class UsuariosService {
@@ -26,6 +26,8 @@ export class UsuariosService {
     private readonly comunaRepository: Repository<Comuna>,
     @InjectRepository(Perfil)
     private readonly perfilRepository: Repository<Perfil>,
+    @InjectRepository(Preferencias)
+    private readonly preferenciasRepository: Repository<Preferencias>,
   ) {}
 
   async create(createUsuarioDto: CreateUsuarioDto): Promise<Usuario> {
@@ -46,7 +48,6 @@ export class UsuariosService {
       );
     }
 
-    // Verificar si la comuna existe
     const comuna = await this.comunaRepository.findOneBy({
       id: createUsuarioDto.idComuna,
     });
@@ -56,7 +57,6 @@ export class UsuariosService {
       );
     }
 
-    // Verificar si el perfil existe
     const perfil = await this.perfilRepository.findOneBy({
       id: createUsuarioDto.idPerfil,
     });
@@ -66,16 +66,44 @@ export class UsuariosService {
       );
     }
 
-    const nuevoUsuario = this.usuarioRepository.create({
-      ...createUsuarioDto,
-      comuna,
-      perfil,
-    });
-
     try {
-      return await this.usuarioRepository.save(nuevoUsuario);
+      return await this.usuarioRepository.manager.transaction(
+        async (transactionalEntityManager) => {
+          const nuevoUsuario = this.usuarioRepository.create({
+            ...createUsuarioDto,
+            comuna,
+            perfil,
+          });
+          const savedUsuario =
+            await transactionalEntityManager.save(nuevoUsuario);
+
+          const preferencias = this.preferenciasRepository.create({
+            respuesta1: createUsuarioDto.respuesta1,
+            respuesta2: createUsuarioDto.respuesta2,
+            respuesta3: createUsuarioDto.respuesta3,
+            respuesta4: createUsuarioDto.respuesta4,
+            respuesta5: createUsuarioDto.respuesta5,
+            respuesta6: createUsuarioDto.respuesta6,
+            respuesta7: createUsuarioDto.respuesta7,
+            respuesta8: createUsuarioDto.respuesta8,
+            respuesta9: createUsuarioDto.respuesta9,
+            usuario: savedUsuario,
+          });
+
+          const savedPreferencias =
+            await transactionalEntityManager.save(preferencias);
+
+          delete savedPreferencias.usuario;
+          savedUsuario.Preferencias = savedPreferencias;
+
+          return savedUsuario;
+        },
+      );
     } catch (error) {
-      throw new BadRequestException('Error al crear el usuario');
+      console.error('Error al crear usuario:', error);
+      throw new BadRequestException(
+        `Error al crear el usuario: ${error.message}`,
+      );
     }
   }
 
