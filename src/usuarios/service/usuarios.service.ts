@@ -5,6 +5,8 @@ import {
   ConflictException,
   Logger,
   InternalServerErrorException,
+  HttpException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Not, Any } from 'typeorm';
@@ -17,6 +19,12 @@ import { UpdatePerfilDto } from '../dto/update-perfil.dto';
 import { CreatePerfilDto } from '../dto/create-perfil.dto';
 import { Preferencias } from '../entities/preferencias.entity';
 import { UsuarioResponseDto } from '../dto/response-usuario.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { CredencialesDto } from '../dto/credenciales.dto';
+import { JwtDto } from 'src/jwt/jwt.dto';
+import * as bcrypt from 'bcryptjs';
+import { JwtService } from '@nestjs/jwt';
+
 @Injectable()
 export class UsuariosService {
   private readonly logger = new Logger(UsuariosService.name);
@@ -30,6 +38,7 @@ export class UsuariosService {
     private readonly perfilRepository: Repository<Perfil>,
     @InjectRepository(Preferencias)
     private readonly preferenciasRepository: Repository<Preferencias>,
+    private readonly jwtService: JwtService,
   ) {}
 
   async create(createUsuarioDto: CreateUsuarioDto): Promise<Usuario> {
@@ -72,11 +81,18 @@ export class UsuariosService {
       );
     }
 
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(
+      createUsuarioDto.clave,
+      saltRounds,
+    );
+
     try {
       return await this.usuarioRepository.manager.transaction(
         async (transactionalEntityManager) => {
           const nuevoUsuario = this.usuarioRepository.create({
             ...createUsuarioDto,
+            clave: hashedPassword,
             comuna,
             perfil,
           });
@@ -644,5 +660,57 @@ export class UsuariosService {
         `Error al actualizar el usuario: ${error.message}`,
       );
     }
+  }
+
+  @ApiBearerAuth()
+  async login(credencialesDto: CredencialesDto): Promise<JwtDto> {
+    console.log('entré');
+    console.log('JWT_SECRET:', process.env.JWT_SECRET);
+    console.log(credencialesDto.email);
+    const usuario = await this.usuarioRepository.findOne({
+      where: { email: credencialesDto.email },
+      relations: ['perfil'],
+    });
+    console.log('usuario', usuario);
+    if (!usuario) {
+      throw new UnauthorizedException(
+        'el usuario o la contraseña no es válido',
+      );
+    }
+
+    const contrasena = await bcrypt.compare(
+      credencialesDto.password,
+      usuario.clave,
+    );
+    console.log('la pass que se le pasa: ' + credencialesDto.password);
+    console.log('la pass que encontro en la base: ' + usuario.clave);
+    console.log(contrasena);
+    console.log(usuario);
+
+    if (!contrasena) {
+      throw new UnauthorizedException(
+        'el usuario o la contraseña no es válido',
+      );
+    }
+    console.log(usuario.email);
+
+    const payload = {
+      email: usuario.email,
+      perfil: usuario.perfil.nombrePerfil,
+    };
+
+    const jwt = new JwtDto();
+
+    console.log('antes del try');
+
+    jwt.token = await this.jwtService.sign(payload, {
+      secret: process.env.JWT_SECRET,
+    });
+
+    console.log('Login exitoso');
+    console.log(usuario);
+    console.log('Token generado:', jwt.token);
+
+    return jwt;
   }
 }

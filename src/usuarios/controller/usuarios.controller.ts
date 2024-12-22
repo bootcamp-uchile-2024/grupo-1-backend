@@ -16,6 +16,7 @@ import {
   BadRequestException,
   InternalServerErrorException,
   Logger,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -23,6 +24,7 @@ import {
   ApiResponse,
   ApiBody,
   ApiParam,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { UsuariosService } from '../service/usuarios.service';
 import { CreateUsuarioDto } from '../dto/create-usuario.dto';
@@ -35,6 +37,11 @@ import { CreatePerfilDto } from '../dto/create-perfil.dto';
 import { ValidaForamteEmailPipe } from 'src/comunes/pipes/validaFormatoEmail.pipe';
 import { RolesAutorizados } from 'src/comunes/decorator/rol.decorator';
 import { Rol } from 'src/enum/rol.enum';
+import { CredencialesDto } from '../dto/credenciales.dto';
+import { JwtDto } from 'src/jwt/jwt.dto';
+import * as bcrypt from 'bcryptjs';
+import { JwtGuard } from 'src/jwt/jwt.guard';
+
 
 @Controller('usuarios')
 @UsePipes(new ValidationPipe({ transform: true }))
@@ -43,8 +50,21 @@ export class UsuariosController {
 
   constructor(private readonly usuariosService: UsuariosService) {}
 
+
+
+
+  @ApiTags('Login')
+  @Post('login')
+  async login(@Body() credencialesDto:CredencialesDto): Promise<JwtDto>{
+    console.log("entre")
+    console.log('JWT_SECRET:', process.env.JWT_SECRET); // Esto debería imprimir la clave secreta en consola.
+
+     return this.usuariosService.login(credencialesDto)
+  }
+
+
+
   @ApiTags('Gestion - Customer')
-  @RolesAutorizados(Rol.INVITADO)
   @Post('gestion/insert')
   @ApiOperation({
     summary: 'Crear un nuevo usuario',
@@ -76,7 +96,10 @@ export class UsuariosController {
     }
   }
 
+
   @ApiTags('Gestion - Customer')
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
   @RolesAutorizados(Rol.ADMIN)
   @Get('/gestion/list')
   @ApiOperation({
@@ -90,6 +113,9 @@ export class UsuariosController {
   @ApiResponse({ status: 500, description: 'Error interno del servidor.' })
   async findAll() {
     this.logger.log('Consultando lista de usuarios');
+
+
+
     try {
       const usuarios = await this.usuariosService.findAll();
       this.logger.log(`Se encontraron ${usuarios.length} usuarios`);
@@ -102,6 +128,9 @@ export class UsuariosController {
     }
   }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN)
   @ApiTags('Gestion - Customer')
   @RolesAutorizados(Rol.ADMIN)
   @Get('/gestion/listbyrut/:identificador')
@@ -192,6 +221,9 @@ export class UsuariosController {
     }
   }
   @ApiTags('Gestion - Customer')
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN)
   @Put('/gestion/update/:identificador')
   @ApiOperation({
     summary: 'Actualizar un usuario',
@@ -250,8 +282,11 @@ export class UsuariosController {
       }
     }
   }
-  @ApiTags('Gestion-Perfiles')
+
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
   @RolesAutorizados(Rol.ADMIN)
+  @ApiTags('Gestion-Perfiles')
   @Post('perfil/create')
   @ApiOperation({
     summary: 'Crear un nuevo perfil',
@@ -281,8 +316,11 @@ export class UsuariosController {
     }
   }
 
-  @ApiTags('Gestion-Perfiles')
+
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
   @RolesAutorizados(Rol.ADMIN)
+  @ApiTags('Gestion-Perfiles')
   @Get('perfil/get')
   @ApiOperation({ summary: 'Obtener todos los perfiles' })
   @ApiResponse({
@@ -309,8 +347,10 @@ export class UsuariosController {
     }
   }
 
-  @ApiTags('Gestion-Perfiles')
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
   @RolesAutorizados(Rol.ADMIN)
+  @ApiTags('Gestion-Perfiles')
   @Get('perfil/getbyid/:id')
   @ApiOperation({
     summary: 'Obtener un perfil por ID',
@@ -361,8 +401,10 @@ export class UsuariosController {
     }
   }
 
-  @ApiTags('Gestion-Perfiles')
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
   @RolesAutorizados(Rol.ADMIN)
+  @ApiTags('Gestion-Perfiles')
   @Put('perfil/update/:id')
   @ApiOperation({
     summary: 'Actualizar un perfil',
@@ -443,7 +485,9 @@ export class UsuariosController {
   }
 
   @ApiTags('Gestion - Customer')
-  @RolesAutorizados(Rol.INVITADO)
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN,Rol.USUARIO)
   @Get('findPasswordByEmail/:email')
   @ApiOperation({
     summary: 'HU010-Recuperar Clave por Email',

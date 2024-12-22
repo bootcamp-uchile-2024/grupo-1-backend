@@ -1,6 +1,6 @@
 import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { ProductosModule } from './productos/productos.module';
 import { DespachosModule } from './despachos/despachos.module';
@@ -16,6 +16,7 @@ import { APP_INTERCEPTOR, APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from './comunes/filter/http-exception.filter';
 import { LoggingInterceptor } from './comunes/interceptor/loggin.interceptor';
 import { LoggingMiddleware } from './comunes/middleware/loggin.middleware';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -33,9 +34,18 @@ import { LoggingMiddleware } from './comunes/middleware/loggin.middleware';
       rootPath: '/uploads',
       serveRoot: '/uploads',
     }),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        global: true,
+        secret: configService.get<string>('JWT_SECRET'), // Leer el JWT_SECRET desde el archivo .env
+        signOptions: { expiresIn: '1h' },
+      }),
+    }),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: process.env.DB_HOST,
+      host: 'localhost',
       port: parseInt(process.env.DB_PORT, 10),
       username: process.env.DB_USER,
       password: process.env.DB_PASS,

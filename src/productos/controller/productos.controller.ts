@@ -21,6 +21,7 @@ import {
   BadRequestException,
   UploadedFiles,
   InternalServerErrorException,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -30,6 +31,7 @@ import {
   ApiQuery,
   ApiParam,
   ApiConsumes,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { Response } from 'express';
 import { ProductosService } from '../service/productos.service';
@@ -59,6 +61,9 @@ import { MaceterosService } from '../service/subservice/maceteros.service';
 import { FertilizantesService } from '../service/subservice/fertilizantes.service';
 import { SustratosService } from '../service/subservice/sustratos.service';
 import { CategoriasService } from '../service/subservice/categorias.service';
+import { RolesAutorizados } from 'src/comunes/decorator/rol.decorator';
+import { JwtGuard } from 'src/jwt/jwt.guard';
+import { Rol } from 'src/enum/rol.enum';
 
 @Controller('productos')
 export class ProductosController {
@@ -72,6 +77,10 @@ export class ProductosController {
     private readonly CategoriasService: CategoriasService,
     private readonly plantasService: PlantaService,
   ) {}
+
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN)
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   @Post('/create')
   @ApiTags('Gestion-Productos')
@@ -101,6 +110,10 @@ export class ProductosController {
       );
     }
   }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN,Rol.USUARIO,Rol.INVITADO)
   @Get('/catalogo')
   @ApiResponse({
     status: 200,
@@ -138,6 +151,10 @@ export class ProductosController {
       );
     }
   }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN,Rol.USUARIO,Rol.INVITADO)
   @Get('/catalogobyid/:id')
   @ApiTags('Gestion-Productos')
   @ApiOperation({
@@ -179,6 +196,9 @@ export class ProductosController {
     }
   }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN)
   @Put('/update/:id')
   @ApiTags('Gestion-Productos')
   @ApiOperation({
@@ -217,6 +237,10 @@ export class ProductosController {
     }
   }
 
+
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN)
   @Post('categorias/create')
   @ApiTags('Gestion-Productos-Categorias')
   @ApiOperation({
@@ -363,6 +387,9 @@ export class ProductosController {
       );
     }
   }
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN)
   @Put('categorias/update/:id')
   @ApiTags('Gestion-Productos-Categorias')
   @ApiOperation({
@@ -400,6 +427,9 @@ export class ProductosController {
     }
   }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN)
   @Post('plantas/create')
   @ApiTags('Gestion-Productos-Plantas')
   @ApiOperation({
@@ -494,6 +524,9 @@ export class ProductosController {
     }
   }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN)
   @Put('plantas/update/:id')
   @ApiTags('Gestion-Productos-Plantas')
   @ApiOperation({
@@ -527,6 +560,10 @@ export class ProductosController {
       }
     }
   }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN)
   @Post('maceteros/create')
   @ApiTags('Gestion-Productos-Maceteros')
   @ApiOperation({
@@ -556,6 +593,10 @@ export class ProductosController {
     }
   }
 
+
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN,Rol.USUARIO,Rol.INVITADO)
   @Get('maceteros/get')
   @ApiTags('Gestion-Productos-Maceteros')
   @ApiOperation({
@@ -587,6 +628,10 @@ export class ProductosController {
       );
     }
   }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN,Rol.USUARIO,Rol.INVITADO)
   @Get('maceteros/getbyid/:id')
   @ApiTags('Gestion-Productos-Maceteros')
   @ApiOperation({
@@ -625,6 +670,9 @@ export class ProductosController {
     }
   }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN)
   @Put('maceteros/update/:id')
   @ApiTags('Gestion-Productos-Maceteros')
   @ApiOperation({
@@ -669,6 +717,9 @@ export class ProductosController {
     }
   }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN)
   @Post('fertilizantes/create')
   @ApiTags('Gestion-Productos-Fertilizantes')
   @ApiOperation({
@@ -781,6 +832,9 @@ export class ProductosController {
     }
   }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN)
   @Put('fertilizantes/update/:id')
   @ApiTags('Gestion-Productos-Fertilizantes')
   @ApiOperation({
@@ -821,6 +875,9 @@ export class ProductosController {
     }
   }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN)
   @Post('sustratos/create')
   @ApiTags('Gestion-Productos-Sustratos')
   @ApiOperation({
@@ -927,6 +984,9 @@ export class ProductosController {
     }
   }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN)
   @Put('sustratos/update/:id')
   @ApiTags('Gestion-Productos-Sustratos')
   @ApiOperation({
@@ -964,6 +1024,9 @@ export class ProductosController {
     }
   }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN)
   @Post('add-image/:id')
   @ApiTags('Gestion-Productos')
   @ApiParam({
@@ -1170,6 +1233,10 @@ export class ProductosController {
       },
     }),
   )
+
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN)
   @Patch(':id/carga-imagen')
   @ApiTags('Gestion-Productos')
   @ApiOperation({ summary: 'Subir una imagen para un producto' })
@@ -1197,6 +1264,9 @@ export class ProductosController {
     };
   }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN)
   @Patch(':id/habilitar')
   @ApiTags('Gestion-Productos')
   @ApiOperation({ summary: 'Habilitar un producto' })
@@ -1221,6 +1291,9 @@ export class ProductosController {
     return producto;
   }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN)
   @Patch(':id/deshabilitar')
   @ApiTags('Gestion-Productos')
   @ApiOperation({ summary: 'Deshabilitar un producto' })
