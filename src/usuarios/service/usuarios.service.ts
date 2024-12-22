@@ -7,6 +7,7 @@ import {
   InternalServerErrorException,
   HttpException,
   UnauthorizedException,
+  Inject,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Not, Any } from 'typeorm';
@@ -24,6 +25,7 @@ import { CredencialesDto } from '../dto/credenciales.dto';
 import { JwtDto } from 'src/jwt/jwt.dto';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
+import { UpdatePasswordDto } from '../dto/update-password.dto';
 
 @Injectable()
 export class UsuariosService {
@@ -712,5 +714,46 @@ export class UsuariosService {
     console.log('Token generado:', jwt.token);
 
     return jwt;
+  }
+
+  async updatePassword(
+    identificador: string,
+    updatePasswordDto: UpdatePasswordDto,
+  ): Promise<void> {
+    this.logger.log(
+      `Iniciando actualización de contraseña para usuario: ${identificador}`,
+    );
+
+    try {
+      const usuario = await this.findByIdOrRut(identificador);
+      if (!usuario) {
+        throw new NotFoundException(
+          `Usuario no encontrado con identificador: ${identificador}`,
+        );
+      }
+
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(
+        updatePasswordDto.newPassword,
+        saltRounds,
+      );
+
+      await this.usuarioRepository.update(
+        { rutUsuario: identificador },
+        { clave: hashedPassword },
+      );
+
+      this.logger.log(
+        `Contraseña actualizada exitosamente para usuario: ${identificador}`,
+      );
+    } catch (error) {
+      this.logger.error(`Error al actualizar contraseña: ${error.message}`);
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        'Error al actualizar la contraseña',
+      );
+    }
   }
 }

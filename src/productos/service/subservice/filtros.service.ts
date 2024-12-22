@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Planta } from 'src/productos/entities/planta.entity';
 import { Repository } from 'typeorm';
 import { DificultadDeCuidado } from 'src/productos/entities/dificultad_de_cuidado.entity';
+import { Producto } from 'src/productos/entities/producto.entity';
 
 @Injectable()
 export class FiltrosService {
@@ -11,6 +12,8 @@ export class FiltrosService {
     private readonly plantaRepository: Repository<Planta>,
     @InjectRepository(DificultadDeCuidado)
     private readonly dificultadRepository: Repository<DificultadDeCuidado>,
+    @InjectRepository(Producto)
+    private readonly productoRepository: Repository<Producto>,
   ) {}
 
   async filtroPetFriendly(filtro: number): Promise<Planta[]> {
@@ -41,6 +44,26 @@ export class FiltrosService {
       throw new BadRequestException({
         status: HttpStatus.BAD_REQUEST,
         error: 'Error al obtener las plantas',
+        data: error,
+      });
+    }
+  }
+  async filtroMasValorados(categoria: string): Promise<Planta[]> {
+    try {
+      const plantas = await this.plantaRepository
+        .createQueryBuilder('planta')
+        .leftJoinAndSelect('planta.producto', 'producto')
+        .leftJoinAndSelect('producto.categoria', 'categoria')
+        .where('categoria.nombreCategoria = :categoria', { categoria })
+        .andWhere('producto.valoracion IS NOT NULL')
+        .orderBy('producto.valoracion', 'DESC')
+        .getMany();
+
+      return plantas;
+    } catch (error) {
+      throw new BadRequestException({
+        status: HttpStatus.BAD_REQUEST,
+        error: 'Error al obtener las plantas más valoradas',
         data: error,
       });
     }

@@ -41,7 +41,7 @@ import { CredencialesDto } from '../dto/credenciales.dto';
 import { JwtDto } from 'src/jwt/jwt.dto';
 import * as bcrypt from 'bcryptjs';
 import { JwtGuard } from 'src/jwt/jwt.guard';
-
+import { UpdatePasswordDto } from '../dto/update-password.dto';
 
 @Controller('usuarios')
 @UsePipes(new ValidationPipe({ transform: true }))
@@ -50,19 +50,14 @@ export class UsuariosController {
 
   constructor(private readonly usuariosService: UsuariosService) {}
 
-
-
-
   @ApiTags('Login')
   @Post('login')
-  async login(@Body() credencialesDto:CredencialesDto): Promise<JwtDto>{
-    console.log("entre")
+  async login(@Body() credencialesDto: CredencialesDto): Promise<JwtDto> {
+    console.log('entre');
     console.log('JWT_SECRET:', process.env.JWT_SECRET); // Esto debería imprimir la clave secreta en consola.
 
-     return this.usuariosService.login(credencialesDto)
+    return this.usuariosService.login(credencialesDto);
   }
-
-
 
   @ApiTags('Gestion - Customer')
   @Post('gestion/insert')
@@ -96,7 +91,6 @@ export class UsuariosController {
     }
   }
 
-
   @ApiTags('Gestion - Customer')
   @ApiBearerAuth()
   @UseGuards(JwtGuard)
@@ -113,8 +107,6 @@ export class UsuariosController {
   @ApiResponse({ status: 500, description: 'Error interno del servidor.' })
   async findAll() {
     this.logger.log('Consultando lista de usuarios');
-
-
 
     try {
       const usuarios = await this.usuariosService.findAll();
@@ -316,7 +308,6 @@ export class UsuariosController {
     }
   }
 
-
   @ApiBearerAuth()
   @UseGuards(JwtGuard)
   @RolesAutorizados(Rol.ADMIN)
@@ -487,7 +478,7 @@ export class UsuariosController {
   @ApiTags('Gestion - Customer')
   @ApiBearerAuth()
   @UseGuards(JwtGuard)
-  @RolesAutorizados(Rol.ADMIN,Rol.USUARIO)
+  @RolesAutorizados(Rol.ADMIN, Rol.USUARIO)
   @Get('findPasswordByEmail/:email')
   @ApiOperation({
     summary: 'HU010-Recuperar Clave por Email',
@@ -542,5 +533,38 @@ export class UsuariosController {
         }
       }
     }
+  }
+
+  @ApiTags('Gestion - Customer')
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN, Rol.USUARIO)
+  @Put('/gestion/update-password/:identificador')
+  @ApiOperation({
+    summary: 'Actualizar contraseña de usuario',
+    description: 'Actualiza la contraseña de un usuario existente',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Contraseña actualizada con éxito.',
+  })
+  @ApiResponse({ status: 404, description: 'Usuario no encontrado.' })
+  @ApiResponse({ status: 500, description: 'Error interno del servidor.' })
+  @ApiBody({ type: UpdatePasswordDto })
+  @ApiParam({
+    name: 'identificador',
+    description: 'ID o RUT del usuario',
+    required: true,
+  })
+  async updatePassword(
+    @Param('identificador') identificador: string,
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+    updatePasswordDto: UpdatePasswordDto,
+  ) {
+    await this.usuariosService.updatePassword(identificador, updatePasswordDto);
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Contraseña actualizada exitosamente',
+    };
   }
 }
