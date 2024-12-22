@@ -7,7 +7,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Not } from 'typeorm';
+import { Repository, Not, Any } from 'typeorm';
 import { Usuario } from '../entities/usuario.entity';
 import { CreateUsuarioDto } from '../dto/create-usuario.dto';
 import { Comuna } from 'src/localizaciones/entities/comuna.entity';
@@ -17,7 +17,6 @@ import { UpdatePerfilDto } from '../dto/update-perfil.dto';
 import { CreatePerfilDto } from '../dto/create-perfil.dto';
 import { Preferencias } from '../entities/preferencias.entity';
 import { UsuarioResponseDto } from '../dto/response-usuario.dto';
-
 @Injectable()
 export class UsuariosService {
   private readonly logger = new Logger(UsuariosService.name);
@@ -289,226 +288,8 @@ export class UsuariosService {
       );
     }
   }
-  async findUsuarioByRut(rut: string): Promise<Usuario> {
-    this.logger.log(`Buscando usuario por RUT: ${rut}`);
 
-    if (!rut) {
-      this.logger.error('RUT no proporcionado');
-      throw new BadRequestException('El RUT es requerido');
-    }
-
-    try {
-      const usuario = await this.usuarioRepository
-        .createQueryBuilder('usuario')
-        .leftJoin('usuario.comuna', 'comuna')
-        .leftJoin('usuario.perfil', 'perfil')
-        .leftJoin('usuario.preferencias', 'preferencias')
-        .select([
-          'usuario.rutUsuario',
-          'usuario.nombres',
-          'usuario.apellidos',
-          'usuario.email',
-          'usuario.clave',
-          'usuario.telefono',
-          'usuario.direccion',
-          'usuario.codigoPostal',
-          'comuna.id',
-          'perfil.id',
-          'preferencias.respuesta1',
-          'preferencias.respuesta2',
-          'preferencias.respuesta3',
-          'preferencias.respuesta4',
-          'preferencias.respuesta5',
-          'preferencias.respuesta6',
-          'preferencias.respuesta7',
-          'preferencias.respuesta8',
-          'preferencias.respuesta9',
-        ])
-        .where('usuario.rutUsuario = :rut', { rut })
-        .getOne();
-
-      if (!usuario) {
-        throw new NotFoundException(`Usuario con RUT ${rut} no encontrado`);
-      }
-
-      const response = {
-        rutUsuario: usuario.rutUsuario,
-        nombres: usuario.nombres,
-        apellidos: usuario.apellidos,
-        email: usuario.email,
-        clave: usuario.clave,
-        telefono: usuario.telefono,
-        direccion: usuario.direccion,
-        codigoPostal: usuario.codigoPostal,
-        idComuna: usuario.comuna?.id,
-        idPerfil: usuario.perfil?.id,
-        respuesta1: usuario.Preferencias?.respuesta1,
-        respuesta2: usuario.Preferencias?.respuesta2,
-        respuesta3: usuario.Preferencias?.respuesta3,
-        respuesta4: usuario.Preferencias?.respuesta4,
-        respuesta5: usuario.Preferencias?.respuesta5,
-        respuesta6: usuario.Preferencias?.respuesta6,
-        respuesta7: usuario.Preferencias?.respuesta7,
-        respuesta8: usuario.Preferencias?.respuesta8,
-        respuesta9: usuario.Preferencias?.respuesta9,
-      };
-      const usuarioResponse = new Usuario();
-      Object.assign(usuarioResponse, response);
-
-      this.logger.log(`Usuario encontrado exitosamente con RUT: ${rut}`);
-      return usuarioResponse;
-    } catch (error) {
-      this.logger.error(`Error al buscar usuario por RUT: ${error.message}`);
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new InternalServerErrorException('Error al buscar el usuario');
-    }
-  }
-  async updateUsuario(
-    identificador: string,
-    updateUsuarioDto: UpdateUsuarioDto,
-  ): Promise<Usuario> {
-    this.logger.log(
-      `Iniciando actualización de usuario con identificador: ${identificador}`,
-    );
-    let usuario: Usuario;
-
-    try {
-      // Buscar usuario por RUT o ID
-      if (isNaN(Number(identificador))) {
-        this.logger.debug(`Buscando usuario por RUT: ${identificador}`);
-        usuario = await this.findUsuarioByRut(identificador);
-      } else {
-        this.logger.debug(`Buscando usuario por ID: ${identificador}`);
-        usuario = await this.findOne(Number(identificador));
-      }
-
-      // Validar si hay cambios en el email
-      if (updateUsuarioDto.email && updateUsuarioDto.email !== usuario.email) {
-        const emailExistente = await this.usuarioRepository.findOne({
-          where: {
-            email: updateUsuarioDto.email,
-            id: Not(usuario.id), // Excluir el usuario actual de la búsqueda
-          },
-        });
-        if (emailExistente) {
-          this.logger.warn(`Email ${updateUsuarioDto.email} ya está en uso`);
-          throw new BadRequestException(
-            `El email ${updateUsuarioDto.email} ya está registrado`,
-          );
-        }
-      }
-
-      // Validar y actualizar comuna si se proporciona
-      if (updateUsuarioDto.idComuna) {
-        const comuna = await this.comunaRepository.findOneBy({
-          id: updateUsuarioDto.idComuna,
-        });
-        if (!comuna) {
-          throw new NotFoundException(
-            `Comuna con ID ${updateUsuarioDto.idComuna} no encontrada`,
-          );
-        }
-        usuario.comuna = comuna;
-      }
-
-      // Validar y actualizar perfil si se proporciona
-      if (updateUsuarioDto.idPerfil) {
-        const perfil = await this.perfilRepository.findOneBy({
-          id: updateUsuarioDto.idPerfil,
-        });
-        if (!perfil) {
-          throw new NotFoundException(
-            `Perfil con ID ${updateUsuarioDto.idPerfil} no encontrado`,
-          );
-        }
-        usuario.perfil = perfil;
-      }
-
-      // Actualizar usuario usando transacción
-      const usuarioActualizado =
-        await this.usuarioRepository.manager.transaction(
-          async (transactionalEntityManager) => {
-            // Actualizar datos del usuario
-            Object.assign(usuario, updateUsuarioDto);
-
-            // Si hay preferencias para actualizar
-            if (
-              usuario.Preferencias &&
-              (updateUsuarioDto.respuesta1 !== undefined ||
-                updateUsuarioDto.respuesta2 !== undefined ||
-                updateUsuarioDto.respuesta3 !== undefined ||
-                updateUsuarioDto.respuesta4 !== undefined ||
-                updateUsuarioDto.respuesta5 !== undefined ||
-                updateUsuarioDto.respuesta6 !== undefined ||
-                updateUsuarioDto.respuesta7 !== undefined ||
-                updateUsuarioDto.respuesta8 !== undefined ||
-                updateUsuarioDto.respuesta9 !== undefined)
-            ) {
-              const preferencias = await this.preferenciasRepository.findOne({
-                where: { usuario: { id: usuario.id } },
-              });
-
-              if (preferencias) {
-                Object.assign(preferencias, {
-                  respuesta1:
-                    updateUsuarioDto.respuesta1 ?? preferencias.respuesta1,
-                  respuesta2:
-                    updateUsuarioDto.respuesta2 ?? preferencias.respuesta2,
-                  respuesta3:
-                    updateUsuarioDto.respuesta3 ?? preferencias.respuesta3,
-                  respuesta4:
-                    updateUsuarioDto.respuesta4 ?? preferencias.respuesta4,
-                  respuesta5:
-                    updateUsuarioDto.respuesta5 ?? preferencias.respuesta5,
-                  respuesta6:
-                    updateUsuarioDto.respuesta6 ?? preferencias.respuesta6,
-                  respuesta7:
-                    updateUsuarioDto.respuesta7 ?? preferencias.respuesta7,
-                  respuesta8:
-                    updateUsuarioDto.respuesta8 ?? preferencias.respuesta8,
-                  respuesta9:
-                    updateUsuarioDto.respuesta9 ?? preferencias.respuesta9,
-                });
-                await transactionalEntityManager.save(
-                  Preferencias,
-                  preferencias,
-                );
-              }
-            }
-
-            const savedUsuario = await transactionalEntityManager.save(
-              Usuario,
-              usuario,
-            );
-            this.logger.log(
-              `Usuario actualizado exitosamente: ${identificador}`,
-            );
-
-            return savedUsuario;
-          },
-        );
-
-      return usuarioActualizado;
-    } catch (error) {
-      this.logger.error(
-        `Error al actualizar usuario: ${error.message}`,
-        error.stack,
-      );
-
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      if (error instanceof BadRequestException) {
-        throw error;
-      }
-
-      throw new InternalServerErrorException(
-        `Error al actualizar el usuario: ${error.message}`,
-      );
-    }
-  }
+  // METODOS PARA PERFILES
   async createPerfil(createPerfilDto: CreatePerfilDto): Promise<Perfil> {
     this.logger.log(
       `Iniciando creación de perfil: ${createPerfilDto.nombrePerfil}`,
@@ -562,10 +343,8 @@ export class UsuariosService {
     this.logger.log(`Iniciando actualización de perfil con ID: ${id}`);
 
     try {
-      // Verificar si el perfil existe
       const perfilExistente = await this.findOnePerfil(id);
 
-      // Validar si es perfil ADMIN
       if (perfilExistente.nombrePerfil === NombrePerfil.ADMIN) {
         this.logger.warn(`Intento de modificar perfil ADMIN rechazado`);
         throw new BadRequestException(
@@ -573,7 +352,6 @@ export class UsuariosService {
         );
       }
 
-      // Validar nombre de perfil único si se está actualizando
       if (updatePerfilDto.nombrePerfil) {
         const perfilDuplicado = await this.perfilRepository.findOne({
           where: {
@@ -592,7 +370,6 @@ export class UsuariosService {
         }
       }
 
-      // Actualizar perfil usando transacción
       const perfilActualizado = await this.perfilRepository.manager.transaction(
         async (transactionalEntityManager) => {
           Object.assign(perfilExistente, updatePerfilDto);
@@ -711,6 +488,9 @@ export class UsuariosService {
       const usuario = await query.getOne();
 
       if (!usuario) {
+        this.logger.warn(
+          `Usuario no encontrado con identificador: ${identificador}`,
+        );
         throw new NotFoundException(
           `Usuario no encontrado con identificador: ${identificador}`,
         );
@@ -743,6 +523,126 @@ export class UsuariosService {
         throw error;
       }
       throw new InternalServerErrorException('Error al buscar el usuario');
+    }
+  }
+  async updateUsuario(
+    identificador: string,
+    updateUsuarioDto: UpdateUsuarioDto,
+  ): Promise<UsuarioResponseDto> {
+    this.logger.log(
+      `Iniciando actualización de usuario con identificador: ${identificador}`,
+    );
+
+    try {
+      const usuarioExistente = await this.findByIdOrRut(identificador);
+      if (!usuarioExistente) {
+        this.logger.warn(
+          `Usuario no encontrado con identificador: ${identificador}`,
+        );
+        throw new NotFoundException(
+          `Usuario no encontrado con identificador: ${identificador}`,
+        );
+      }
+
+      if (updateUsuarioDto.idComuna) {
+        const comuna = await this.comunaRepository.findOneBy({
+          id: updateUsuarioDto.idComuna,
+        });
+        if (!comuna) {
+          this.logger.warn(
+            `Comuna con ID ${updateUsuarioDto.idComuna} no encontrada`,
+          );
+          throw new NotFoundException(
+            `Comuna con ID ${updateUsuarioDto.idComuna} no encontrada`,
+          );
+        }
+      }
+
+      if (
+        updateUsuarioDto.email &&
+        updateUsuarioDto.email !== usuarioExistente.email
+      ) {
+        const emailExistente = await this.usuarioRepository.findOne({
+          where: { email: updateUsuarioDto.email },
+        });
+        if (emailExistente) {
+          this.logger.warn(`El email ${updateUsuarioDto.email} ya está en uso`);
+          throw new ConflictException(
+            `El email ${updateUsuarioDto.email} ya está en uso`,
+          );
+        }
+      }
+
+      return await this.usuarioRepository.manager.transaction(
+        async (transactionalEntityManager) => {
+          // Actualizar usuario
+          const usuario = await transactionalEntityManager
+            .createQueryBuilder()
+            .update(Usuario)
+            .set({
+              nombres: updateUsuarioDto.nombres,
+              apellidos: updateUsuarioDto.apellidos,
+              email: updateUsuarioDto.email,
+              telefono: updateUsuarioDto.telefono,
+              direccion: updateUsuarioDto.direccion,
+              codigoPostal: updateUsuarioDto.codigoPostal,
+              comuna: updateUsuarioDto.idComuna
+                ? { id: updateUsuarioDto.idComuna }
+                : undefined,
+            })
+            .where('rutUsuario = :rutUsuario', { rutUsuario: identificador })
+            .execute();
+
+          if (
+            Object.keys(updateUsuarioDto).some((key) =>
+              key.startsWith('respuesta'),
+            )
+          ) {
+            await transactionalEntityManager
+              .createQueryBuilder()
+              .update(Preferencias)
+              .set({
+                respuesta1: updateUsuarioDto.respuesta1,
+                respuesta2: updateUsuarioDto.respuesta2,
+                respuesta3: updateUsuarioDto.respuesta3,
+                respuesta4: updateUsuarioDto.respuesta4,
+                respuesta5: updateUsuarioDto.respuesta5,
+                respuesta6: updateUsuarioDto.respuesta6,
+                respuesta7: updateUsuarioDto.respuesta7,
+                respuesta8: updateUsuarioDto.respuesta8,
+                respuesta9: updateUsuarioDto.respuesta9,
+              })
+              .where('usuarioId = :id', { id: usuarioExistente.id })
+              .execute();
+          }
+
+          // Obtener el usuario actualizado
+          const usuarioActualizado = await this.findByIdOrRut(identificador);
+          this.logger.log(`Usuario actualizado exitosamente: ${identificador}`);
+
+          return usuarioActualizado;
+        },
+      );
+    } catch (error) {
+      this.logger.error(
+        `Error al actualizar usuario: ${error.message}`,
+        error.stack,
+      );
+
+      if (error instanceof NotFoundException) {
+        this.logger.warn(
+          `Usuario no encontrado con identificador: ${identificador}`,
+        );
+        throw error;
+      }
+      if (error instanceof ConflictException) {
+        this.logger.warn(`Error de conflicto: ${error.message}`);
+        throw error;
+      }
+
+      throw new InternalServerErrorException(
+        `Error al actualizar el usuario: ${error.message}`,
+      );
     }
   }
 }

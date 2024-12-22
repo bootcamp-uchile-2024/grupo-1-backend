@@ -1,7 +1,7 @@
 {
   "name": "plantopia-api",
   "tittle": "Plantopia API",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Somos un e-commerce dedicado a la venta de plantas, productos para jardinería y servicios especializados en el cuidado de plantas. Nuestra API permite gestionar y acceder a una amplia variedad de plantas, insumos y accesorios, así como a la información y recomendaciones para su correcto cuidado. Con ella, puedes explorar nuestro catálogo, realizar compras, y recibir consejos personalizados para mantener tus plantas en óptimas condiciones.",
   "author": "Plantopia-Backend-Team",
   "contributors": [
