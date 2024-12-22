@@ -44,6 +44,8 @@ export class GlobalFilter implements ExceptionFilter {
       requestBody: request.body,
       queryParams: request.query,
       headers: request.headers,
+      error: exception instanceof Error ? exception.message : null,
+      exception: exception, // Esto ayudará a ver más detalles del error
     });
 
     response.status(status).json({

@@ -91,6 +91,7 @@ export class CreateUsuarioDto {
   @ApiProperty({
     description: 'ID de la comuna del usuario',
     example: 1,
+    default: 1,
   })
   @IsInt({ message: 'El ID de la comuna debe ser un número entero' })
   @IsNotEmpty({ message: 'El ID de la comuna es obligatorio' })

@@ -13,7 +13,7 @@ import { Comuna } from 'src/localizaciones/entities/comuna.entity';
 import { JardinVirtual } from './jardin_virtual.entity';
 import { Servicio } from 'src/servicios/entities/servicio.entity';
 import { OrdenCompra } from 'src/ventas/entities/orden_compra.entity';
-import { Preferencias } from '../../productos/entities/preferencias.entity';
+import { Preferencias } from './preferencias.entity';
 
 @Entity({ name: 'Usuario' })
 export class Usuario {
