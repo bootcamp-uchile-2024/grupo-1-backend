@@ -3,3 +3,4 @@ export enum Rol{
     USUARIO = 'USUARIO',
     INVITADO='INVITADO'
 }
+

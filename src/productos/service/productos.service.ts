@@ -480,9 +480,7 @@ export class ProductosService {
     if (!producto) {
       throw new NotFoundException(`Producto con ID ${id} no encontrada`);
     }
-    console.log('id: ', id);
-    console.log('stockcompra: ', stockCompra);
-    console.log('prodicto: ', producto);
+   
     if (stockCompra > producto.stock) {
       return null;
     }

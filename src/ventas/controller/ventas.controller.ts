@@ -230,4 +230,5 @@ export class VentasController {
   async createVenta(@Body() CreateVentaDto: CreateVentaDto) {
     return await this.ventaService.createVenta(CreateVentaDto);
   }
+  
 }

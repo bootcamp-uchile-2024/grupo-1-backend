@@ -12,12 +12,10 @@ export class JwtGuard implements CanActivate {
 
   
   canActivate(context: ExecutionContext,): boolean | Promise<boolean>{
-    console.log("estoy en el guard")
-    console.log(process.env.JWT_SECRET); 
+   
     const request = context.switchToHttp().getRequest();
 
    const bearerToken= request.headers.authorization;
-   console.log(bearerToken)
    
    if (!bearerToken){
     return false
@@ -34,7 +32,7 @@ export class JwtGuard implements CanActivate {
     console.error(error)
     return false
    }
-   console.log("sigo en el guard")
+
 
     return true;
   }
