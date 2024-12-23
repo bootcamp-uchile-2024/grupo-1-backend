@@ -28,19 +28,16 @@ export class VentaMappers {
     dto: CreateDetalleOrdenCompraDto,
     productoService: ProductosService,
   ): Promise<DetalleOrdenCompra> {
-    console.log('servicio ', productoService);
     const detalleOc = new DetalleOrdenCompra();
     detalleOc.idOrdenCompra = dto.idOrden;
     detalleOc.idProducto = dto.idProducto;
     detalleOc.cantidad = dto.cantidad;
-    console.log('detalleOc : ', detalleOc);
     const producto = await productoService.findOneOC(dto.idProducto);
     detalleOc.precio = producto.precioNormal;
     detalleOc.descuento = producto.descuento * dto.cantidad;
     detalleOc.totalProducto =
       dto.cantidad * producto.precioNormal - detalleOc.descuento;
     detalleOc.cantidadVenta = 0;
-    console.log(detalleOc);
     return detalleOc;
   }
 

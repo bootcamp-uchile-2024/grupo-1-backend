@@ -68,13 +68,10 @@ export class VentasService {
       where: { usuario: { id: usuarioId } },
       relations: ['usuario'],
     });
-    console.log('jardinVirtual', jardinVirtual);
     if (!jardinVirtual) {
-      console.log('id del', ordenCompra.usuario.id);
       const nuevoJardin = this.jardinVirtualRepository.create({
         usuario: { id: ordenCompra.usuario.id },
       });
-      console.log('nuevoJardin', nuevoJardin);
       await this.jardinVirtualRepository.save(nuevoJardin);
     }
 
@@ -102,7 +99,6 @@ export class VentasService {
         relations: ['categoria'],
       });
       if (producto.categoria.nombreCategoria === TipoProductos.Planta) {
-        console.log('jardinVirtual>: ', jardinVirtual);
         const plantaYaRegistrada =
           await this.detalleJardinVirtualRepository.findOne({
             where: {
@@ -162,7 +158,6 @@ export class VentasService {
       formaPago,
       estadoVenta, // Estado de venta completada
     });
-    console.log('ventamne', ventaNueva);
     const ventacreada = await this.ventaRepository.save(ventaNueva);
     let ventadto: GetVentaDto;
     ventadto.id = ventacreada.id;

@@ -7,13 +7,12 @@ services:
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASS}
     volumes:
-      - ./db/data_dev:/var/lib/mysql
+      - /home/ubuntu/mysql_data:/var/lib/mysql
     ports:
       - '3306:3306'
     restart: always
     networks:
       - app-network
-
 
   flyway:
     image: flyway/flyway:10.20.1-alpine
@@ -27,7 +26,7 @@ services:
         '-user=${DB_USER}',
         '-password=${DB_PASS}',
         '-locations=filesystem:/flyway/sql',
-         '-baselineOnMigrate=true',
+        '-baselineOnMigrate=true',
         'migrate',
       ]
     volumes:
@@ -35,7 +34,12 @@ services:
     networks:
       - app-network
     restart: on-failure
+    command: -url=jdbc:mysql://mysql:3306/PlantopiaDB -user=user_prod -password=password_prod -connectRetries=5 repair migrate
 
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local

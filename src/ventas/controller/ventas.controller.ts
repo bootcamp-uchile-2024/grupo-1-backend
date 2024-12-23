@@ -73,7 +73,7 @@ export class VentasController {
   @ApiBody({ type: CreateDetalleOrdenCompraDto })
   @ApiBearerAuth()
   @UseGuards(JwtGuard)
-  @RolesAutorizados(Rol.ADMIN,Rol.USUARIO,Rol.INVITADO)
+  @RolesAutorizados(Rol.ADMIN, Rol.USUARIO, Rol.INVITADO)
   @Post('/carrito/addItem/')
   //@UsePipes(ValidaProductoCarritoPipe)
   async agregaProductoCarrito(
@@ -96,7 +96,7 @@ export class VentasController {
   @ApiBody({ type: QuitarProductoCarritoDto })
   @ApiBearerAuth()
   @UseGuards(JwtGuard)
-  @RolesAutorizados(Rol.ADMIN,Rol.USUARIO,Rol.INVITADO)
+  @RolesAutorizados(Rol.ADMIN, Rol.USUARIO, Rol.INVITADO)
   @Delete('/carrito/removeItem/')
   @ApiTags('Gestion-Ventas')
   //@UsePipes(ValidaEliminaProductoCarroPipe)
@@ -128,7 +128,7 @@ export class VentasController {
   @ApiBody({ type: CreateDetalleOrdenCompraDto })
   @ApiBearerAuth()
   @UseGuards(JwtGuard)
-  @RolesAutorizados(Rol.ADMIN,Rol.USUARIO,Rol.INVITADO)
+  @RolesAutorizados(Rol.ADMIN, Rol.USUARIO, Rol.INVITADO)
   @Put('/carrito/updateItem/')
   @ApiTags('Gestion-Ventas')
   //@UsePipes(ValidaEliminaProductoCarroPipe)
@@ -167,21 +167,14 @@ export class VentasController {
     type: Number,
     description: 'El ID usuario para buscar su carrito.',
   })
-
   @ApiBearerAuth()
   @UseGuards(JwtGuard)
-  @RolesAutorizados(Rol.ADMIN,Rol.USUARIO,Rol.INVITADO)
+  @RolesAutorizados(Rol.ADMIN, Rol.USUARIO, Rol.INVITADO)
   @UsePipes(ValidaBuscaCarritoPipe)
   @Get('/carrito/creado/')
   @ApiTags('Gestion-Ventas')
   async findOne(@Query() query: any) {
     const { emailComprador, idUsuario } = query;
-    console.log(
-      'Controller - emailComprador:',
-      emailComprador,
-      'idUsuario:',
-      idUsuario,
-    );
     const carrito = await this.ordenComprasService.buscarCarrito(
       emailComprador,
       idUsuario,

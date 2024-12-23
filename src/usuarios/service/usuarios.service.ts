@@ -666,14 +666,10 @@ export class UsuariosService {
 
   @ApiBearerAuth()
   async login(credencialesDto: CredencialesDto): Promise<JwtDto> {
-    console.log('entré');
-    console.log('JWT_SECRET:', process.env.JWT_SECRET);
-    console.log(credencialesDto.email);
     const usuario = await this.usuarioRepository.findOne({
       where: { email: credencialesDto.email },
       relations: ['perfil'],
     });
-    console.log('usuario', usuario);
     if (!usuario) {
       throw new UnauthorizedException(
         'el usuario o la contraseña no es válido',
@@ -684,17 +680,12 @@ export class UsuariosService {
       credencialesDto.password,
       usuario.clave,
     );
-    console.log('la pass que se le pasa: ' + credencialesDto.password);
-    console.log('la pass que encontro en la base: ' + usuario.clave);
-    console.log(contrasena);
-    console.log(usuario);
 
     if (!contrasena) {
       throw new UnauthorizedException(
         'el usuario o la contraseña no es válido',
       );
     }
-    console.log(usuario.email);
 
     const payload = {
       email: usuario.email,
@@ -703,15 +694,9 @@ export class UsuariosService {
 
     const jwt = new JwtDto();
 
-    console.log('antes del try');
-
     jwt.token = await this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
     });
-
-    console.log('Login exitoso');
-    console.log(usuario);
-    console.log('Token generado:', jwt.token);
 
     return jwt;
   }
