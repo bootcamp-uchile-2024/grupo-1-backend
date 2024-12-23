@@ -23,6 +23,8 @@ import { DetalleJardinVirtual } from 'src/usuarios/entities/detalle_jardin_virtu
 
 @Injectable()
 export class VentasService {
+  private readonly logger = new Logger(VentasService.name);
+
   fechaHoy = new Date();
   fechaActual =
     String(this.fechaHoy.getFullYear()) +
@@ -30,7 +32,6 @@ export class VentasService {
     String(this.fechaHoy.getMonth() + 1).padStart(2, '0') +
     '-' +
     String(this.fechaHoy.getDate()).padStart(2, '0');
-  logger: any;
   constructor(
     @InjectRepository(Venta)
     private readonly ventaRepository: Repository<Venta>,
@@ -53,10 +54,14 @@ export class VentasService {
   async createVenta(createVentaDto: CreateVentaDto): Promise<GetVentaDto> {
     const timestamp = new Date().toISOString();
     let jardinVirtual: JardinVirtual | undefined;
-    /*this.logger.log(
-      `${timestamp} INFO [ventasServices] Iniciando traspaso de carrito compra a venta realizada`,
-    );*/
+
+    this.logger.log(`[${timestamp}] Iniciando proceso de creación de venta`);
+
     const idOrden = createVentaDto.idOrden;
+    this.logger.log(
+      `[${timestamp}] Buscando orden de compra con ID: ${idOrden}`,
+    );
+
     const ordenCompra = await this.ordenCompraRepository
       .createQueryBuilder('ordenCompra')
       .leftJoinAndSelect('ordenCompra.detallesOrden', 'detallesOrden') // Unir detalles de la orden
@@ -68,15 +73,22 @@ export class VentasService {
       .getOne();
 
     if (!ordenCompra) {
+      this.logger.error(
+        `[${timestamp}] Carrito con ID ${idOrden} no encontrado o no puede ser procesado`,
+      );
       throw new NotFoundException(
         `Carrito con ID ${idOrden} no puede ser procesado`,
       );
     }
+
+    this.logger.log(
+      `[${timestamp}] Orden de compra encontrada, procesando detalles`,
+    );
     const detallesActualiza = [];
     // Si no hay usuario, emitir advertencia y continuar
     if (!ordenCompra.usuario) {
-      console.warn(
-        `Advertencia: La orden de compra con ID ${idOrden} no tiene un usuario registrado.`,
+      this.logger.warn(
+        `[${timestamp}] La orden de compra con ID ${idOrden} no tiene un usuario registrado`,
       );
     } else {
       const usuarioId = ordenCompra.usuario.id;
@@ -93,11 +105,17 @@ export class VentasService {
     }
 
     for (const detalle of ordenCompra.detallesOrden) {
+      this.logger.log(
+        `[${timestamp}] Validando stock para producto ID: ${detalle.idProducto}`,
+      );
       const hayStock = await this.productoServices.validaStock(
         detalle.idProducto,
         detalle.cantidad,
       );
       if (!hayStock) {
+        this.logger.error(
+          `[${timestamp}] Stock insuficiente para producto ID: ${detalle.idProducto}`,
+        );
         await this.ordenCompraRepository.update(ordenCompra.id, {
           estado: EstadoOrden.VENTA_ANULADA,
         });
@@ -105,6 +123,9 @@ export class VentasService {
           `El producto con ID ${detalle.idProducto} no tiene suficiente stock.`,
         );
       }
+      this.logger.log(
+        `[${timestamp}] Actualizando stock del producto ID: ${detalle.idProducto}`,
+      );
       await this.productoRepository.update(detalle.idProducto, {
         stock: () => `stock - ${detalle.cantidad}`,
         cantidadVentas: () => `cantidadVentas + ${detalle.cantidad}`,
@@ -188,6 +209,9 @@ export class VentasService {
       idFormaPago: ventaNueva.formaPago.id,
       idEstadoVenta: ventaNueva.estadoVenta.id,
     };
+    this.logger.log(
+      `[${timestamp}] Venta creada exitosamente con ID: ${ventacreada.id}`,
+    );
     return ventadto;
   }
 }
