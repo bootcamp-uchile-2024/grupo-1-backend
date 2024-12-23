@@ -1537,6 +1537,7 @@ export class ProductosController {
   }
 
   @Get('/plantas/masvendidas')
+  @ApiTags('Filtros - Plantas')
   @ApiOperation({ summary: 'Obtener las plantas más vendidas' })
   @ApiResponse({
     status: 200,
@@ -1549,7 +1550,7 @@ export class ProductosController {
   })
   async obtenerPlantasMasVendidas(): Promise<Planta[]> {
     try {
-      return await this.productosService.obtenerPlantasMasVendidas();
+      return await this.FiltrosService.obtenerPlantasMasVendidas();
     } catch (error) {
       throw new HttpException(
         'Ha ocurrido un error al obtener las plantas más vendidas.',

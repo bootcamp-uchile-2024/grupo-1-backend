@@ -488,17 +488,4 @@ export class ProductosService {
     }
     return stockCompra;
   }
-
-  async obtenerPlantasMasVendidas(): Promise<Planta[]> {
-    const queryBuilder = this.plantaRepository.createQueryBuilder('planta');
-    queryBuilder
-      .innerJoinAndSelect('planta.producto', 'producto')
-      .where('producto.activo = :activo', { activo: 1 });
-    queryBuilder.leftJoinAndSelect('producto.categoria', 'categoria');
-    queryBuilder.leftJoinAndSelect('producto.imagenes', 'imagenes');
-    queryBuilder.orderBy('producto.cantidadVentas', 'DESC');
-    queryBuilder.take(10);
-    const plantasMasVendidas = await queryBuilder.getMany();
-    return plantasMasVendidas;
-  }
 }
