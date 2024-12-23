@@ -17,6 +17,7 @@ import {
   InternalServerErrorException,
   Logger,
   UseGuards,
+  UnauthorizedException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -50,12 +51,48 @@ export class UsuariosController {
 
   constructor(private readonly usuariosService: UsuariosService) {}
 
-  @ApiTags('Login')
-  @Post('login')
-  async login(@Body() credencialesDto: CredencialesDto): Promise<JwtDto> {
+ @ApiTags('Login')
+@ApiOperation({
+  summary: 'Iniciar sesión',
+  description: 'Permite a un usuario autenticarse en el sistema y obtener un token JWT.',
+})
+@ApiResponse({ status: 200, description: 'Inicio de sesión exitoso.' })
+@ApiResponse({ status: 400, description: 'Credenciales inválidas.' })
+@ApiResponse({ status: 401, description: 'Autenticación fallida. Usuario o contraseña incorrectos.' })
+@ApiResponse({ status: 500, description: 'Error interno del servidor.' })
+@ApiBody({
+  description: 'Datos necesarios para iniciar sesión.',
+  type: CredencialesDto,
+})
+@UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+@Post('login')
+async login(
+  @Body() credencialesDto: CredencialesDto,
+): Promise<JwtDto> {
+  this.logger.log(`Iniciando login para el usuario: ${credencialesDto.email}`);
+  try {
+    const jwtToken = await this.usuariosService.login(credencialesDto);
 
-    return this.usuariosService.login(credencialesDto);
+    this.logger.log(
+      `Login exitoso para el usuario: ${credencialesDto.email}`,
+    );
+    return jwtToken;
+  } catch (error) {
+    this.logger.error(
+      `Error al realizar login para el usuario: ${credencialesDto.email}. Mensaje: ${error.message}`,
+    );
+    if (error instanceof UnauthorizedException) {
+      throw new UnauthorizedException(
+        'Usuario o contraseña incorrectos. Por favor, verifique sus credenciales.',
+      );
+    }
+    if (error instanceof HttpException) {
+      throw error;
+    }
+    throw new InternalServerErrorException('Error al realizar login.');
   }
+}
+
 
   @ApiTags('Gestion - Customer')
   @Post('gestion/insert')

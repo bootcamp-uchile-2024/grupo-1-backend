@@ -45,7 +45,7 @@ import { JwtModule } from '@nestjs/jwt';
     }),
     TypeOrmModule.forRoot({
       type: process.env.DB_TYPE as any,
-      host: process.env.DB_HOST,
+      host: 'localhost',
       port: parseInt(process.env.DB_PORT, 10),
       username: process.env.DB_USER,
       password: process.env.DB_PASS,
