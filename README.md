@@ -57,7 +57,7 @@ Plantopia es un e-commerce dedicado a la venta de plantas, productos para jardin
 
 3. Configura las variables de entorno:
    - Crea un archivo `.env` en la raíz del proyecto y añade las variables necesarias.
-
+```bash
 PUERTO
 AMBIENTE=desarrollo
 VERSION=1.4.0
@@ -69,11 +69,13 @@ DB_DATABASE=plantopiadb
 DB_ROOTPASS=rootpassword
 DB_TYPE=mysql
 JWT_SECRET
+```
 
 
 4. Levanta la imagen de Docker Desarrollo - docker-compose
+  En la raiz del proyecto ejecutar el comando -> docker-compose.yml
    ```bash
-  en la raiz del proyecto ejecutar el comando -> docker-compose.yml
+   docker-compose up
    ```
 
 ## Uso
