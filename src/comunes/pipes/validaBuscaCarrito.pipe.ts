@@ -10,12 +10,6 @@ export class ValidaBuscaCarritoPipe implements PipeTransform {
   constructor(private readonly usuarioService: UsuariosService) {}
   async transform(value: any, metadata: ArgumentMetadata) {
     const { emailComprador, idUsuario } = value;
-    console.log(
-      'Transform Pipe - emailComprador:',
-      emailComprador,
-      'idUsuario:',
-      idUsuario,
-    );
 
     if (!emailComprador && !idUsuario) {
       throw new BadRequestException('Debe ingresar email o rut para buscar ');

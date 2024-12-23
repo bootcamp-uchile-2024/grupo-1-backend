@@ -53,9 +53,6 @@ export class UsuariosController {
   @ApiTags('Login')
   @Post('login')
   async login(@Body() credencialesDto: CredencialesDto): Promise<JwtDto> {
-    console.log('entre');
-    console.log('JWT_SECRET:', process.env.JWT_SECRET); // Esto debería imprimir la clave secreta en consola.
-
     return this.usuariosService.login(credencialesDto);
   }
 

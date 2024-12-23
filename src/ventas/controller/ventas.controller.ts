@@ -173,12 +173,6 @@ export class VentasController {
   @ApiTags('Gestion-Ventas')
   async findOne(@Query() query: any) {
     const { emailComprador, idUsuario } = query;
-    console.log(
-      'Controller - emailComprador:',
-      emailComprador,
-      'idUsuario:',
-      idUsuario,
-    );
     const carrito = await this.ordenComprasService.buscarCarrito(
       emailComprador,
       idUsuario,
