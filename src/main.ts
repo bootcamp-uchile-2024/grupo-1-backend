@@ -61,7 +61,7 @@ async function bootstrap() {
   );
   const ventasSwagger = SwaggerModule.createDocument(
     app,
-    createSwaggerConfig('Gestión Ventas'),
+    createSwaggerConfig('Ventas'),
     {
       include: [VentasModule],
     },

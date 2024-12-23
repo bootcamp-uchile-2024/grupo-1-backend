@@ -11,7 +11,6 @@ export class ValidaEmailIdPipe implements PipeTransform {
   constructor(private readonly usuarioService: UsuariosService) {}
   async transform(value: CreateOrdenCompraDto, { metatype }: ArgumentMetadata) {
     const { emailComprador, idUsuario } = value;
-    console.log('el id es;a: ', idUsuario);
     if (Number(idUsuario) == 0) {
       if (emailComprador && !this.isValidEmail(emailComprador)) {
         throw new BadRequestException('Email o id de usuario no válido1.');

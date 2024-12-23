@@ -13,6 +13,7 @@ import {
   HttpException,
   NotFoundException,
   Put,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -20,6 +21,7 @@ import {
   ApiResponse,
   ApiBody,
   ApiParam,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { UsuariosService } from '../service/usuarios.service';
 import { CreateUsuarioDto } from '../dto/create-usuario.dto';
@@ -30,14 +32,30 @@ import { Perfil } from '../entities/perfil.entity';
 import { UpdatePerfilDto } from '../dto/update-perfil.dto';
 import { CreatePerfilDto } from '../dto/create-perfil.dto';
 import { ValidaForamteEmailPipe } from 'src/comunes/pipes/validaFormatoEmail.pipe';
-
+import { Logger } from '@nestjs/common';
+import { BuscarJardinQueryDto } from '../dto/buscarJardin.dto';
 @ApiTags('usuarios')
 @Controller('usuarios')
 @UsePipes(new ValidationPipe({ transform: true }))
 export class UsuariosController {
   perfilRepository: any;
   constructor(private readonly usuariosService: UsuariosService) {}
-
+  /*  @ApiQuery({
+    name: 'idUsuario',
+    required: true,
+    type: Number,
+    description: 'El ID usuario para buscar su historial.',
+  })
+  @Get('/myjardinvirtual/')
+  async buscarJardin(@Query() query: any) {
+    const { idUsuario } = query;
+    if (!idUsuario) {
+      throw new Error('idUsuario es requerido');
+    }
+    console.log(`Buscando jardín para el usuario con idUsuario: ${idUsuario}`);
+    const jardinVirtuual = await this.usuariosService.miJardin(idUsuario);
+    return jardinVirtuual;
+  }*/
   @Post()
   @ApiOperation({
     summary: 'Crear un nuevo usuario',

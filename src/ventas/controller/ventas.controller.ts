@@ -30,7 +30,7 @@ import { QuitarProductoCarritoDto } from '../dto/quitarProductoCarrito.dto';
 import { ValidaBuscaCarritoPipe } from 'src/comunes/pipes/validaBuscaCarrito.pipe';
 import { CreateVentaDto } from '../dto/create-venta-dto';
 import { VentasService } from '../service/ventas.service';
-@ApiTags('ventas')
+@ApiTags('Gestion - Ventas')
 @Controller('ventas')
 //@UsePipes(new ValidationPipe({ transform: true }))
 export class VentasController {
@@ -39,6 +39,7 @@ export class VentasController {
     private readonly detalleOrdenCompraService: DetalleOrdenComprasService,
     private readonly ventaService: VentasService,
   ) {}
+
   @ApiOperation({
     summary: 'Historia Usuario H005: Carrito Compras',
     description:
@@ -87,7 +88,6 @@ export class VentasController {
   @ApiResponse({ status: 400, description: 'Producto  no eliminado' })
   @ApiBody({ type: QuitarProductoCarritoDto })
   @Delete('/carrito/removeItem/')
-  //@UsePipes(ValidaEliminaProductoCarroPipe)
   async quitaProductoCarrito(
     @Body(ValidaEliminaProductoCarroPipe)
     quitarProducto: QuitarProductoCarritoDto,
@@ -115,7 +115,6 @@ export class VentasController {
   @ApiResponse({ status: 400, description: 'Producto  no actualizado' })
   @ApiBody({ type: CreateDetalleOrdenCompraDto })
   @Put('/carrito/updateItem/')
-  //@UsePipes(ValidaEliminaProductoCarroPipe)
   async modificaCantidadProductoCarrito(
     @Body(ValidaProductoCarritoPipe)
     actualizaCarrito: CreateDetalleOrdenCompraDto,
@@ -187,9 +186,8 @@ export class VentasController {
   @Put('/carrito/finaliza/')
   async finalizaCarrito(@Query() query: any) {
     const { idOC } = query;
-
     const carrito = await this.ordenComprasService.finalizaCarrito(idOC);
-    return idOC;
+    return carrito;
   }
 
   @ApiOperation({
@@ -198,13 +196,44 @@ export class VentasController {
       'Esta funcionalidad crea la venta segun el pago realizado para el carrito compras',
   })
   @ApiResponse({
-    status: 200,
+    status: 201,
     description: 'Venta realizada',
   })
   @ApiResponse({ status: 400, description: 'Venta no completada' })
   @ApiBody({ type: CreateVentaDto })
-  @Post('/carrito/pagado/')
+  @Post('/')
   async createVenta(@Body() CreateVentaDto: CreateVentaDto) {
     return await this.ventaService.createVenta(CreateVentaDto);
+  }
+
+  @ApiOperation({
+    summary: 'Historia Usuario H005: Carrito Compras',
+    description: 'Esta funcionalidad permite buscar ventas realizadas',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Historial Ventas',
+  })
+  @ApiResponse({ status: 400, description: 'No hay ventas vigentes' })
+  @ApiQuery({
+    name: 'emailComprador',
+    required: false,
+    type: String,
+    description: 'El email comprador para buscar su historial.',
+  })
+  @ApiQuery({
+    name: 'idUsuario',
+    required: false,
+    type: Number,
+    description: 'El ID usuario para buscar su historial.',
+  })
+  @Get('/historial/')
+  async buscarVentas(@Query() query: any) {
+    const { emailComprador, idUsuario } = query;
+    const carrito = await this.ordenComprasService.historialCompras(
+      emailComprador,
+      idUsuario,
+    );
+    return carrito;
   }
 }

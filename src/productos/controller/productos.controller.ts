@@ -1184,4 +1184,26 @@ export class ProductosController {
   async deshabilitar(@Param('id') id: number): Promise<Producto> {
     return this.productosService.deshabilitarProducto(id);
   }
+
+  @Get('/plantas/masvendidas')
+  @ApiOperation({ summary: 'Obtener las plantas más vendidas' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de las plantas más vendidas.',
+    type: [Producto],
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Categoría "Planta" no encontrada.',
+  })
+  async obtenerPlantasMasVendidas(): Promise<Planta[]> {
+    try {
+      return await this.productosService.obtenerPlantasMasVendidas();
+    } catch (error) {
+      throw new HttpException(
+        'Ha ocurrido un error al obtener las plantas más vendidas.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 }

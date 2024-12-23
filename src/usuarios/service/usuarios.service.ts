@@ -13,6 +13,8 @@ import { Perfil } from '../entities/perfil.entity';
 import { UpdateUsuarioDto } from '../dto/update-usuario.dto';
 import { UpdatePerfilDto } from '../dto/update-perfil.dto';
 import { CreatePerfilDto } from '../dto/create-perfil.dto';
+import { DetalleJardinVirtualDto } from 'src/ventas/dto/detalle-jardin.dto';
+import { JardinVirtual } from '../entities/jardin_virtual.entity';
 
 @Injectable()
 export class UsuariosService {
@@ -23,6 +25,8 @@ export class UsuariosService {
     private readonly comunaRepository: Repository<Comuna>,
     @InjectRepository(Perfil)
     private readonly perfilRepository: Repository<Perfil>,
+    @InjectRepository(JardinVirtual)
+    private readonly jardinVirtualRepository: Repository<JardinVirtual>,
   ) {}
 
   async create(createUsuarioDto: CreateUsuarioDto): Promise<Usuario> {
@@ -202,5 +206,46 @@ export class UsuariosService {
       throw new NotFoundException(`Usuario con email ${email} no encontrado`);
     }
     return usuario;
+  }
+
+  async miJardin(usuarioId: number): Promise<any> {
+    // Validación del ID de usuario
+    console.log('id: ', usuarioId);
+    const usuario = await this.usuarioRepository.findOne({
+      where: { id: usuarioId },
+      relations: ['jardinVirtual'],
+    });
+    console.log;
+    if (!usuario) {
+      throw new Error('Usuario con el ID proporcionado no encontrado');
+    }
+
+    // Obtener el jardín virtual relacionado con el usuario
+    const jardinVirtual = await this.jardinVirtualRepository
+      .createQueryBuilder('jardin')
+      .leftJoinAndSelect('jardin.detalles', 'detalle')
+      .leftJoinAndSelect('detalle.planta', 'planta')
+      .where('jardin.idUsuario = :usuarioId', { usuarioId })
+      .getOne();
+
+    if (!jardinVirtual) {
+      throw new Error('Jardín virtual no encontrado para este usuario');
+    }
+
+    // Construir el DTO de la respuesta
+    const detallesPlantas = jardinVirtual.detalles.map((detalle) => ({
+      idPlanta: detalle.idPlanta,
+      nombrePlanta: detalle.planta.nombrePlanta,
+      fechaIngreso: detalle.fechaIngreso,
+    }));
+
+    return {
+      id: jardinVirtual.id,
+      usuarioId: usuario.id,
+      nombreUsuario: usuario.nombres,
+      jardinId: jardinVirtual.id,
+      plantas: detallesPlantas,
+      fechaIngreso: detallesPlantas[0]?.fechaIngreso, // ejemplo de fecha
+    };
   }
 }

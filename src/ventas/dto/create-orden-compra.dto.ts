@@ -7,7 +7,7 @@ export class CreateOrdenCompraDto {
     description:
       'Correo electrónico del usuario (debe ser un correo con formato válido)',
   })
-  @ValidateIf((o) => !o.idUsuario) // Valida solo si no hay idUsuario
+  @ValidateIf((o) => !o.idUsuario)
   @IsEmail({}, { message: 'El email debe ser un correo electrónico válido' })
   public emailComprador?: string;
 
