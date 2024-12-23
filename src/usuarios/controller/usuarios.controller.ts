@@ -159,7 +159,6 @@ async login(
   @UseGuards(JwtGuard)
   @RolesAutorizados(Rol.ADMIN)
   @ApiTags('Gestion - Customer')
-  @RolesAutorizados(Rol.ADMIN)
   @Get('/gestion/listbyrut/:identificador')
   @ApiOperation({
     summary: 'Obtener un usuario por ID o RUT',

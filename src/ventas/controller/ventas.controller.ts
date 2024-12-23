@@ -35,7 +35,7 @@ import { VentasService } from '../service/ventas.service';
 import { JwtGuard } from 'src/jwt/jwt.guard';
 import { RolesAutorizados } from 'src/comunes/decorator/rol.decorator';
 import { Rol } from 'src/enum/rol.enum';
-@ApiTags('ventas')
+@ApiTags('Gestion - Ventas')
 @Controller('ventas')
 //@UsePipes(new ValidationPipe({ transform: true }))
 export class VentasController {
@@ -45,6 +45,7 @@ export class VentasController {
     private readonly ventaService: VentasService,
   ) {}
   @ApiTags('Gestion-Ventas')
+
   @ApiOperation({
     summary: 'Historia Usuario H005: Carrito Compras',
     description:
@@ -71,9 +72,6 @@ export class VentasController {
   })
   @ApiResponse({ status: 400, description: 'Producto  no Añadido' })
   @ApiBody({ type: CreateDetalleOrdenCompraDto })
-  @ApiBearerAuth()
-  @UseGuards(JwtGuard)
-  @RolesAutorizados(Rol.ADMIN,Rol.USUARIO,Rol.INVITADO)
   @Post('/carrito/addItem/')
   //@UsePipes(ValidaProductoCarritoPipe)
   async agregaProductoCarrito(
@@ -94,12 +92,8 @@ export class VentasController {
   })
   @ApiResponse({ status: 400, description: 'Producto  no eliminado' })
   @ApiBody({ type: QuitarProductoCarritoDto })
-  @ApiBearerAuth()
-  @UseGuards(JwtGuard)
-  @RolesAutorizados(Rol.ADMIN,Rol.USUARIO,Rol.INVITADO)
   @Delete('/carrito/removeItem/')
   @ApiTags('Gestion-Ventas')
-  //@UsePipes(ValidaEliminaProductoCarroPipe)
   async quitaProductoCarrito(
     @Body(ValidaEliminaProductoCarroPipe)
     quitarProducto: QuitarProductoCarritoDto,
@@ -126,12 +120,8 @@ export class VentasController {
   })
   @ApiResponse({ status: 400, description: 'Producto  no actualizado' })
   @ApiBody({ type: CreateDetalleOrdenCompraDto })
-  @ApiBearerAuth()
-  @UseGuards(JwtGuard)
-  @RolesAutorizados(Rol.ADMIN,Rol.USUARIO,Rol.INVITADO)
   @Put('/carrito/updateItem/')
   @ApiTags('Gestion-Ventas')
-  //@UsePipes(ValidaEliminaProductoCarroPipe)
   async modificaCantidadProductoCarrito(
     @Body(ValidaProductoCarritoPipe)
     actualizaCarrito: CreateDetalleOrdenCompraDto,
@@ -168,9 +158,7 @@ export class VentasController {
     description: 'El ID usuario para buscar su carrito.',
   })
 
-  @ApiBearerAuth()
-  @UseGuards(JwtGuard)
-  @RolesAutorizados(Rol.ADMIN,Rol.USUARIO,Rol.INVITADO)
+
   @UsePipes(ValidaBuscaCarritoPipe)
   @Get('/carrito/creado/')
   @ApiTags('Gestion-Ventas')
@@ -209,9 +197,8 @@ export class VentasController {
   @ApiTags('Gestion-Ventas')
   async finalizaCarrito(@Query() query: any) {
     const { idOC } = query;
-
     const carrito = await this.ordenComprasService.finalizaCarrito(idOC);
-    return idOC;
+    return carrito;
   }
 
   @ApiOperation({
@@ -220,15 +207,49 @@ export class VentasController {
       'Esta funcionalidad crea la venta segun el pago realizado para el carrito compras',
   })
   @ApiResponse({
-    status: 200,
+    status: 201,
     description: 'Venta realizada',
   })
   @ApiResponse({ status: 400, description: 'Venta no completada' })
   @ApiBody({ type: CreateVentaDto })
-  @Post('/carrito/pagado/')
+  @Post('/')
   @ApiTags('Gestion-Ventas')
   async createVenta(@Body() CreateVentaDto: CreateVentaDto) {
     return await this.ventaService.createVenta(CreateVentaDto);
   }
-  
+
+  @ApiOperation({
+    summary: 'Historia Usuario H005: Carrito Compras',
+    description: 'Esta funcionalidad permite buscar ventas realizadas',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Historial Ventas',
+  })
+  @ApiResponse({ status: 400, description: 'No hay ventas vigentes' })
+  @ApiQuery({
+    name: 'emailComprador',
+    required: false,
+    type: String,
+    description: 'El email comprador para buscar su historial.',
+  })
+  @ApiQuery({
+    name: 'idUsuario',
+    required: false,
+    type: Number,
+    description: 'El ID usuario para buscar su historial.',
+  })
+
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN,Rol.USUARIO)
+  @Get('/historial/')
+  async buscarVentas(@Query() query: any) {
+    const { emailComprador, idUsuario } = query;
+    const carrito = await this.ordenComprasService.historialCompras(
+      emailComprador,
+      idUsuario,
+    );
+    return carrito;
+  }
 }

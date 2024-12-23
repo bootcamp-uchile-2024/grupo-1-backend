@@ -111,9 +111,7 @@ export class ProductosController {
     }
   }
 
-  @ApiBearerAuth()
-  @UseGuards(JwtGuard)
-  @RolesAutorizados(Rol.ADMIN, Rol.USUARIO, Rol.INVITADO)
+
   @Get('/catalogo')
   @ApiResponse({
     status: 200,
@@ -152,9 +150,11 @@ export class ProductosController {
     }
   }
 
+ 
+  
   @ApiBearerAuth()
   @UseGuards(JwtGuard)
-  @RolesAutorizados(Rol.ADMIN, Rol.USUARIO, Rol.INVITADO)
+  @RolesAutorizados(Rol.ADMIN)
   @Get('/catalogobyid/:id')
   @ApiTags('Gestion-Productos')
   @ApiOperation({
@@ -592,9 +592,7 @@ export class ProductosController {
     }
   }
 
-  @ApiBearerAuth()
-  @UseGuards(JwtGuard)
-  @RolesAutorizados(Rol.ADMIN, Rol.USUARIO, Rol.INVITADO)
+ 
   @Get('maceteros/get')
   @ApiTags('Gestion-Productos-Maceteros')
   @ApiOperation({
@@ -627,9 +625,7 @@ export class ProductosController {
     }
   }
 
-  @ApiBearerAuth()
-  @UseGuards(JwtGuard)
-  @RolesAutorizados(Rol.ADMIN, Rol.USUARIO, Rol.INVITADO)
+
   @Get('maceteros/getbyid/:id')
   @ApiTags('Gestion-Productos-Maceteros')
   @ApiOperation({
@@ -1101,6 +1097,10 @@ export class ProductosController {
     }
   }
 
+  
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN)
   @Post('edit-image/:productId/:imageId')
   @ApiTags('Gestion-Productos')
   @ApiParam({ name: 'productId', description: 'ID del producto' })
@@ -1167,6 +1167,10 @@ export class ProductosController {
     }
   }
 
+  
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN)
   @Delete('delete-image/:productId/:imageId')
   @ApiTags('Gestion-Productos')
   @ApiParam({ name: 'productId', description: 'ID del producto' })
@@ -1534,5 +1538,28 @@ export class ProductosController {
       message: 'Plantas obtenidas con éxito',
       data: filtro,
     });
+  }
+
+  @Get('/plantas/masvendidas')
+  @ApiTags('Filtros - Plantas')
+  @ApiOperation({ summary: 'Obtener las plantas más vendidas' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de las plantas más vendidas.',
+    type: [Producto],
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Categoría "Planta" no encontrada.',
+  })
+  async obtenerPlantasMasVendidas(): Promise<Planta[]> {
+    try {
+      return await this.FiltrosService.obtenerPlantasMasVendidas();
+    } catch (error) {
+      throw new HttpException(
+        'Ha ocurrido un error al obtener las plantas más vendidas.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }
