@@ -4,6 +4,10 @@
 
 Plantopia es un e-commerce dedicado a la venta de plantas, productos para jardinería y servicios especializados en el cuidado de plantas. Nuestra API permite gestionar y acceder a una amplia variedad de plantas, insumos y accesorios, así como a la información y recomendaciones para su correcto cuidado. Con ella, puedes explorar nuestro catálogo, realizar compras, y recibir consejos personalizados para mantener tus plantas en óptimas condiciones.
 
+[Links de Interes]
+- Api produccion -> http://3.142.12.50:4000/api
+- DockerHub -> https://hub.docker.com/repository/docker/cnicolas86/plantopia/general
+
 ## Tabla de Contenidos
 
 - [📚 Plantopia - API](#-plantopia---api)
