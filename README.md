@@ -98,6 +98,7 @@ $ npm run start:prod
 Puedes encontrar la documentación completa de la API en el siguiente enlace:
 [Documentación API](http://3.142.12.50:4000/api)
 
+
 ## Contribución
 
 Estamos abiertos a contribuciones. Por favor, sigue estos pasos para contribuir:
@@ -118,7 +119,9 @@ npm run test
 
 ## Despliegue
 
-Para desplegar la aplicación en un entorno de producción, asegúrate de configurar correctamente las variables de entorno y seguir los pasos de instalación.
+Para desplegar la aplicación en un entorno de producción, asegúrate de configurar correctamente las variables de entorno y chequear la ultima version de la imagen productiva en nuestro dockerhub
+visita el siguiente link -> 
+https://hub.docker.com/repository/docker/cnicolas86/plantopia/general
 
 ## Changelog
 
