@@ -33,6 +33,14 @@ Plantopia es un e-commerce dedicado a la venta de plantas, productos para jardin
 - Typescript
 - Docker
 - MySQL
+- TypeOrm
+- Class-Validator
+- Multer
+- JWT
+- Guard
+- Interceptor
+- Pipes
+- Logger
 
 ### Pasos de Instalación
 
@@ -50,11 +58,22 @@ Plantopia es un e-commerce dedicado a la venta de plantas, productos para jardin
 3. Configura las variables de entorno:
    - Crea un archivo `.env` en la raíz del proyecto y añade las variables necesarias.
 
-4. Levanta la imagen de Docker:
+PUERTO
+AMBIENTE=desarrollo
+VERSION=1.4.0
+DB_HOST=mysql
+DB_PORT=3306
+DB_USER=user_dev
+DB_PASS=password_dev
+DB_DATABASE=plantopiadb
+DB_ROOTPASS=rootpassword
+DB_TYPE=mysql
+JWT_SECRET
+
+
+4. Levanta la imagen de Docker Desarrollo - docker-compose
    ```bash
-   docker run --name mysql-prod -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=plantopiaDB -p 3306:3306 -d mysql:8.0
-   docker pull cnicolas86/plantopia:1.2.0
-   docker run -p 4000:4000 -e AMBIENTE=produccion cnicolas86/plantopia:1.2.0
+  en la raiz del proyecto ejecutar el comando -> docker-compose.yml
    ```
 
 ## Uso
@@ -75,7 +94,7 @@ $ npm run start:prod
 ### Ejemplos de Uso
 
 Puedes encontrar la documentación completa de la API en el siguiente enlace:
-[Documentación API](http://13.51.194.39:4000/api)
+[Documentación API](http://3.142.12.50:4000/api)
 
 ## Contribución
 
@@ -114,7 +133,7 @@ Este proyecto está licenciado bajo MIT.
 ## FAQ
 
 **¿Cómo puedo obtener acceso a la API?**
-Visita nuestra [documentación](http://13.51.194.39:4000/api) para más detalles.
+Visita nuestra [documentación](http://3.142.12.50:4000/api) para más detalles.
 
 **¿Qué métodos de pago aceptan?**
 Actualmente estamos trabajando en la integración con pasarelas de pago.
