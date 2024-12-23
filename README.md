@@ -4,6 +4,10 @@
 
 Plantopia es un e-commerce dedicado a la venta de plantas, productos para jardinería y servicios especializados en el cuidado de plantas. Nuestra API permite gestionar y acceder a una amplia variedad de plantas, insumos y accesorios, así como a la información y recomendaciones para su correcto cuidado. Con ella, puedes explorar nuestro catálogo, realizar compras, y recibir consejos personalizados para mantener tus plantas en óptimas condiciones.
 
+[Links de Interes]
+- Api produccion -> http://3.142.12.50:4000/api
+- DockerHub -> https://hub.docker.com/repository/docker/cnicolas86/plantopia/general
+
 ## Tabla de Contenidos
 
 - [📚 Plantopia - API](#-plantopia---api)
@@ -33,6 +37,14 @@ Plantopia es un e-commerce dedicado a la venta de plantas, productos para jardin
 - Typescript
 - Docker
 - MySQL
+- TypeOrm
+- Class-Validator
+- Multer
+- JWT
+- Guard
+- Interceptor
+- Pipes
+- Logger
 
 ### Pasos de Instalación
 
@@ -49,12 +61,25 @@ Plantopia es un e-commerce dedicado a la venta de plantas, productos para jardin
 
 3. Configura las variables de entorno:
    - Crea un archivo `.env` en la raíz del proyecto y añade las variables necesarias.
+```bash
+PUERTO
+AMBIENTE=desarrollo
+VERSION=1.4.0
+DB_HOST=mysql
+DB_PORT=3306
+DB_USER=user_dev
+DB_PASS=password_dev
+DB_DATABASE=plantopiadb
+DB_ROOTPASS=rootpassword
+DB_TYPE=mysql
+JWT_SECRET
+```
 
-4. Levanta la imagen de Docker:
+
+4. Levanta la imagen de Docker Desarrollo - docker-compose
+  En la raiz del proyecto ejecutar el comando -> docker-compose.yml
    ```bash
-   docker run --name mysql-prod -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=plantopiaDB -p 3306:3306 -d mysql:8.0
-   docker pull cnicolas86/plantopia:1.2.0
-   docker run -p 4000:4000 -e AMBIENTE=produccion cnicolas86/plantopia:1.2.0
+   docker-compose up
    ```
 
 ## Uso
@@ -75,7 +100,8 @@ $ npm run start:prod
 ### Ejemplos de Uso
 
 Puedes encontrar la documentación completa de la API en el siguiente enlace:
-[Documentación API](http://13.51.194.39:4000/api)
+[Documentación API](http://3.142.12.50:4000/api)
+
 
 ## Contribución
 
@@ -97,7 +123,9 @@ npm run test
 
 ## Despliegue
 
-Para desplegar la aplicación en un entorno de producción, asegúrate de configurar correctamente las variables de entorno y seguir los pasos de instalación.
+Para desplegar la aplicación en un entorno de producción, asegúrate de configurar correctamente las variables de entorno y chequear la ultima version de la imagen productiva en nuestro dockerhub
+visita el siguiente link -> 
+https://hub.docker.com/repository/docker/cnicolas86/plantopia/general
 
 ## Changelog
 
@@ -114,7 +142,7 @@ Este proyecto está licenciado bajo MIT.
 ## FAQ
 
 **¿Cómo puedo obtener acceso a la API?**
-Visita nuestra [documentación](http://13.51.194.39:4000/api) para más detalles.
+Visita nuestra [documentación](http://3.142.12.50:4000/api) para más detalles.
 
 **¿Qué métodos de pago aceptan?**
 Actualmente estamos trabajando en la integración con pasarelas de pago.
