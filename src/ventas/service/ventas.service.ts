@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { Venta } from '../entities/venta.entity';
@@ -29,7 +30,7 @@ export class VentasService {
     String(this.fechaHoy.getMonth() + 1).padStart(2, '0') +
     '-' +
     String(this.fechaHoy.getDate()).padStart(2, '0');
-
+  logger: any;
   constructor(
     @InjectRepository(Venta)
     private readonly ventaRepository: Repository<Venta>,
@@ -50,41 +51,52 @@ export class VentasService {
     private readonly productoServices: ProductosService,
   ) {}
   async createVenta(createVentaDto: CreateVentaDto): Promise<GetVentaDto> {
+    const timestamp = new Date().toISOString();
+    let jardinVirtual: JardinVirtual | undefined;
+    /*this.logger.log(
+      `${timestamp} INFO [ventasServices] Iniciando traspaso de carrito compra a venta realizada`,
+    );*/
     const idOrden = createVentaDto.idOrden;
-    const ordenCompra = await this.ordenCompraRepository.findOne({
-      where: { id: idOrden, estado: EstadoOrden.PROCESANDO },
-      relations: ['detallesOrden', 'usuario'],
-    });
+    const ordenCompra = await this.ordenCompraRepository
+      .createQueryBuilder('ordenCompra')
+      .leftJoinAndSelect('ordenCompra.detallesOrden', 'detallesOrden') // Unir detalles de la orden
+      .leftJoinAndSelect('ordenCompra.usuario', 'usuario') // Unir usuario, incluso si es null
+      .where('ordenCompra.id = :idOrden', { idOrden })
+      .andWhere('ordenCompra.estado = :estado', {
+        estado: EstadoOrden.PROCESANDO,
+      })
+      .getOne();
 
     if (!ordenCompra) {
-      throw new BadRequestException(
+      throw new NotFoundException(
         `Carrito con ID ${idOrden} no puede ser procesado`,
       );
     }
-
     const detallesActualiza = [];
-    const usuarioId = ordenCompra.usuario.id;
-    const jardinVirtual = await this.jardinVirtualRepository.findOne({
-      where: { usuario: { id: usuarioId } },
-      relations: ['usuario'],
-    });
-    console.log('jardinVirtual', jardinVirtual);
-    if (!jardinVirtual) {
-      console.log('id del', ordenCompra.usuario.id);
-      const nuevoJardin = this.jardinVirtualRepository.create({
-        usuario: { id: ordenCompra.usuario.id },
+    // Si no hay usuario, emitir advertencia y continuar
+    if (!ordenCompra.usuario) {
+      console.warn(
+        `Advertencia: La orden de compra con ID ${idOrden} no tiene un usuario registrado.`,
+      );
+    } else {
+      const usuarioId = ordenCompra.usuario.id;
+      /* const jardinVirtual = await this.jardinVirtualRepository.findOne({
+        where: { usuario: { id: usuarioId } },
+        relations: ['usuario'],
       });
-      console.log('nuevoJardin', nuevoJardin);
-      await this.jardinVirtualRepository.save(nuevoJardin);
+      if (!jardinVirtual) {
+        const nuevoJardin = this.jardinVirtualRepository.create({
+          usuario: { id: ordenCompra.usuario.id },
+        });
+        await this.jardinVirtualRepository.save(nuevoJardin);
+      }*/
     }
 
     for (const detalle of ordenCompra.detallesOrden) {
-      // Validar stock
       const hayStock = await this.productoServices.validaStock(
         detalle.idProducto,
         detalle.cantidad,
       );
-
       if (!hayStock) {
         await this.ordenCompraRepository.update(ordenCompra.id, {
           estado: EstadoOrden.VENTA_ANULADA,
@@ -101,24 +113,25 @@ export class VentasService {
         where: { id: detalle.idProducto },
         relations: ['categoria'],
       });
-      if (producto.categoria.nombreCategoria === TipoProductos.Planta) {
-        console.log('jardinVirtual>: ', jardinVirtual);
-        const plantaYaRegistrada =
-          await this.detalleJardinVirtualRepository.findOne({
-            where: {
+      /*if (ordenCompra.usuario) {
+        if (producto.categoria.nombreCategoria === TipoProductos.Planta) {
+          const plantaYaRegistrada =
+            await this.detalleJardinVirtualRepository.findOne({
+              where: {
+                idJardin: jardinVirtual.id,
+                idPlanta: detalle.idProducto,
+              },
+            });
+          if (!plantaYaRegistrada) {
+            const nuevaPlanta = this.detalleJardinVirtualRepository.create({
               idJardin: jardinVirtual.id,
               idPlanta: detalle.idProducto,
-            },
-          });
-        if (!plantaYaRegistrada) {
-          const nuevaPlanta = this.detalleJardinVirtualRepository.create({
-            idJardin: jardinVirtual.id,
-            idPlanta: detalle.idProducto,
-            fechaIngreso: new Date(),
-          });
-          await this.detalleJardinVirtualRepository.save(nuevaPlanta);
+              fechaIngreso: new Date(),
+            });
+            await this.detalleJardinVirtualRepository.save(nuevaPlanta);
+          }
         }
-      }
+      }*/
 
       detallesActualiza.push(detalle);
     }
@@ -127,23 +140,25 @@ export class VentasService {
     });
     let totalBruto = 0;
     let totalDescuento = 0;
-
     for (const detalle of detallesActualiza) {
       totalBruto += detalle.totalProducto;
       totalDescuento += detalle.descuento;
-
-      // Actualizar la cantidad vendida en los detalles de la orden
-      /*await this.detalleOrdenCompraRepository.update(detalle.idOrdenCompra, {
-        cantidadVenta: detalle.cantidad,
-      });*/
+      await this.detalleOrdenCompraRepository.update(
+        {
+          idOrdenCompra: detalle.idOrdenCompra,
+          idProducto: detalle.idProducto,
+        },
+        {
+          cantidadVenta: () => `cantidadVenta + ${detalle.cantidad}`,
+        },
+      );
     }
 
-    const iva = totalBruto * 0.19;
+    const iva = Math.round(totalBruto * 0.19);
     const totalPago = totalBruto + iva - totalDescuento;
     const formaPago = await this.formaPagoRepository.findOne({
       where: { id: createVentaDto.idFormaPago },
     });
-
     if (!formaPago) {
       throw new BadRequestException(
         `Forma de pago con ID ${createVentaDto.idFormaPago} no encontrada.`,
@@ -160,14 +175,19 @@ export class VentasService {
       nroComprobantePago: createVentaDto.nroComprobantePago,
       ordenCompra,
       formaPago,
-      estadoVenta, // Estado de venta completada
+      estadoVenta,
     });
-    console.log('ventamne', ventaNueva);
     const ventacreada = await this.ventaRepository.save(ventaNueva);
-    let ventadto: GetVentaDto;
-    ventadto.id = ventacreada.id;
-    ventadto.nroComprobantePago = ventaNueva.nroComprobantePago;
-    ventadto.totalPago = ventacreada.totalPago;
+    const ventadto: GetVentaDto = {
+      id: ventacreada.id,
+      totalBruto: ventacreada.totalBruto,
+      iva: ventacreada.iva,
+      totalPago: ventacreada.totalPago,
+      nroComprobantePago: ventaNueva.nroComprobantePago,
+      idOrdenCompra: ventaNueva.ordenCompra.id,
+      idFormaPago: ventaNueva.formaPago.id,
+      idEstadoVenta: ventaNueva.estadoVenta.id,
+    };
     return ventadto;
   }
 }
