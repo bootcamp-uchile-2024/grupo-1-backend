@@ -22,6 +22,7 @@ import {
   UploadedFiles,
   InternalServerErrorException,
   UseGuards,
+  Logger,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -67,6 +68,8 @@ import { Rol } from 'src/enum/rol.enum';
 
 @Controller('productos')
 export class ProductosController {
+  private readonly logger = new Logger(ProductosController.name);
+
   constructor(
     private readonly productosService: ProductosService,
     private readonly PlantaService: PlantaService,
@@ -948,37 +951,29 @@ export class ProductosController {
   })
   @ApiResponse({
     status: 200,
-    description: 'Detalles del sustrato encontrado',
-    type: Sustrato,
+    description: 'Sustrato encontrado exitosamente',
   })
   @ApiResponse({
     status: 404,
     description: 'Sustrato no encontrado',
   })
-  @ApiParam({
-    name: 'id',
-    description: 'ID del producto',
-    required: true,
-  })
-  async findOneSustrato(
-    @Param('id', ParseIntPipe) id: number,
-    @Res() res: Response,
-  ) {
+  async findOneSustrato(@Param('id') id: number) {
+    this.logger.verbose(`Buscando sustrato con ID: ${id}`);
     try {
       const sustrato = await this.SustratosService.findSustratoById(id);
-      res.status(HttpStatus.OK).json(sustrato);
+      this.logger.debug(`Sustrato encontrado exitosamente con ID: ${id}`);
+      return sustrato;
     } catch (error) {
+      this.logger.error(
+        `Error al buscar sustrato con ID ${id}: ${error.message}`,
+      );
       if (error instanceof NotFoundException) {
-        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
-      } else {
-        throw new HttpException(
-          {
-            status: HttpStatus.INTERNAL_SERVER_ERROR,
-            error: 'Error al obtener el sustrato.',
-          },
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
       }
+      throw new HttpException(
+        'Error interno del servidor',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -1088,13 +1083,18 @@ export class ProductosController {
     @Body('imageBase64') imageBase64: string,
     @Res() res: Response,
   ) {
+    this.logger.verbose(`Iniciando carga de imagen para producto ID: ${id}`);
     try {
       const producto = await this.productosService.addImageToProduct(
         id,
         imageBase64,
       );
+      this.logger.log(`Imagen añadida exitosamente al producto ID: ${id}`);
       return res.json({ message: 'Imagen añadida correctamente', producto });
     } catch (error) {
+      this.logger.error(
+        `Error al añadir imagen al producto ${id}: ${error.message}`,
+      );
       return res.status(error.status || 500).json({
         message: error.message || 'Error al agregar la imagen',
       });
@@ -1150,17 +1150,26 @@ export class ProductosController {
     @Body('imageBase64') imageBase64: string,
     @Res() res: Response,
   ) {
+    this.logger.verbose(
+      `Iniciando edición de imagen ${imageId} para producto ${productId}`,
+    );
     try {
       const producto = await this.productosService.editImageForProduct(
         productId,
         imageId,
         imageBase64,
       );
+      this.logger.log(
+        `Imagen ${imageId} editada exitosamente para producto ${productId}`,
+      );
       return res.json({
         message: 'Imagen editada correctamente',
         producto,
       });
     } catch (error) {
+      this.logger.error(
+        `Error al editar imagen ${imageId} del producto ${productId}: ${error.message}`,
+      );
       return res.status(error.status || 500).json({
         message: error.message || 'Error al editar la imagen',
       });
@@ -1194,16 +1203,25 @@ export class ProductosController {
     @Param('imageId') imageId: number,
     @Res() res: Response,
   ) {
+    this.logger.verbose(
+      `Iniciando eliminación de imagen ${imageId} del producto ${productId}`,
+    );
     try {
       const producto = await this.productosService.deleteImageFromProduct(
         productId,
         imageId,
+      );
+      this.logger.log(
+        `Imagen ${imageId} eliminada exitosamente del producto ${productId}`,
       );
       return res.json({
         message: 'Imagen eliminada correctamente',
         producto,
       });
     } catch (error) {
+      this.logger.error(
+        `Error al eliminar imagen ${imageId} del producto ${productId}: ${error.message}`,
+      );
       return res.status(error.status || 500).json({
         message: error.message || 'Error al eliminar la imagen',
       });
@@ -1318,7 +1336,7 @@ export class ProductosController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Lista de plantas pet friendly obtenida con éxito.',
+    description: 'Lista de plantas pet friendly obtenidas con éxito.',
     type: [Planta],
   })
   @ApiResponse({

@@ -101,15 +101,34 @@ export class FiltrosService {
     }
   }
   async obtenerPlantasMasVendidas(): Promise<Planta[]> {
-    const queryBuilder = this.plantaRepository.createQueryBuilder('planta');
-    queryBuilder
-      .innerJoinAndSelect('planta.producto', 'producto')
-      .where('producto.activo = :activo', { activo: 1 });
-    queryBuilder.leftJoinAndSelect('producto.categoria', 'categoria');
-    queryBuilder.leftJoinAndSelect('producto.imagenes', 'imagenes');
-    queryBuilder.orderBy('producto.cantidadVentas', 'DESC');
-    queryBuilder.take(10);
-    const plantasMasVendidas = await queryBuilder.getMany();
-    return plantasMasVendidas;
+    this.logger.log('Iniciando búsqueda de plantas más vendidas');
+
+    try {
+      const queryBuilder = this.plantaRepository.createQueryBuilder('planta');
+      queryBuilder
+        .innerJoinAndSelect('planta.producto', 'producto')
+        .where('producto.activo = :activo', { activo: 1 });
+      queryBuilder.leftJoinAndSelect('producto.categoria', 'categoria');
+      queryBuilder.leftJoinAndSelect('producto.imagenes', 'imagenes');
+      queryBuilder.orderBy('producto.cantidadVentas', 'DESC');
+      queryBuilder.take(10);
+
+      const plantasMasVendidas = await queryBuilder.getMany();
+
+      this.logger.log(
+        `Se encontraron ${plantasMasVendidas.length} plantas más vendidas`,
+      );
+
+      return plantasMasVendidas;
+    } catch (error) {
+      this.logger.error(
+        `Error al obtener plantas más vendidas: ${error.message}`,
+      );
+      throw new BadRequestException({
+        status: HttpStatus.BAD_REQUEST,
+        error: 'Error al obtener las plantas más vendidas',
+        data: error,
+      });
+    }
   }
 }

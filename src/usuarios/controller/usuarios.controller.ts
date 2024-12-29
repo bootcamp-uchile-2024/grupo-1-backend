@@ -53,7 +53,17 @@ export class UsuariosController {
   @ApiTags('Login')
   @Post('login')
   async login(@Body() credencialesDto: CredencialesDto): Promise<JwtDto> {
-    return this.usuariosService.login(credencialesDto);
+    this.logger.verbose(
+      `Intento de login para usuario: ${credencialesDto.email}`,
+    );
+    try {
+      const result = await this.usuariosService.login(credencialesDto);
+      this.logger.log(`Login exitoso para usuario: ${credencialesDto.email}`);
+      return result;
+    } catch (error) {
+      this.logger.error(`Error en login: ${error.message}`);
+      throw error;
+    }
   }
 
   @ApiTags('Gestion - Customer')
@@ -405,17 +415,19 @@ export class UsuariosController {
   @ApiParam({ name: 'id', description: 'ID del perfil', required: true })
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-    updatePerfilDto: UpdatePerfilDto,
+    @Body() updatePerfilDto: UpdatePerfilDto,
     @Res() res: Response,
   ) {
+    this.logger.verbose(`Iniciando actualización de perfil ID: ${id}`);
     try {
       const perfil = await this.usuariosService.updatePerfil(
         id,
         updatePerfilDto,
       );
+      this.logger.log(`Perfil ${id} actualizado exitosamente`);
       res.status(HttpStatus.OK).json(perfil);
     } catch (error) {
+      this.logger.error(`Error al actualizar perfil ${id}: ${error.message}`);
       if (error instanceof NotFoundException) {
         res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
       } else if (error instanceof BadRequestException) {
@@ -452,12 +464,15 @@ export class UsuariosController {
     @Param('id', ParseIntPipe) id: number,
     @Res() res: Response,
   ) {
+    this.logger.verbose(`Iniciando eliminación de perfil ID: ${id}`);
     try {
       await this.usuariosService.deletePerfil(id);
+      this.logger.log(`Perfil ${id} eliminado exitosamente`);
       res
         .status(HttpStatus.OK)
         .json({ message: 'Perfil eliminado con éxito.' });
     } catch (error) {
+      this.logger.error(`Error al eliminar perfil ${id}: ${error.message}`);
       if (error instanceof NotFoundException) {
         res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
       } else {
@@ -505,29 +520,35 @@ export class UsuariosController {
     @Param('email') email: string,
     @Res() res: Response,
   ) {
-    {
-      try {
-        const usuario = await this.usuariosService.findPasswordByEmail(email);
-
-        if (!usuario) {
-          return res
-            .status(HttpStatus.NOT_FOUND)
-            .json({ message: 'Usuario no encontrado' });
-        }
-
-        res.status(HttpStatus.OK).json(usuario.clave);
-      } catch (error) {
-        if (error instanceof NotFoundException) {
-          res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
-        } else {
-          throw new HttpException(
-            {
-              status: HttpStatus.INTERNAL_SERVER_ERROR,
-              error: 'Error al obtener el usuario.',
-            },
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
-        }
+    this.logger.verbose(
+      `Iniciando recuperación de contraseña para email: ${email}`,
+    );
+    try {
+      const usuario = await this.usuariosService.findPasswordByEmail(email);
+      if (!usuario) {
+        this.logger.warn(`No se encontró usuario con email: ${email}`);
+        return res
+          .status(HttpStatus.NOT_FOUND)
+          .json({ message: 'Usuario no encontrado' });
+      }
+      this.logger.log(
+        `Contraseña recuperada exitosamente para email: ${email}`,
+      );
+      res.status(HttpStatus.OK).json(usuario.clave);
+    } catch (error) {
+      this.logger.error(
+        `Error al recuperar contraseña para email ${email}: ${error.message}`,
+      );
+      if (error instanceof NotFoundException) {
+        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            error: 'Error al obtener el usuario.',
+          },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
       }
     }
   }
@@ -555,13 +576,28 @@ export class UsuariosController {
   })
   async updatePassword(
     @Param('identificador') identificador: string,
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-    updatePasswordDto: UpdatePasswordDto,
+    @Body() updatePasswordDto: UpdatePasswordDto,
   ) {
-    await this.usuariosService.updatePassword(identificador, updatePasswordDto);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Contraseña actualizada exitosamente',
-    };
+    this.logger.verbose(
+      `Iniciando actualización de contraseña para usuario: ${identificador}`,
+    );
+    try {
+      await this.usuariosService.updatePassword(
+        identificador,
+        updatePasswordDto,
+      );
+      this.logger.log(
+        `Contraseña actualizada exitosamente para usuario: ${identificador}`,
+      );
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Contraseña actualizada exitosamente',
+      };
+    } catch (error) {
+      this.logger.error(
+        `Error al actualizar contraseña para usuario ${identificador}: ${error.message}`,
+      );
+      throw error;
+    }
   }
 }

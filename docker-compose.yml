@@ -7,9 +7,9 @@ services:
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASS}
     volumes:
-      - ./db/data_dev:/var/lib/mysql
+      - ./db/data_dev:/var/lib/mysql # Mapea la carpeta de datos de la DB
     ports:
-      - '3306:3306'
+      - '3306:3306' # Puerto local -> Puerto contenedor
     restart: always
     networks:
       - app-network

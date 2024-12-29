@@ -44,7 +44,7 @@ export class Producto {
   cantidadVentas: number;
 
   @ManyToOne(() => Categoria, (categoria) => categoria.productos)
-  @JoinColumn({ name: 'id' })
+  @JoinColumn({ name: 'idCategoria' })
   categoria: Categoria;
   @Column({ type: 'int', default: 1 })
   activo: number; // Campo activo (0 para deshabilitado, 1 para habilitado)
