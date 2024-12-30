@@ -10,9 +10,6 @@ import { resolve } from 'path';
 import { setupSwagger } from './swagger.config';
 import rateLimit from 'express-rate-limit';
 
-
-
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -41,7 +38,6 @@ async function bootstrap() {
     fs.mkdirSync(uploadsPath, { recursive: true });
   }
   app.use('/uploads', express.static(uploadsPath));
-
 
   await app.listen(puerto);
   Logger.log(
