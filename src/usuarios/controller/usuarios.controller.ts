@@ -99,9 +99,9 @@ export class UsuariosController {
   }
 
   @ApiTags('Gestion - Customer')
-  //@ApiBearerAuth()
-  //@UseGuards(JwtGuard)
-  //@RolesAutorizados(Rol.ADMIN)
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN)
   @Get('/gestion/list')
   @ApiOperation({
     summary: 'Obtener la lista de usuarios',
@@ -127,11 +127,11 @@ export class UsuariosController {
     }
   }
 
-  //@ApiBearerAuth()
-  //@UseGuards(JwtGuard)
-  //@RolesAutorizados(Rol.ADMIN)
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN)
   @ApiTags('Gestion - Customer')
-  //@RolesAutorizados(Rol.ADMIN)
+  @RolesAutorizados(Rol.ADMIN)
   @Get('/gestion/listbyrut/:identificador')
   @ApiOperation({
     summary: 'Obtener un usuario por ID o RUT',
@@ -172,7 +172,7 @@ export class UsuariosController {
   }
 
   @ApiTags('Gestion - Customer')
-  //@RolesAutorizados(Rol.ADMIN)
+  @RolesAutorizados(Rol.ADMIN)
   @Delete('/gestion/delete/:identificador')
   @ApiOperation({ summary: 'Eliminar un usuario por ID o RUT' })
   @ApiResponse({ status: 200, description: 'Usuario eliminado con éxito.' })
@@ -220,9 +220,9 @@ export class UsuariosController {
     }
   }
   @ApiTags('Gestion - Customer')
-  //@ApiBearerAuth()
-  //@UseGuards(JwtGuard)
-  //@RolesAutorizados(Rol.ADMIN)
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN)
   @Put('/gestion/update/:identificador')
   @ApiOperation({
     summary: 'Actualizar un usuario',
@@ -282,9 +282,9 @@ export class UsuariosController {
     }
   }
 
-  //@ApiBearerAuth()
-  //@UseGuards(JwtGuard)
-  //@RolesAutorizados(Rol.ADMIN)
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN)
   @ApiTags('Gestion-Perfiles')
   @Post('perfil/create')
   @ApiOperation({
@@ -315,9 +315,9 @@ export class UsuariosController {
     }
   }
 
-  //@ApiBearerAuth()
-  //@UseGuards(JwtGuard)
-  //@RolesAutorizados(Rol.ADMIN)
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN)
   @ApiTags('Gestion-Perfiles')
   @Get('perfil/get')
   @ApiOperation({ summary: 'Obtener todos los perfiles' })
@@ -345,9 +345,9 @@ export class UsuariosController {
     }
   }
 
-  //@ApiBearerAuth()
-  //@UseGuards(JwtGuard)
-  //@RolesAutorizados(Rol.ADMIN)
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN)
   @ApiTags('Gestion-Perfiles')
   @Get('perfil/getbyid/:id')
   @ApiOperation({
@@ -399,9 +399,9 @@ export class UsuariosController {
     }
   }
 
-  //@ApiBearerAuth()
-  //@UseGuards(JwtGuard)
-  //@RolesAutorizados(Rol.ADMIN)
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN)
   @ApiTags('Gestion-Perfiles')
   @Put('perfil/update/:id')
   @ApiOperation({
@@ -445,7 +445,7 @@ export class UsuariosController {
   }
 
   @ApiTags('Gestion-Perfiles')
-  //@RolesAutorizados(Rol.ADMIN)
+  @RolesAutorizados(Rol.ADMIN)
   @Delete('perfil/delete/:id')
   @ApiParam({
     name: 'id',
@@ -488,9 +488,9 @@ export class UsuariosController {
   }
 
   @ApiTags('Gestion - Customer')
-  //@ApiBearerAuth()
-  //@UseGuards(JwtGuard)
-  //@RolesAutorizados(Rol.ADMIN, Rol.USUARIO)
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN, Rol.USUARIO)
   @Get('findPasswordByEmail/:email')
   @ApiOperation({
     summary: 'HU010-Recuperar Clave por Email',
@@ -554,9 +554,9 @@ export class UsuariosController {
   }
 
   @ApiTags('Gestion - Customer')
-  //@ApiBearerAuth()
-  //@UseGuards(JwtGuard)
-  //@RolesAutorizados(Rol.ADMIN, Rol.USUARIO)
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @RolesAutorizados(Rol.ADMIN, Rol.USUARIO)
   @Put('/gestion/update-password/:identificador')
   @ApiOperation({
     summary: 'Actualizar contraseña de usuario',

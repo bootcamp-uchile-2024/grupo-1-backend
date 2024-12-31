@@ -664,7 +664,7 @@ export class UsuariosService {
     }
   }
 
-  //@ApiBearerAuth()
+  @ApiBearerAuth()
   async login(credencialesDto: CredencialesDto): Promise<JwtDto> {
     const usuario = await this.usuarioRepository.findOne({
       where: { email: credencialesDto.email },
