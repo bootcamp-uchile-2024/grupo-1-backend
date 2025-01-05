@@ -60,3 +60,4 @@ db
 docker-compose.yml
 docker-compose.yml
 .env.productivo
+EC2.pem

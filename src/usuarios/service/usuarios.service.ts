@@ -260,22 +260,30 @@ export class UsuariosService {
         throw new NotFoundException(`Usuario no encontrado`);
       }
 
+      // Obtener el ID del usuario desde la base de datos
+      const usuarioEntity = await this.usuarioRepository.findOne({
+        where: { rutUsuario: identificador },
+        relations: ['Preferencias'], // Aseguramos cargar las preferencias
+      });
+
+      if (!usuarioEntity) {
+        throw new NotFoundException(
+          `Usuario no encontrado en la base de datos`,
+        );
+      }
+
       try {
         await this.usuarioRepository.manager.transaction(
           async (transactionalEntityManager) => {
-            await transactionalEntityManager
-              .createQueryBuilder()
-              .delete()
-              .from('preferencias')
-              .where('usuarioId = :id', { id: usuario.id })
-              .execute();
+            // Primero eliminamos las preferencias si existen
+            if (usuarioEntity.Preferencias) {
+              await transactionalEntityManager.delete(Preferencias, {
+                usuario: { id: usuarioEntity.id },
+              });
+            }
 
-            await transactionalEntityManager
-              .createQueryBuilder()
-              .delete()
-              .from(Usuario)
-              .where('id = :id', { id: usuario.id })
-              .execute();
+            // Luego eliminamos el usuario
+            await transactionalEntityManager.delete(Usuario, usuarioEntity.id);
           },
         );
 
