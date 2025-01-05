@@ -1298,6 +1298,19 @@ export class ProductosController {
     name: 'id',
     description: 'ID del producto que se va a habilitar',
   })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        activo: {
+          type: 'number',
+          example: 1,
+          description:
+            'Estado de activación del producto (1: activo, 0: inactivo)',
+        },
+      },
+    },
+  })
   async habilitarProducto(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: { activo: number },
@@ -1328,6 +1341,19 @@ export class ProductosController {
   @ApiParam({
     name: 'id',
     description: 'ID del producto que se va a deshabilitar',
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        activo: {
+          type: 'number',
+          example: 0,
+          description:
+            'Estado de activación del producto (1: activo, 0: inactivo)',
+        },
+      },
+    },
   })
   @ApiResponse({
     status: 200,

@@ -50,8 +50,30 @@ export class UsuariosController {
 
   constructor(private readonly usuariosService: UsuariosService) {}
 
-  @ApiTags('Login')
+  @ApiTags('Gestion - Customer')
   @Post('login')
+  @ApiOperation({
+    summary: 'Autenticación de usuario',
+    description:
+      'Permite a un usuario iniciar sesión en el sistema usando sus credenciales',
+  })
+  @ApiBody({
+    type: CredencialesDto,
+    description: 'Credenciales del usuario para iniciar sesión',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Login exitoso',
+    type: JwtDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Credenciales inválidas',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Error interno del servidor',
+  })
   async login(@Body() credencialesDto: CredencialesDto): Promise<JwtDto> {
     this.logger.verbose(
       `Intento de login para usuario: ${credencialesDto.email}`,
