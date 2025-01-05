@@ -22,6 +22,7 @@ async function bootstrap() {
     rateLimit({
       windowMs: 15 * 60 * 1000,
       max: 100,
+      message: 'Demasiadas solicitudes, por favor intenta más tarde',
     }),
   );
   app.useGlobalInterceptors(new LogRespuestasInterceptor());
