@@ -457,21 +457,39 @@ export class ProductosService {
     });
   }
 
-  async habilitarProducto(id: number): Promise<Producto> {
+  async habilitarProducto(id: number, activo: number): Promise<Producto> {
+    if (!id || id <= 0) {
+      throw new BadRequestException('ID de producto inválido');
+    }
+
     const producto = await this.productoRepository.findOne({ where: { id } });
     if (!producto) {
       throw new NotFoundException(`Producto con ID ${id} no encontrado.`);
     }
-    producto.activo = 1;
+
+    if (producto.activo === activo) {
+      throw new BadRequestException('El producto ya está habilitado');
+    }
+
+    producto.activo = activo;
     return this.productoRepository.save(producto);
   }
 
-  async deshabilitarProducto(id: number): Promise<Producto> {
+  async deshabilitarProducto(id: number, activo: number): Promise<Producto> {
+    if (!id || id <= 0) {
+      throw new BadRequestException('ID de producto inválido');
+    }
+
     const producto = await this.productoRepository.findOne({ where: { id } });
     if (!producto) {
       throw new NotFoundException(`Producto con ID ${id} no encontrado.`);
     }
-    producto.activo = 0;
+
+    if (producto.activo === activo) {
+      throw new BadRequestException('El producto ya está deshabilitado');
+    }
+
+    producto.activo = activo;
     return this.productoRepository.save(producto);
   }
 

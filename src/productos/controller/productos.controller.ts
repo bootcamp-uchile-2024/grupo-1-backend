@@ -242,7 +242,7 @@ export class ProductosController {
 
   //@ApiBearerAuth()
   //@UseGuards(JwtGuard)
-  ////@RolesAutorizados(Rol.ADMIN)
+  //@RolesAutorizados(Rol.ADMIN)
   @Post('categorias/create')
   @ApiTags('Gestion-Productos-Categorias')
   @ApiOperation({
@@ -1298,12 +1298,38 @@ export class ProductosController {
     name: 'id',
     description: 'ID del producto que se va a habilitar',
   })
-  async habilitarProducto(@Param('id', ParseIntPipe) id: number) {
-    const producto = await this.productosService.habilitarProducto(id);
-    if (!producto) {
-      throw new NotFoundException(`Producto con ID ${id} no encontrado`);
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        activo: {
+          type: 'number',
+          example: 1,
+          description:
+            'Estado de activación del producto (1: activo, 0: inactivo)',
+        },
+      },
+    },
+  })
+  async habilitarProducto(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: { activo: number },
+  ) {
+    try {
+      const producto = await this.productosService.habilitarProducto(
+        id,
+        body.activo,
+      );
+      return {
+        message: 'Producto habilitado exitosamente',
+        data: producto,
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Error al habilitar el producto');
     }
-    return producto;
   }
 
   //@ApiBearerAuth()
@@ -1325,8 +1351,40 @@ export class ProductosController {
     status: 404,
     description: 'Producto no encontrado',
   })
-  async deshabilitar(@Param('id') id: number): Promise<Producto> {
-    return this.productosService.deshabilitarProducto(id);
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        activo: {
+          type: 'number',
+          example: 0,
+          description:
+            'Estado de activación del producto (1: activo, 0: inactivo)',
+        },
+      },
+    },
+  })
+  async deshabilitar(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: { activo: number },
+  ) {
+    try {
+      const producto = await this.productosService.deshabilitarProducto(
+        id,
+        body.activo,
+      );
+      return {
+        message: 'Producto deshabilitado exitosamente',
+        data: producto,
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        'Error al deshabilitar el producto',
+      );
+    }
   }
   @ApiTags('Filtros - Plantas')
   @Get('plantas/filtropetfriendly')
