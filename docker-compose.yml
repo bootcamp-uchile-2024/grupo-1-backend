@@ -19,6 +19,7 @@ services:
     working_dir: /usr/src/app
     volumes:
       - ./:/usr/src/app
+      - ./certificados:/usr/src/app/certificados
     ports:
       - '3000:3000'
     depends_on:
