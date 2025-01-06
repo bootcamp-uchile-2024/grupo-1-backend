@@ -37,7 +37,6 @@ import {
 } from '@nestjs/swagger';
 import { Response } from 'express';
 import { ProductosService } from '../service/productos.service';
-import { CreatePlantaDto } from '../dto/create-planta.dto';
 import { CreateCategoriaDto } from '../dto/create-categoria.dto';
 import { UpdateCategoriaDto } from '../dto/update-categoria.dto';
 import { CreateProductoDto } from '../dto/create-producto.dto';
@@ -49,8 +48,6 @@ import { Categoria } from '../entities/categoria.entity';
 import { UpdateFertilizanteDto } from '../dto/update-fertilizante.dto';
 import { Fertilizante } from '../entities/fertilizante.entity';
 import { Macetero } from '../entities/macetero.entity';
-import { UpdatePlantaDto } from '../dto/update-planta.dto';
-import { Planta } from '../entities/planta.entity';
 import { UpdateSustratoDto } from '../dto/update-sustrato.dto';
 import { Sustrato } from '../entities/sustrato.entity';
 import { CreateSustratoDto } from '../dto/create-sustrato.dto';
@@ -58,7 +55,6 @@ import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { CreateProd2Dto } from '../dto/create-prod2.dto';
-import { PlantaService } from '../service/subservice/plantas.service';
 import { MaceterosService } from '../service/subservice/maceteros.service';
 import { FertilizantesService } from '../service/subservice/fertilizantes.service';
 import { SustratosService } from '../service/subservice/sustratos.service';
@@ -67,7 +63,6 @@ import { RolesAutorizados } from 'src/comunes/decorator/rol.decorator';
 import { JwtGuard } from 'src/jwt/jwt.guard';
 import { Rol } from 'src/enum/rol.enum';
 import * as path from 'path';
-import { NewCreatePlantaDto } from '../dto/new-create-planta.dto';
 
 @Controller('productos')
 export class ProductosController {
@@ -75,13 +70,11 @@ export class ProductosController {
 
   constructor(
     private readonly productosService: ProductosService,
-    private readonly PlantaService: PlantaService,
     private readonly MaceterosService: MaceterosService,
     private readonly FertilizantesService: FertilizantesService,
     private readonly SustratosService: SustratosService,
     private readonly FiltrosService: FiltrosService,
     private readonly CategoriasService: CategoriasService,
-    private readonly plantasService: PlantaService,
   ) {}
 
   //@ApiBearerAuth()
@@ -433,359 +426,6 @@ export class ProductosController {
         updateCategoriaDto,
       );
       res.status(HttpStatus.OK).json(categoria);
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
-      } else {
-        throw new HttpException(
-          {
-            status: HttpStatus.BAD_REQUEST,
-            error: 'Datos inválidos.',
-          },
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-    }
-  }
-  @Post('plantas/newcreate')
-  //@ApiBearerAuth()
-  //@UseGuards(JwtGuard)
-  //@RolesAutorizados(Rol.ADMIN)
-  @ApiTags('Gestion-Productos-Plantas')
-  @ApiConsumes('multipart/form-data')
-  @ApiOperation({
-    summary: 'Crear una nueva planta con imágenes',
-    description:
-      'Crea una nueva planta con sus imágenes asociadas y todas sus relaciones. Los valores disponibles son:\n\n' +
-      '- Hábitat (ID):\n' +
-      '  1: Interior\n' +
-      '  2: Exterior\n' +
-      '  3: Interior/Exterior\n\n' +
-      '- Luz (ID):\n' +
-      '  1: Luz directa\n' +
-      '  2: Luz indirecta brillante\n' +
-      '  3: Luz indirecta media\n' +
-      '  4: Sombra\n\n' +
-      '- Humedad (ID):\n' +
-      '  1: Alta\n' +
-      '  2: Media\n' +
-      '  3: Baja\n\n' +
-      '- Dificultad de Cuidado (ID):\n' +
-      '  1: Fácil\n' +
-      '  2: Moderado\n' +
-      '  3: Difícil\n\n' +
-      '- Frecuencia de Riego (ID):\n' +
-      '  1: Diario\n' +
-      '  2: Cada 2-3 días\n' +
-      '  3: Semanal\n' +
-      '  4: Quincenal\n\n' +
-      '- Tipos de Suelo (ID):\n' +
-      '  1: Arcilloso\n' +
-      '  2: Arenoso\n' +
-      '  3: Franco\n' +
-      '  4: Limoso\n\n' +
-      '- Estaciones (ID):\n' +
-      '  1: Primavera\n' +
-      '  2: Verano\n' +
-      '  3: Otoño\n' +
-      '  4: Invierno\n\n' +
-      '- Toxicidad Mascotas:\n' +
-      '  0: No tóxica\n' +
-      '  1: Tóxica\n\n' +
-      '- Estado del producto:\n' +
-      '  0: INACTIVO\n' +
-      '  1: ACTIVO',
-  })
-  @ApiResponse({
-    status: HttpStatus.CREATED,
-    description: 'Planta creada exitosamente',
-    schema: {
-      example: {
-        statusCode: 201,
-        message: 'Planta creada exitosamente',
-        data: {
-          id: 1,
-          nombrePlanta: 'Monstera Deliciosa',
-          nombreCientifico: 'Monstera deliciosa',
-          producto: {
-            id: 1,
-            nombreProducto: 'Monstera Deliciosa',
-            descripcionProducto: 'Planta: Monstera Deliciosa',
-            precio: 29990,
-            precioNormal: 29990,
-            stock: 10,
-            activo: 1,
-            imagenes: [
-              {
-                id: 1,
-                urlImagen: '/uploads/productos/imagen-123456789.jpg',
-              },
-            ],
-          },
-          habitat: { id: 1, nombre: 'Interior' },
-          luz: { id: 2, tipo: 'Luz indirecta brillante' },
-          humedad: { id: 2, nivel: 'Media' },
-          temperaturaIdeal: 23,
-          toxicidadMascotas: 1,
-          tamanoMaximo: 2,
-          peso: 5,
-          dificultad: { id: 1, nivel: 'Fácil' },
-          frecuencia: { id: 2, tipo: 'Cada 2-3 días' },
-          estaciones: [
-            { id: 1, nombre: 'Primavera' },
-            { id: 2, nombre: 'Verano' },
-          ],
-          fertilizantes: [{ id: 1, nombre: 'Fertilizante NPK' }],
-          sustratos: [{ id: 1, nombre: 'Sustrato para interior' }],
-          suelos: [
-            { id: 1, tipo: 'Arcilloso' },
-            { id: 3, tipo: 'Franco' },
-          ],
-        },
-      },
-    },
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'Error en los datos proporcionados',
-    schema: {
-      example: {
-        statusCode: 400,
-        message: 'Error de validación',
-        error: 'Bad Request',
-        errors: [
-          'El nombre de la planta es requerido',
-          'El ID del hábitat debe ser 1, 2 o 3',
-          'El precio debe ser mayor a 0',
-        ],
-      },
-    },
-  })
-  @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
-    description: 'No autorizado',
-    schema: {
-      example: {
-        statusCode: 401,
-        message: 'Unauthorized',
-      },
-    },
-  })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: 'Acceso denegado',
-    schema: {
-      example: {
-        statusCode: 403,
-        message: 'Forbidden resource',
-        error: 'Forbidden',
-      },
-    },
-  })
-  @ApiResponse({
-    status: HttpStatus.INTERNAL_SERVER_ERROR,
-    description: 'Error interno del servidor',
-    schema: {
-      example: {
-        statusCode: 500,
-        message: 'Error interno del servidor',
-        error: 'Internal Server Error',
-      },
-    },
-  })
-  @UseInterceptors(
-    FilesInterceptor('imagenes', 10, {
-      storage: diskStorage({
-        destination: './uploads/productos',
-        filename: (req, file, callback) => {
-          const uniqueSuffix =
-            Date.now() + '-' + Math.round(Math.random() * 1e9);
-          const ext = extname(file.originalname);
-          callback(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
-        },
-      }),
-      fileFilter: (req, file, callback) => {
-        if (!file.mimetype.match(/image\/(jpg|jpeg|png|gif)$/)) {
-          return callback(
-            new BadRequestException(
-              'Solo se permiten archivos de imagen (jpg, jpeg, png, gif)',
-            ),
-            false,
-          );
-        }
-        callback(null, true);
-      },
-    }),
-  )
-  async newCreatePlanta(
-    @Body() createPlantaDto: NewCreatePlantaDto,
-    @UploadedFiles() files: Express.Multer.File[],
-  ) {
-    this.logger.log('Iniciando creación de planta con imágenes');
-
-    if (!files || files.length === 0) {
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: 'Se debe subir al menos una imagen',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    const rutasImagenes = files.map(
-      (file) => `/uploads/productos/${file.filename}`,
-    );
-
-    try {
-      const planta = await this.PlantaService.newCreatePlanta(
-        createPlantaDto,
-        rutasImagenes,
-      );
-
-      return {
-        statusCode: HttpStatus.CREATED,
-        message: 'Planta creada exitosamente',
-        data: planta,
-        rutasImagenes,
-      };
-    } catch (error) {
-      this.logger.error(`Error al crear planta: ${error.message}`);
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'Error al crear la planta',
-          data: error.message,
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-
-  //@ApiBearerAuth()
-  //@UseGuards(JwtGuard)
-  //////@RolesAutorizados(Rol.ADMIN)
-  @Post('plantas/create')
-  @ApiTags('Gestion-Productos-Plantas')
-  @ApiOperation({
-    summary: 'Crear una nueva planta',
-    description: 'Crea una nueva planta en el sistema',
-  })
-  @ApiResponse({ status: 201, description: 'Planta creada con éxito.' })
-  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
-  @ApiBody({ type: CreatePlantaDto })
-  async createPlanta(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-    createPlantaDto: CreatePlantaDto,
-    @Res() res: Response,
-  ) {
-    try {
-      const planta = await this.PlantaService.createPlanta(createPlantaDto);
-      res.status(HttpStatus.CREATED).json(planta);
-    } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: 'Datos inválidos.',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-  }
-
-  @Get('plantas/get')
-  @ApiTags('Gestion-Productos-Plantas')
-  @ApiOperation({
-    summary: 'Obtener plantas paginadas',
-    description: 'Obtiene una lista de plantas',
-  })
-  @ApiQuery({ name: 'page', required: true, type: Number })
-  @ApiQuery({ name: 'size', required: true, type: Number })
-  @ApiResponse({ status: 200, description: 'Plantas obtenidas con éxito.' })
-  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
-  async getPlantasPaginadas(
-    @Query('page', ParseIntPipe) page: number,
-    @Query('size', ParseIntPipe) size: number,
-    @Res() res: Response,
-  ) {
-    this.logger.log(
-      `Obteniendo plantas paginadas - página: ${page}, tamaño: ${size}`,
-    );
-    try {
-      const plantas = await this.PlantaService.getPlantasPaginadas(page, size);
-      this.logger.log('Plantas obtenidas exitosamente');
-      res.status(HttpStatus.OK).json(plantas);
-    } catch (error) {
-      this.logger.error(`Error al obtener plantas: ${error.message}`);
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: 'Datos inválidos.',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-  }
-  @Get('plantas/getbyid/:id')
-  @ApiTags('Gestion-Productos-Plantas')
-  @ApiOperation({
-    summary: 'Obtener una planta por ID de producto',
-    description:
-      'Devuelve los detalles de una planta específica por el ID del producto',
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'Detalles de la planta encontrada',
-    type: Planta,
-  })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: 'Planta no encontrada',
-  })
-  @ApiResponse({
-    status: HttpStatus.INTERNAL_SERVER_ERROR,
-    description: 'Error al obtener la planta.',
-  })
-  @ApiParam({
-    name: 'id',
-    description: 'ID del producto',
-    required: true,
-  })
-  async findOnePlanta(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    try {
-      const planta = await this.PlantaService.findPlantaById(id);
-      return {
-        statusCode: HttpStatus.OK,
-        message: 'Planta encontrada exitosamente',
-        data: planta,
-      };
-    } catch (error) {
-      return this.handleException(error);
-    }
-  }
-
-  //@ApiBearerAuth()
-  //@UseGuards(JwtGuard)
-  //////@RolesAutorizados(Rol.ADMIN)
-  @Put('plantas/update/:id')
-  @ApiTags('Gestion-Productos-Plantas')
-  @ApiOperation({
-    summary: 'Actualizar una planta',
-    description: 'Actualiza los detalles de una planta existente',
-  })
-  @ApiResponse({ status: 200, description: 'Planta actualizada con éxito.' })
-  @ApiResponse({ status: 404, description: 'Planta no encontrada.' })
-  @ApiBody({ type: UpdatePlantaDto })
-  @ApiParam({ name: 'id', description: 'ID de la planta', required: true })
-  async updatePlanta(
-    @Param('id', ParseIntPipe) id: number,
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-    updatePlantaDto: UpdatePlantaDto,
-    @Res() res: Response,
-  ) {
-    try {
-      const planta = await this.PlantaService.updatePlanta(id, updatePlantaDto);
-      res.status(HttpStatus.OK).json(planta);
     } catch (error) {
       if (error instanceof NotFoundException) {
         res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
@@ -1633,290 +1273,7 @@ export class ProductosController {
     }
   }
   @ApiTags('Filtros')
-  @Get('plantas/filtropetfriendly')
-  @ApiOperation({
-    summary: 'Filtrar plantas pet friendly',
-    description: 'Devuelve una lista de plantas pet friendly',
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'Lista de plantas pet friendly obtenidas con éxito.',
-    type: [Planta],
-  })
-  @ApiResponse({
-    status: HttpStatus.INTERNAL_SERVER_ERROR,
-    description: 'Error al obtener las plantas pet friendly.',
-  })
-  @ApiQuery({
-    name: 'filtro',
-    description: 'Filtro para obtener plantas pet friendly (true o false)',
-    required: true,
-  })
-  @ApiResponse({
-    status: HttpStatus.INTERNAL_SERVER_ERROR,
-    description: 'Error al obtener las plantas pet friendly.',
-  })
-  @ApiQuery({
-    name: 'filtro',
-    description: 'Filtro para obtener plantas pet friendly (true o false)',
-    required: true,
-    enum: ['true', 'false'],
-  })
-  async filtroPetFriendly(
-    @Query('filtro') filtro: string,
-    @Res() res: Response,
-  ) {
-    this.logger.log(`Aplicando filtro pet friendly: ${filtro}`);
-    try {
-      const filtroBooleano = filtro === 'true' ? 0 : 1;
-      const plantas =
-        await this.FiltrosService.filtroPetFriendly(filtroBooleano);
-      this.logger.log(`Filtro pet friendly aplicado exitosamente`);
-      res.status(HttpStatus.OK).json({
-        status: HttpStatus.OK,
-        message: 'Plantas pet friendly obtenidas con éxito',
-        data: plantas,
-      });
-    } catch (error) {
-      this.logger.error(
-        `Error al aplicar filtro pet friendly: ${error.message}`,
-      );
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          data: error,
-          error: 'Error al obtener las plantas pet friendly.',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-  @Get('plantas/filtrocuidados')
-  @ApiTags('Filtros')
-  @ApiOperation({
-    summary: 'Filtrar plantas segun dificultad de cuidado',
-    description: 'Devuelve una lista de plantas segun dificultad de cuidado',
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'Lista de plantas obtenida con éxito.',
-    type: [Planta],
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'Error al obtener el filtro de cuidados.',
-  })
-  @ApiQuery({
-    name: 'filtro',
-    description: 'Nivel de cuidado permitido para filtrar las plantas',
-    required: true,
-    enum: [
-      'Avanzado',
-      'Difícil',
-      'Experto',
-      'Fácil',
-      'Intermedio',
-      'Maestro',
-      'Moderado',
-      'Muy Difícil',
-      'Principiante',
-      'Profesional',
-    ],
-  })
-  async filtroCuidados(@Query('filtro') filtro: string, @Res() res: Response) {
-    try {
-      const plantas = await this.FiltrosService.filtroCuidados(filtro);
-      res.status(HttpStatus.OK).json({
-        status: HttpStatus.OK,
-        message: 'Plantas obtenidas con éxito',
-        data: plantas,
-      });
-    } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          data: error,
-          error: 'Error al obtener las plantas.',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-  @ApiTags('Gestion-Productos')
-  @Post('/newcreate')
-  @ApiConsumes('multipart/form-data')
-  @ApiOperation({
-    summary: 'Crear un producto con listado de imagenes',
-    description:
-      'Crea un nuevo producto con sus imágenes asociadas. Las categorías disponibles son:\n\n' +
-      '- 1: PLANTAS\n' +
-      '- 2: CONTROL DE PLAGAS\n' +
-      '- 3: MACETEROS\n' +
-      '- 4: SUSTRATOS\n' +
-      '- 5: FERTILIZANTES',
-  })
-  @ApiResponse({
-    status: HttpStatus.CREATED,
-    description: 'Producto creado con éxito',
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'Error al crear el producto',
-  })
-  @ApiResponse({
-    status: HttpStatus.INTERNAL_SERVER_ERROR,
-    description: 'Error interno del servidor',
-  })
-  @ApiBody({
-    description: 'Crear un producto con listado de imágenes',
-    type: CreateProd2Dto,
-    required: true,
-    schema: { example: { nombre: 'Producto de prueba', precio: 1000 } },
-  })
-  @UseInterceptors(
-    FilesInterceptor('imagenes', 10, {
-      storage: diskStorage({
-        destination: './uploads/productos',
-        filename: (req, file, callback) => {
-          const uniqueSuffix =
-            Date.now() + '-' + Math.round(Math.random() * 1e9);
-          const ext = extname(file.originalname);
-          callback(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
-        },
-      }),
-      fileFilter: (req, file, callback) => {
-        if (!file.mimetype.match(/image\/*/)) {
-          return callback(
-            new BadRequestException('Solo se permiten imágenes.'),
-            false,
-          );
-        }
-        callback(null, true);
-      },
-    }),
-  )
-  //TODO: METODO PARA CREAR PRODUCTO JUNTO A SU IMAGEN
-  async creaProductoImagen(
-    @Body() CreateProd2Dto: CreateProd2Dto,
-    @UploadedFiles() files: Express.Multer.File[],
-  ) {
-    if (!files || files.length === 0) {
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: 'Se deben subir al menos una imagen',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    const rutasImagenes = files.map(
-      (file) => `/uploads/productos/${file.filename}`,
-    );
-
-    try {
-      const producto = await this.productosService.creaProductoImagen(
-        CreateProd2Dto,
-        rutasImagenes,
-      );
-      return {
-        statusCode: HttpStatus.CREATED,
-        message: 'Producto creado exitosamente',
-        data: producto,
-        rutasImagenes,
-      };
-    } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'Error al crear el producto',
-          data: error.message,
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-  private handleException(error: any) {
-    const status = error.getStatus
-      ? error.getStatus()
-      : HttpStatus.INTERNAL_SERVER_ERROR;
-    const message = error.message || 'Error interno del servidor';
-    return {
-      statusCode: status,
-      message,
-      error: error.response || null,
-    };
-  }
-  @ApiTags('Filtros')
-  @ApiOperation({
-    summary: 'Filtrar plantas mas valoradas por los compradores',
-    description:
-      'Devuelve una lista de plantas mas valoradas por los compradores',
-  })
-  @ApiQuery({
-    name: 'categoria',
-    description: 'Categoria de la planta',
-    required: true,
-    enum: ['Plantas', 'Maceteros', 'Fertilizantes', 'Sustratos'],
-  })
-  @Get('plantas/masvaloradas')
-  async filtroPlantasMasValoradas(
-    @Query('categoria') categoria: string,
-    @Res() res: Response,
-  ) {
-    this.logger.log(
-      `Obteniendo plantas más valoradas para categoría: ${categoria}`,
-    );
-    try {
-      const filtro = await this.FiltrosService.filtroMasValorados(categoria);
-      this.logger.log('Plantas más valoradas obtenidas exitosamente');
-      res.status(HttpStatus.OK).json({
-        status: HttpStatus.OK,
-        message: 'Plantas obtenidas con éxito',
-        data: filtro,
-      });
-    } catch (error) {
-      this.logger.error(
-        `Error al obtener plantas más valoradas: ${error.message}`,
-      );
-      throw new HttpException(
-        'Error al obtener las plantas más valoradas',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-
-  @Get('/plantas/masvendidas')
-  @ApiTags('Filtros')
-  @ApiOperation({ summary: 'Obtener las plantas más vendidas' })
-  @ApiResponse({
-    status: 200,
-    description: 'Lista de las plantas más vendidas.',
-    type: [Producto],
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Categoría "Planta" no encontrada.',
-  })
-  async obtenerPlantasMasVendidas(): Promise<Planta[]> {
-    this.logger.log('Obteniendo plantas más vendidas');
-    try {
-      const plantas = await this.FiltrosService.obtenerPlantasMasVendidas();
-      this.logger.log('Plantas más vendidas obtenidas exitosamente');
-      return plantas;
-    } catch (error) {
-      this.logger.error(
-        `Error al obtener plantas más vendidas: ${error.message}`,
-      );
-      throw new HttpException(
-        'Ha ocurrido un error al obtener las plantas más vendidas.',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-
   @Get('/filtrocategoria')
-  @ApiTags('Filtros')
   @ApiOperation({
     summary: 'Filtrar productos por categoría',
     description:
@@ -2038,5 +1395,16 @@ export class ProductosController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+  private handleException(error: any) {
+    const status = error.getStatus
+      ? error.getStatus()
+      : HttpStatus.INTERNAL_SERVER_ERROR;
+    const message = error.message || 'Error interno del servidor';
+    return {
+      statusCode: status,
+      message,
+      error: error.response || null,
+    };
   }
 }

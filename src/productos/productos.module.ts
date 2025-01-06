@@ -24,6 +24,8 @@ import { SustratosService } from './service/subservice/sustratos.service';
 import { FiltrosService } from './service/subservice/filtros.service';
 import { CategoriasService } from './service/subservice/categorias.service';
 import { JwtService } from '@nestjs/jwt';
+import { PlantasController } from './controller/plantas.controller';
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -43,7 +45,7 @@ import { JwtService } from '@nestjs/jwt';
       Macetero,
     ]),
   ],
-  controllers: [ProductosController],
+  controllers: [ProductosController, PlantasController],
   providers: [
     ProductosService,
     PlantaService,
