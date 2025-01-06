@@ -448,15 +448,15 @@ export class ProductosController {
     }
   }
   @Post('plantas/newcreate')
-  @ApiTags('Gestion-Productos-Plantas')
   //@ApiBearerAuth()
   //@UseGuards(JwtGuard)
   //@RolesAutorizados(Rol.ADMIN)
+  @ApiTags('Gestion-Productos-Plantas')
   @ApiConsumes('multipart/form-data')
   @ApiOperation({
-    summary: 'Crear una nuevo producto tipo planta con imágenes',
+    summary: 'Crear una nueva planta con imágenes',
     description:
-      'Crea una nuevo producto tipo planta con sus imágenes asociadas y todas sus relaciones. Los valores disponibles son:\n\n' +
+      'Crea una nueva planta con sus imágenes asociadas y todas sus relaciones. Los valores disponibles son:\n\n' +
       '- Hábitat (ID):\n' +
       '  1: Interior\n' +
       '  2: Exterior\n' +
@@ -622,6 +622,7 @@ export class ProductosController {
     @UploadedFiles() files: Express.Multer.File[],
   ) {
     this.logger.log('Iniciando creación de planta con imágenes');
+
     if (!files || files.length === 0) {
       throw new HttpException(
         {
@@ -631,14 +632,17 @@ export class ProductosController {
         HttpStatus.BAD_REQUEST,
       );
     }
+
     const rutasImagenes = files.map(
       (file) => `/uploads/productos/${file.filename}`,
     );
+
     try {
       const planta = await this.PlantaService.newCreatePlanta(
         createPlantaDto,
         rutasImagenes,
       );
+
       return {
         statusCode: HttpStatus.CREATED,
         message: 'Planta creada exitosamente',
