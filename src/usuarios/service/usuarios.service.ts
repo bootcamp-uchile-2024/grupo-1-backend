@@ -260,10 +260,16 @@ export class UsuariosService {
         throw new NotFoundException(`Usuario no encontrado`);
       }
 
-      // Obtener el ID del usuario desde la base de datos
       const usuarioEntity = await this.usuarioRepository.findOne({
-        where: { rutUsuario: identificador },
-        relations: ['Preferencias'], // Aseguramos cargar las preferencias
+        where: [
+          { rutUsuario: identificador },
+          {
+            id: isNaN(Number(identificador))
+              ? undefined
+              : Number(identificador),
+          },
+        ],
+        relations: ['Preferencias'],
       });
 
       if (!usuarioEntity) {
