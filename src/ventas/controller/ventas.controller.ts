@@ -10,6 +10,7 @@ import {
   Put,
   Query,
   UseGuards,
+  Logger,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -39,6 +40,8 @@ import { Rol } from 'src/enum/rol.enum';
 @Controller('ventas')
 //@UsePipes(new ValidationPipe({ transform: true }))
 export class VentasController {
+  private readonly logger = new Logger(VentasController.name);
+
   constructor(
     private readonly ordenComprasService: OrdenComprasService,
     private readonly detalleOrdenCompraService: DetalleOrdenComprasService,
@@ -59,7 +62,14 @@ export class VentasController {
   @Post('/carrito/')
   @UsePipes(ValidaEmailIdPipe)
   async create(@Body() CreateOrdenCompraDto: CreateOrdenCompraDto) {
-    return await this.ordenComprasService.create(CreateOrdenCompraDto);
+    this.logger.log(
+      `Iniciando creación de orden de compra: ${JSON.stringify(CreateOrdenCompraDto)}`,
+    );
+    const result = await this.ordenComprasService.create(CreateOrdenCompraDto);
+    this.logger.log(
+      `Orden de compra creada exitosamente: ${JSON.stringify(result)}`,
+    );
+    return result;
   }
   @ApiOperation({
     summary: 'Historia Usuario H005: Carrito Compras',
@@ -80,9 +90,16 @@ export class VentasController {
     @Body(ValidaProductoCarritoPipe)
     CreateDetalleOrdenCompraDto: CreateDetalleOrdenCompraDto,
   ) {
-    return await this.detalleOrdenCompraService.create(
+    this.logger.log(
+      `Agregando producto al carrito: ${JSON.stringify(CreateDetalleOrdenCompraDto)}`,
+    );
+    const result = await this.detalleOrdenCompraService.create(
       CreateDetalleOrdenCompraDto,
     );
+    this.logger.log(
+      `Producto agregado exitosamente: ${JSON.stringify(result)}`,
+    );
+    return result;
   }
   @ApiOperation({
     summary: 'Historia Usuario H005: Carrito Compras',
@@ -103,11 +120,17 @@ export class VentasController {
     @Body(ValidaEliminaProductoCarroPipe)
     quitarProducto: QuitarProductoCarritoDto,
   ) {
+    this.logger.log(
+      `Eliminando producto del carrito: ${JSON.stringify(quitarProducto)}`,
+    );
     const response =
       await this.detalleOrdenCompraService.eliminaProductoDetalle(
         quitarProducto.idOrden,
         quitarProducto.idProducto,
       );
+    this.logger.log(
+      `Producto eliminado exitosamente: ${JSON.stringify(response)}`,
+    );
 
     return {
       status: 'success',
@@ -172,11 +195,15 @@ export class VentasController {
   @Get('/carrito/creado/')
   @ApiTags('Gestion-Ventas')
   async findOne(@Query() query: any) {
+    this.logger.log(
+      `Buscando carrito con parámetros: ${JSON.stringify(query)}`,
+    );
     const { emailComprador, idUsuario } = query;
     const carrito = await this.ordenComprasService.buscarCarrito(
       emailComprador,
       idUsuario,
     );
+    this.logger.log(`Carrito encontrado: ${JSON.stringify(carrito)}`);
     return carrito;
   }
 
@@ -199,8 +226,12 @@ export class VentasController {
   @Put('/carrito/finaliza/')
   @ApiTags('Gestion-Ventas')
   async finalizaCarrito(@Query() query: any) {
+    this.logger.log(`Finalizando carrito con ID: ${query.idOC}`);
     const { idOC } = query;
     const carrito = await this.ordenComprasService.finalizaCarrito(idOC);
+    this.logger.log(
+      `Carrito finalizado exitosamente: ${JSON.stringify(carrito)}`,
+    );
     return carrito;
   }
 
@@ -218,7 +249,10 @@ export class VentasController {
   @Post('/')
   @ApiTags('Gestion-Ventas')
   async createVenta(@Body() CreateVentaDto: CreateVentaDto) {
-    return await this.ventaService.createVenta(CreateVentaDto);
+    this.logger.log(`Creando venta: ${JSON.stringify(CreateVentaDto)}`);
+    const result = await this.ventaService.createVenta(CreateVentaDto);
+    this.logger.log(`Venta creada exitosamente: ${JSON.stringify(result)}`);
+    return result;
   }
 
   @ApiOperation({
@@ -244,10 +278,14 @@ export class VentasController {
   })
   @Get('/historial/')
   async buscarVentas(@Query() query: any) {
+    this.logger.log(`Buscando historial de ventas: ${JSON.stringify(query)}`);
     const { emailComprador, idUsuario } = query;
     const carrito = await this.ordenComprasService.historialCompras(
       emailComprador,
       idUsuario,
+    );
+    this.logger.log(
+      `Historial de ventas encontrado: ${JSON.stringify(carrito)}`,
     );
     return carrito;
   }

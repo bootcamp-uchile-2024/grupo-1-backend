@@ -53,165 +53,126 @@ export class VentasService {
   ) {}
   async createVenta(createVentaDto: CreateVentaDto): Promise<GetVentaDto> {
     const timestamp = new Date().toISOString();
-    let jardinVirtual: JardinVirtual | undefined;
-
-    this.logger.log(`[${timestamp}] Iniciando proceso de creación de venta`);
-
-    const idOrden = createVentaDto.idOrden;
     this.logger.log(
-      `[${timestamp}] Buscando orden de compra con ID: ${idOrden}`,
+      `[${timestamp}] Iniciando creación de venta: ${JSON.stringify(createVentaDto)}`,
     );
 
-    const ordenCompra = await this.ordenCompraRepository
-      .createQueryBuilder('ordenCompra')
-      .leftJoinAndSelect('ordenCompra.detallesOrden', 'detallesOrden') // Unir detalles de la orden
-      .leftJoinAndSelect('ordenCompra.usuario', 'usuario') // Unir usuario, incluso si es null
-      .where('ordenCompra.id = :idOrden', { idOrden })
-      .andWhere('ordenCompra.estado = :estado', {
-        estado: EstadoOrden.PROCESANDO,
-      })
-      .getOne();
+    try {
+      let jardinVirtual: JardinVirtual | undefined;
+      const idOrden = createVentaDto.idOrden;
 
-    if (!ordenCompra) {
-      this.logger.error(
-        `[${timestamp}] Carrito con ID ${idOrden} no encontrado o no puede ser procesado`,
-      );
-      throw new NotFoundException(
-        `Carrito con ID ${idOrden} no puede ser procesado`,
-      );
-    }
+      this.logger.log(`[${timestamp}] Buscando orden de compra ID: ${idOrden}`);
+      const ordenCompra = await this.ordenCompraRepository
+        .createQueryBuilder('ordenCompra')
+        .leftJoinAndSelect('ordenCompra.detallesOrden', 'detallesOrden')
+        .leftJoinAndSelect('ordenCompra.usuario', 'usuario')
+        .where('ordenCompra.id = :idOrden', { idOrden })
+        .andWhere('ordenCompra.estado = :estado', {
+          estado: EstadoOrden.PROCESANDO,
+        })
+        .getOne();
 
-    this.logger.log(
-      `[${timestamp}] Orden de compra encontrada, procesando detalles`,
-    );
-    const detallesActualiza = [];
-    // Si no hay usuario, emitir advertencia y continuar
-    if (!ordenCompra.usuario) {
-      this.logger.warn(
-        `[${timestamp}] La orden de compra con ID ${idOrden} no tiene un usuario registrado`,
-      );
-    } else {
-      const usuarioId = ordenCompra.usuario.id;
-      /* const jardinVirtual = await this.jardinVirtualRepository.findOne({
-        where: { usuario: { id: usuarioId } },
-        relations: ['usuario'],
-      });
-      if (!jardinVirtual) {
-        const nuevoJardin = this.jardinVirtualRepository.create({
-          usuario: { id: ordenCompra.usuario.id },
-        });
-        await this.jardinVirtualRepository.save(nuevoJardin);
-      }*/
-    }
-
-    for (const detalle of ordenCompra.detallesOrden) {
-      this.logger.log(
-        `[${timestamp}] Validando stock para producto ID: ${detalle.idProducto}`,
-      );
-      const hayStock = await this.productoServices.validaStock(
-        detalle.idProducto,
-        detalle.cantidad,
-      );
-      if (!hayStock) {
+      if (!ordenCompra) {
         this.logger.error(
-          `[${timestamp}] Stock insuficiente para producto ID: ${detalle.idProducto}`,
+          `[${timestamp}] Carrito ${idOrden} no encontrado o no procesable`,
         );
-        await this.ordenCompraRepository.update(ordenCompra.id, {
-          estado: EstadoOrden.VENTA_ANULADA,
-        });
-        throw new BadRequestException(
-          `El producto con ID ${detalle.idProducto} no tiene suficiente stock.`,
+        throw new NotFoundException(
+          `Carrito con ID ${idOrden} no puede ser procesado`,
         );
       }
-      this.logger.log(
-        `[${timestamp}] Actualizando stock del producto ID: ${detalle.idProducto}`,
-      );
-      await this.productoRepository.update(detalle.idProducto, {
-        stock: () => `stock - ${detalle.cantidad}`,
-        cantidadVentas: () => `cantidadVentas + ${detalle.cantidad}`,
-      });
-      const producto = await this.productoRepository.findOne({
-        where: { id: detalle.idProducto },
-        relations: ['categoria'],
-      });
-      /*if (ordenCompra.usuario) {
-        if (producto.categoria.nombreCategoria === TipoProductos.Planta) {
-          const plantaYaRegistrada =
-            await this.detalleJardinVirtualRepository.findOne({
-              where: {
-                idJardin: jardinVirtual.id,
-                idPlanta: detalle.idProducto,
-              },
-            });
-          if (!plantaYaRegistrada) {
-            const nuevaPlanta = this.detalleJardinVirtualRepository.create({
-              idJardin: jardinVirtual.id,
-              idPlanta: detalle.idProducto,
-              fechaIngreso: new Date(),
-            });
-            await this.detalleJardinVirtualRepository.save(nuevaPlanta);
-          }
+
+      this.logger.log(`[${timestamp}] Validando stock de productos`);
+      for (const detalle of ordenCompra.detallesOrden) {
+        this.logger.log(
+          `[${timestamp}] Validando stock producto ID: ${detalle.idProducto}`,
+        );
+        const hayStock = await this.productoServices.validaStock(
+          detalle.idProducto,
+          detalle.cantidad,
+        );
+
+        if (!hayStock) {
+          this.logger.error(
+            `[${timestamp}] Stock insuficiente para producto ID: ${detalle.idProducto}`,
+          );
+          await this.ordenCompraRepository.update(ordenCompra.id, {
+            estado: EstadoOrden.VENTA_ANULADA,
+          });
+          throw new BadRequestException(
+            `El producto con ID ${detalle.idProducto} no tiene suficiente stock.`,
+          );
         }
-      }*/
 
-      detallesActualiza.push(detalle);
-    }
-    await this.ordenCompraRepository.update(ordenCompra.id, {
-      estado: EstadoOrden.COMPLETADO,
-    });
-    let totalBruto = 0;
-    let totalDescuento = 0;
-    for (const detalle of detallesActualiza) {
-      totalBruto += detalle.totalProducto;
-      totalDescuento += detalle.descuento;
-      await this.detalleOrdenCompraRepository.update(
-        {
-          idOrdenCompra: detalle.idOrdenCompra,
-          idProducto: detalle.idProducto,
-        },
-        {
-          cantidadVenta: () => `cantidadVenta + ${detalle.cantidad}`,
-        },
-      );
-    }
+        this.logger.log(
+          `[${timestamp}] Actualizando stock producto ID: ${detalle.idProducto}`,
+        );
+        await this.productoRepository.update(detalle.idProducto, {
+          stock: () => `stock - ${detalle.cantidad}`,
+          cantidadVentas: () => `cantidadVentas + ${detalle.cantidad}`,
+        });
+      }
 
-    const iva = Math.round(totalBruto * 0.19);
-    const totalPago = totalBruto + iva - totalDescuento;
-    const formaPago = await this.formaPagoRepository.findOne({
-      where: { id: createVentaDto.idFormaPago },
-    });
-    if (!formaPago) {
-      throw new BadRequestException(
-        `Forma de pago con ID ${createVentaDto.idFormaPago} no encontrada.`,
+      this.logger.log(`[${timestamp}] Calculando totales de la venta`);
+      let totalBruto = ordenCompra.detallesOrden.reduce(
+        (sum, detalle) => sum + detalle.totalProducto,
+        0,
       );
+      let totalDescuento = ordenCompra.detallesOrden.reduce(
+        (sum, detalle) => sum + detalle.descuento,
+        0,
+      );
+
+      const iva = Math.round(totalBruto * 0.19);
+      const totalPago = totalBruto + iva - totalDescuento;
+
+      this.logger.log(
+        `[${timestamp}] Verificando forma de pago ID: ${createVentaDto.idFormaPago}`,
+      );
+      const formaPago = await this.formaPagoRepository.findOne({
+        where: { id: createVentaDto.idFormaPago },
+      });
+
+      if (!formaPago) {
+        this.logger.error(
+          `[${timestamp}] Forma de pago no encontrada ID: ${createVentaDto.idFormaPago}`,
+        );
+        throw new BadRequestException(
+          `Forma de pago con ID ${createVentaDto.idFormaPago} no encontrada.`,
+        );
+      }
+
+      this.logger.log(`[${timestamp}] Creando registro de venta`);
+      const ventaNueva = this.ventaRepository.create({
+        totalBruto,
+        totalDescuento,
+        iva,
+        totalPago,
+        nroComprobantePago: createVentaDto.nroComprobantePago,
+        ordenCompra,
+        formaPago,
+        estadoVenta: { id: 2 },
+      });
+
+      const ventaCreada = await this.ventaRepository.save(ventaNueva);
+
+      this.logger.log(
+        `[${timestamp}] Venta creada exitosamente ID: ${ventaCreada.id}`,
+      );
+      return {
+        id: ventaCreada.id,
+        totalBruto: ventaCreada.totalBruto,
+        iva: ventaCreada.iva,
+        totalPago: ventaCreada.totalPago,
+        nroComprobantePago: ventaCreada.nroComprobantePago,
+        idOrdenCompra: ventaCreada.ordenCompra.id,
+        idFormaPago: ventaCreada.formaPago.id,
+        idEstadoVenta: ventaCreada.estadoVenta.id,
+      };
+    } catch (error) {
+      this.logger.error(
+        `[${timestamp}] Error en creación de venta: ${error.message}`,
+      );
+      throw error;
     }
-    const estadoVenta = await this.estadosVentaRepository.findOne({
-      where: { id: 2 },
-    });
-    const ventaNueva = this.ventaRepository.create({
-      totalBruto,
-      totalDescuento,
-      iva,
-      totalPago,
-      nroComprobantePago: createVentaDto.nroComprobantePago,
-      ordenCompra,
-      formaPago,
-      estadoVenta,
-    });
-    const ventacreada = await this.ventaRepository.save(ventaNueva);
-    const ventadto: GetVentaDto = {
-      id: ventacreada.id,
-      totalBruto: ventacreada.totalBruto,
-      iva: ventacreada.iva,
-      totalPago: ventacreada.totalPago,
-      nroComprobantePago: ventaNueva.nroComprobantePago,
-      idOrdenCompra: ventaNueva.ordenCompra.id,
-      idFormaPago: ventaNueva.formaPago.id,
-      idEstadoVenta: ventaNueva.estadoVenta.id,
-    };
-    this.logger.log(
-      `[${timestamp}] Venta creada exitosamente con ID: ${ventacreada.id}`,
-    );
-    return ventadto;
   }
 }

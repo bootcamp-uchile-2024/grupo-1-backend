@@ -23,6 +23,7 @@ import {
   InternalServerErrorException,
   UseGuards,
   Logger,
+  DefaultValuePipe,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -99,16 +100,18 @@ export class ProductosController {
     createProductoDto: CreateProductoDto,
     @Res() res: Response,
   ) {
+    this.logger.log(
+      `Iniciando creación de producto: ${JSON.stringify(createProductoDto)}`,
+    );
     try {
       const producto =
         await this.productosService.createProducto(createProductoDto);
+      this.logger.log(`Producto creado exitosamente con ID: ${producto.id}`);
       res.status(HttpStatus.CREATED).json(producto);
     } catch (error) {
+      this.logger.error(`Error al crear producto: ${error.message}`);
       throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: 'Datos inválidos.',
-        },
+        { status: HttpStatus.BAD_REQUEST, error: 'Datos inválidos.' },
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -137,14 +140,18 @@ export class ProductosController {
     @Query('size', ParseIntPipe) size: number,
     @Res() res: Response,
   ) {
+    this.logger.log(`Obteniendo catálogo - página: ${page}, tamaño: ${size}`);
     try {
       const productos = await this.productosService.findAllCatalogoPaginado(
         page,
         size,
       );
+      this.logger.log(
+        `Catálogo obtenido exitosamente. Total items: ${productos.length}`,
+      );
       res.status(HttpStatus.OK).json(productos);
     } catch (error) {
-      error('Error al obtener los productos: ' + error.message);
+      this.logger.error(`Error al obtener catálogo: ${error.message}`);
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -179,16 +186,19 @@ export class ProductosController {
     required: true,
   })
   async findOne(@Param('id', ParseIntPipe) id: number, @Res() res: Response) {
+    this.logger.log(`Buscando producto por ID: ${id}`);
     try {
       const producto = await this.productosService.porProducto(id);
       if (!producto) {
+        this.logger.warn(`Producto no encontrado con ID: ${id}`);
         return res
           .status(HttpStatus.NOT_FOUND)
           .json({ message: 'Producto no encontrado' });
       }
+      this.logger.log(`Producto encontrado exitosamente: ${id}`);
       res.status(HttpStatus.OK).json(producto);
     } catch (error) {
-      error('Error al obtener el producto: ' + error.message);
+      this.logger.error(`Error al obtener producto ${id}: ${error.message}`);
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -218,22 +228,23 @@ export class ProductosController {
     updateProductoDto: CreateProductoDto,
     @Res() res: Response,
   ) {
+    this.logger.log(
+      `Actualizando producto ${id} con datos: ${JSON.stringify(updateProductoDto)}`,
+    );
     try {
       const producto = await this.productosService.updateProducto(
         id,
         updateProductoDto,
       );
+      this.logger.log(`Producto ${id} actualizado exitosamente`);
       res.status(HttpStatus.OK).json(producto);
     } catch (error) {
-      error('Error al actualizar producto: ' + error.message);
+      this.logger.error(`Error al actualizar producto ${id}: ${error.message}`);
       if (error instanceof NotFoundException) {
         res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
       } else {
         throw new HttpException(
-          {
-            status: HttpStatus.BAD_REQUEST,
-            error: 'Datos inválidos.',
-          },
+          { status: HttpStatus.BAD_REQUEST, error: 'Datos inválidos.' },
           HttpStatus.BAD_REQUEST,
         );
       }
@@ -257,11 +268,14 @@ export class ProductosController {
     createCategoriaDto: CreateCategoriaDto,
     @Res() res: Response,
   ) {
+    this.logger.log('Iniciando creación de nueva categoría');
     try {
       const categoria =
         await this.CategoriasService.createCategoria(createCategoriaDto);
+      this.logger.log(`Categoría creada exitosamente con ID: ${categoria.id}`);
       res.status(HttpStatus.CREATED).json(categoria);
     } catch (error) {
+      this.logger.error(`Error al crear categoría: ${error.message}`);
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
@@ -290,13 +304,16 @@ export class ProductosController {
     @Query('size', ParseIntPipe) size: number,
     @Res() res: Response,
   ) {
+    this.logger.log(`Buscando categorías - página: ${page}, tamaño: ${size}`);
     try {
       const categorias = await this.CategoriasService.findAllCategorias(
         page,
         size,
       );
+      this.logger.log(`Se encontraron categorías exitosamente`);
       res.status(HttpStatus.OK).json(categorias);
     } catch (error) {
+      this.logger.error(`Error al obtener categorías: ${error.message}`);
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -475,10 +492,15 @@ export class ProductosController {
     @Query('size', ParseIntPipe) size: number,
     @Res() res: Response,
   ) {
+    this.logger.log(
+      `Obteniendo plantas paginadas - página: ${page}, tamaño: ${size}`,
+    );
     try {
       const plantas = await this.PlantaService.getPlantasPaginadas(page, size);
+      this.logger.log('Plantas obtenidas exitosamente');
       res.status(HttpStatus.OK).json(plantas);
     } catch (error) {
+      this.logger.error(`Error al obtener plantas: ${error.message}`);
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
@@ -775,11 +797,16 @@ export class ProductosController {
     @Query('size') size: number,
     @Res() res: Response,
   ) {
+    this.logger.log(
+      `Obteniendo fertilizantes paginados - página: ${page}, tamaño: ${size}`,
+    );
     try {
       const fertilizantes =
         await this.FertilizantesService.getFertilizantesPaginados(page, size);
+      this.logger.log('Fertilizantes obtenidos exitosamente');
       res.status(HttpStatus.OK).json(fertilizantes);
     } catch (error) {
+      this.logger.error(`Error al obtener fertilizantes: ${error.message}`);
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
@@ -926,13 +953,16 @@ export class ProductosController {
     @Query('size', ParseIntPipe) size: number,
     @Res() res: Response,
   ) {
+    this.logger.log(`Buscando sustratos - página: ${page}, tamaño: ${size}`);
     try {
       const sustratos = await this.SustratosService.findAllSustratos(
         page,
         size,
       );
+      this.logger.log('Sustratos encontrados exitosamente');
       res.status(HttpStatus.OK).json(sustratos);
     } catch (error) {
+      this.logger.error(`Error al obtener sustratos: ${error.message}`);
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -1386,7 +1416,7 @@ export class ProductosController {
       );
     }
   }
-  @ApiTags('Filtros - Plantas')
+  @ApiTags('Filtros')
   @Get('plantas/filtropetfriendly')
   @ApiOperation({
     summary: 'Filtrar plantas pet friendly',
@@ -1420,16 +1450,21 @@ export class ProductosController {
     @Query('filtro') filtro: string,
     @Res() res: Response,
   ) {
+    this.logger.log(`Aplicando filtro pet friendly: ${filtro}`);
     try {
       const filtroBooleano = filtro === 'true' ? 0 : 1;
       const plantas =
         await this.FiltrosService.filtroPetFriendly(filtroBooleano);
+      this.logger.log(`Filtro pet friendly aplicado exitosamente`);
       res.status(HttpStatus.OK).json({
         status: HttpStatus.OK,
         message: 'Plantas pet friendly obtenidas con éxito',
         data: plantas,
       });
     } catch (error) {
+      this.logger.error(
+        `Error al aplicar filtro pet friendly: ${error.message}`,
+      );
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -1441,7 +1476,7 @@ export class ProductosController {
     }
   }
   @Get('plantas/filtrocuidados')
-  @ApiTags('Filtros - Plantas')
+  @ApiTags('Filtros')
   @ApiOperation({
     summary: 'Filtrar plantas segun dificultad de cuidado',
     description: 'Devuelve una lista de plantas segun dificultad de cuidado',
@@ -1587,7 +1622,7 @@ export class ProductosController {
       error: error.response || null,
     };
   }
-  @ApiTags('Filtros - Plantas')
+  @ApiTags('Filtros')
   @ApiOperation({
     summary: 'Filtrar plantas mas valoradas por los compradores',
     description:
@@ -1604,16 +1639,30 @@ export class ProductosController {
     @Query('categoria') categoria: string,
     @Res() res: Response,
   ) {
-    const filtro = await this.FiltrosService.filtroMasValorados(categoria);
-    res.status(HttpStatus.OK).json({
-      status: HttpStatus.OK,
-      message: 'Plantas obtenidas con éxito',
-      data: filtro,
-    });
+    this.logger.log(
+      `Obteniendo plantas más valoradas para categoría: ${categoria}`,
+    );
+    try {
+      const filtro = await this.FiltrosService.filtroMasValorados(categoria);
+      this.logger.log('Plantas más valoradas obtenidas exitosamente');
+      res.status(HttpStatus.OK).json({
+        status: HttpStatus.OK,
+        message: 'Plantas obtenidas con éxito',
+        data: filtro,
+      });
+    } catch (error) {
+      this.logger.error(
+        `Error al obtener plantas más valoradas: ${error.message}`,
+      );
+      throw new HttpException(
+        'Error al obtener las plantas más valoradas',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Get('/plantas/masvendidas')
-  @ApiTags('Filtros - Plantas')
+  @ApiTags('Filtros')
   @ApiOperation({ summary: 'Obtener las plantas más vendidas' })
   @ApiResponse({
     status: 200,
@@ -1625,12 +1674,95 @@ export class ProductosController {
     description: 'Categoría "Planta" no encontrada.',
   })
   async obtenerPlantasMasVendidas(): Promise<Planta[]> {
+    this.logger.log('Obteniendo plantas más vendidas');
     try {
-      return await this.FiltrosService.obtenerPlantasMasVendidas();
+      const plantas = await this.FiltrosService.obtenerPlantasMasVendidas();
+      this.logger.log('Plantas más vendidas obtenidas exitosamente');
+      return plantas;
     } catch (error) {
+      this.logger.error(
+        `Error al obtener plantas más vendidas: ${error.message}`,
+      );
       throw new HttpException(
         'Ha ocurrido un error al obtener las plantas más vendidas.',
         HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Get('/filtrocategoria')
+  @ApiTags('Filtros')
+  @ApiOperation({
+    summary: 'Filtrar productos por categoría',
+    description:
+      'Devuelve una lista paginada de productos por categoría específica',
+  })
+  @ApiQuery({
+    name: 'categoria',
+    description: 'Nombre de la categoría a filtrar',
+    required: true,
+    enum: ['Plantas', 'Maceteros', 'Fertilizantes', 'Sustratos'],
+  })
+  @ApiQuery({
+    name: 'pagina',
+    description: 'Número de página',
+    required: false,
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'cantidad',
+    description: 'Cantidad de elementos por página',
+    required: false,
+    type: Number,
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Lista de productos filtrados por categoría',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Error en los parámetros de la solicitud',
+  })
+  async filtrarPorCategoria(
+    @Query('categoria') categoria: string,
+    @Query('pagina', new DefaultValuePipe(1), ParseIntPipe) pagina: number,
+    @Query('cantidad', new DefaultValuePipe(10), ParseIntPipe) cantidad: number,
+  ) {
+    this.logger.log(
+      `Filtrando productos por categoría: ${categoria}, página: ${pagina}, límite: ${cantidad}`,
+    );
+
+    try {
+      const resultado = await this.FiltrosService.filtrarPorCategoria(
+        categoria,
+        pagina,
+        cantidad,
+      );
+
+      this.logger.log(
+        `Filtrado exitoso. Total de elementos: ${resultado.total}`,
+      );
+
+      return {
+        status: HttpStatus.OK,
+        message: 'Productos filtrados exitosamente',
+        data: {
+          items: resultado.plantas,
+          total: resultado.total,
+          currentPage: pagina,
+          totalPages: resultado.pages,
+          cantidad,
+        },
+      };
+    } catch (error) {
+      this.logger.error(`Error al filtrar por categoría: ${error.message}`);
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Error al filtrar productos por categoría',
+          message: error.message,
+        },
+        HttpStatus.BAD_REQUEST,
       );
     }
   }
