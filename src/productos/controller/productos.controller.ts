@@ -67,6 +67,7 @@ import { RolesAutorizados } from 'src/comunes/decorator/rol.decorator';
 import { JwtGuard } from 'src/jwt/jwt.guard';
 import { Rol } from 'src/enum/rol.enum';
 import * as path from 'path';
+import { NewCreatePlantaDto } from '../dto/new-create-planta.dto';
 
 @Controller('productos')
 export class ProductosController {
@@ -120,7 +121,7 @@ export class ProductosController {
 
   //@ApiBearerAuth()
   //@UseGuards(JwtGuard)
-  ////@RolesAutorizados(Rol.ADMIN, Rol.USUARIO, Rol.INVITADO)
+  //@RolesAutorizados(Rol.ADMIN, Rol.USUARIO, Rol.INVITADO)
   @Get('/catalogo')
   @ApiResponse({
     status: 200,
@@ -444,6 +445,216 @@ export class ProductosController {
           HttpStatus.BAD_REQUEST,
         );
       }
+    }
+  }
+  @Post('plantas/newcreate')
+  @ApiTags('Gestion-Productos-Plantas')
+  //@ApiBearerAuth()
+  //@UseGuards(JwtGuard)
+  //@RolesAutorizados(Rol.ADMIN)
+  @ApiConsumes('multipart/form-data')
+  @ApiOperation({
+    summary: 'Crear una nuevo producto tipo planta con imágenes',
+    description:
+      'Crea una nuevo producto tipo planta con sus imágenes asociadas y todas sus relaciones. Los valores disponibles son:\n\n' +
+      '- Hábitat (ID):\n' +
+      '  1: Interior\n' +
+      '  2: Exterior\n' +
+      '  3: Interior/Exterior\n\n' +
+      '- Luz (ID):\n' +
+      '  1: Luz directa\n' +
+      '  2: Luz indirecta brillante\n' +
+      '  3: Luz indirecta media\n' +
+      '  4: Sombra\n\n' +
+      '- Humedad (ID):\n' +
+      '  1: Alta\n' +
+      '  2: Media\n' +
+      '  3: Baja\n\n' +
+      '- Dificultad de Cuidado (ID):\n' +
+      '  1: Fácil\n' +
+      '  2: Moderado\n' +
+      '  3: Difícil\n\n' +
+      '- Frecuencia de Riego (ID):\n' +
+      '  1: Diario\n' +
+      '  2: Cada 2-3 días\n' +
+      '  3: Semanal\n' +
+      '  4: Quincenal\n\n' +
+      '- Tipos de Suelo (ID):\n' +
+      '  1: Arcilloso\n' +
+      '  2: Arenoso\n' +
+      '  3: Franco\n' +
+      '  4: Limoso\n\n' +
+      '- Estaciones (ID):\n' +
+      '  1: Primavera\n' +
+      '  2: Verano\n' +
+      '  3: Otoño\n' +
+      '  4: Invierno\n\n' +
+      '- Toxicidad Mascotas:\n' +
+      '  0: No tóxica\n' +
+      '  1: Tóxica\n\n' +
+      '- Estado del producto:\n' +
+      '  0: INACTIVO\n' +
+      '  1: ACTIVO',
+  })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'Planta creada exitosamente',
+    schema: {
+      example: {
+        statusCode: 201,
+        message: 'Planta creada exitosamente',
+        data: {
+          id: 1,
+          nombrePlanta: 'Monstera Deliciosa',
+          nombreCientifico: 'Monstera deliciosa',
+          producto: {
+            id: 1,
+            nombreProducto: 'Monstera Deliciosa',
+            descripcionProducto: 'Planta: Monstera Deliciosa',
+            precio: 29990,
+            precioNormal: 29990,
+            stock: 10,
+            activo: 1,
+            imagenes: [
+              {
+                id: 1,
+                urlImagen: '/uploads/productos/imagen-123456789.jpg',
+              },
+            ],
+          },
+          habitat: { id: 1, nombre: 'Interior' },
+          luz: { id: 2, tipo: 'Luz indirecta brillante' },
+          humedad: { id: 2, nivel: 'Media' },
+          temperaturaIdeal: 23,
+          toxicidadMascotas: 1,
+          tamanoMaximo: 2,
+          peso: 5,
+          dificultad: { id: 1, nivel: 'Fácil' },
+          frecuencia: { id: 2, tipo: 'Cada 2-3 días' },
+          estaciones: [
+            { id: 1, nombre: 'Primavera' },
+            { id: 2, nombre: 'Verano' },
+          ],
+          fertilizantes: [{ id: 1, nombre: 'Fertilizante NPK' }],
+          sustratos: [{ id: 1, nombre: 'Sustrato para interior' }],
+          suelos: [
+            { id: 1, tipo: 'Arcilloso' },
+            { id: 3, tipo: 'Franco' },
+          ],
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Error en los datos proporcionados',
+    schema: {
+      example: {
+        statusCode: 400,
+        message: 'Error de validación',
+        error: 'Bad Request',
+        errors: [
+          'El nombre de la planta es requerido',
+          'El ID del hábitat debe ser 1, 2 o 3',
+          'El precio debe ser mayor a 0',
+        ],
+      },
+    },
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'No autorizado',
+    schema: {
+      example: {
+        statusCode: 401,
+        message: 'Unauthorized',
+      },
+    },
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Acceso denegado',
+    schema: {
+      example: {
+        statusCode: 403,
+        message: 'Forbidden resource',
+        error: 'Forbidden',
+      },
+    },
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'Error interno del servidor',
+    schema: {
+      example: {
+        statusCode: 500,
+        message: 'Error interno del servidor',
+        error: 'Internal Server Error',
+      },
+    },
+  })
+  @UseInterceptors(
+    FilesInterceptor('imagenes', 10, {
+      storage: diskStorage({
+        destination: './uploads/productos',
+        filename: (req, file, callback) => {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const ext = extname(file.originalname);
+          callback(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+        },
+      }),
+      fileFilter: (req, file, callback) => {
+        if (!file.mimetype.match(/image\/(jpg|jpeg|png|gif)$/)) {
+          return callback(
+            new BadRequestException(
+              'Solo se permiten archivos de imagen (jpg, jpeg, png, gif)',
+            ),
+            false,
+          );
+        }
+        callback(null, true);
+      },
+    }),
+  )
+  async newCreatePlanta(
+    @Body() createPlantaDto: NewCreatePlantaDto,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    this.logger.log('Iniciando creación de planta con imágenes');
+    if (!files || files.length === 0) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Se debe subir al menos una imagen',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const rutasImagenes = files.map(
+      (file) => `/uploads/productos/${file.filename}`,
+    );
+    try {
+      const planta = await this.PlantaService.newCreatePlanta(
+        createPlantaDto,
+        rutasImagenes,
+      );
+      return {
+        statusCode: HttpStatus.CREATED,
+        message: 'Planta creada exitosamente',
+        data: planta,
+        rutasImagenes,
+      };
+    } catch (error) {
+      this.logger.error(`Error al crear planta: ${error.message}`);
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Error al crear la planta',
+          data: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
