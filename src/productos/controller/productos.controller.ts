@@ -344,15 +344,19 @@ export class ProductosController {
     @Param('id', ParseIntPipe) id: number,
     @Res() res: Response,
   ) {
+    this.logger.log(`Buscando categoría por ID: ${id}`);
     try {
       const categoria = await this.CategoriasService.findCategoriaById(id);
       if (!categoria) {
+        this.logger.warn(`Categoría no encontrada con ID: ${id}`);
         return res
           .status(HttpStatus.NOT_FOUND)
           .json({ message: 'Categoría no encontrada' });
       }
+      this.logger.log(`Categoría encontrada exitosamente: ${id}`);
       res.status(HttpStatus.OK).json(categoria);
     } catch (error) {
+      this.logger.error(`Error al obtener categoría ${id}: ${error.message}`);
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -388,16 +392,22 @@ export class ProductosController {
     @Param('nombrecategoria') nombrecategoria: string,
     @Res() res: Response,
   ) {
+    this.logger.log(`Buscando categoría por nombre: ${nombrecategoria}`);
     try {
       const categoria =
         await this.CategoriasService.findCategoriaIdByName(nombrecategoria);
       if (!categoria) {
+        this.logger.warn(`Categoría no encontrada: ${nombrecategoria}`);
         return res
           .status(HttpStatus.NOT_FOUND)
           .json({ message: 'Categoría no encontrada' });
       }
+      this.logger.log(`Categoría encontrada exitosamente: ${nombrecategoria}`);
       res.status(HttpStatus.OK).json(categoria);
     } catch (error) {
+      this.logger.error(
+        `Error al obtener categoría ${nombrecategoria}: ${error.message}`,
+      );
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -426,13 +436,20 @@ export class ProductosController {
     updateCategoriaDto: UpdateCategoriaDto,
     @Res() res: Response,
   ) {
+    this.logger.log(
+      `Actualizando categoría ${id} con datos: ${JSON.stringify(updateCategoriaDto)}`,
+    );
     try {
       const categoria = await this.CategoriasService.updateCategoria(
         id,
         updateCategoriaDto,
       );
+      this.logger.log(`Categoría ${id} actualizada exitosamente`);
       res.status(HttpStatus.OK).json(categoria);
     } catch (error) {
+      this.logger.error(
+        `Error al actualizar categoría ${id}: ${error.message}`,
+      );
       if (error instanceof NotFoundException) {
         res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
       } else {
@@ -464,10 +481,15 @@ export class ProductosController {
     createPlantaDto: CreatePlantaDto,
     @Res() res: Response,
   ) {
+    this.logger.log(
+      `Iniciando creación de planta: ${JSON.stringify(createPlantaDto)}`,
+    );
     try {
       const planta = await this.PlantaService.createPlanta(createPlantaDto);
+      this.logger.log(`Planta creada exitosamente con ID: ${planta.id}`);
       res.status(HttpStatus.CREATED).json(planta);
     } catch (error) {
+      this.logger.error(`Error al crear planta: ${error.message}`);
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
@@ -1366,43 +1388,6 @@ export class ProductosController {
   @ApiBearerAuth()
   @UseGuards(JwtGuard)
   @RolesAutorizados(Rol.ADMIN)
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        activo: {
-          type: 'number',
-          example: 1,
-          description:
-            'Estado de activación del producto (1: activo, 0: inactivo)',
-        },
-      },
-    },
-  })
-  async habilitarProducto(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() body: { activo: number },
-  ) {
-    try {
-      const producto = await this.productosService.habilitarProducto(
-        id,
-        body.activo,
-      );
-      return {
-        message: 'Producto habilitado exitosamente',
-        data: producto,
-      };
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new InternalServerErrorException('Error al habilitar el producto');
-    }
-  }
-
-  //@ApiBearerAuth()
-  //@UseGuards(JwtGuard)
-  //////@RolesAutorizados(Rol.ADMIN)
   @Patch(':id/deshabilitar')
   @ApiTags('Gestion-Productos')
   @ApiOperation({ summary: 'Deshabilitar un producto' })
