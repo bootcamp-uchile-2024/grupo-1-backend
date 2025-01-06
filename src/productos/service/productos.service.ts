@@ -375,6 +375,8 @@ export class ProductosService {
       const nuevoProducto = this.productoRepository.create({
         ...CreateProd2Dto,
         categoria: { id: CreateProd2Dto.idCategoria } as any,
+        valoracion: CreateProd2Dto.valoracion ?? 0,
+        cantidadVentas: CreateProd2Dto.cantidadVentas ?? 0,
       });
 
       const productoGuardado = await queryRunner.manager.save(nuevoProducto);
@@ -392,7 +394,7 @@ export class ProductosService {
       await queryRunner.commitTransaction();
       return productoGuardado;
     } catch (error) {
-      console.error(
+      this.logger.error(
         'Error durante la creación del producto con imágenes:',
         error,
       );

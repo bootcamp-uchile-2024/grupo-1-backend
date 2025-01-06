@@ -66,6 +66,7 @@ import { CategoriasService } from '../service/subservice/categorias.service';
 import { RolesAutorizados } from 'src/comunes/decorator/rol.decorator';
 import { JwtGuard } from 'src/jwt/jwt.guard';
 import { Rol } from 'src/enum/rol.enum';
+import * as path from 'path';
 
 @Controller('productos')
 export class ProductosController {
@@ -85,37 +86,37 @@ export class ProductosController {
   //@ApiBearerAuth()
   //@UseGuards(JwtGuard)
   //////@RolesAutorizados(Rol.ADMIN)
-  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-  @Post('/create')
-  @ApiTags('Gestion-Productos')
-  @ApiOperation({
-    summary: 'Crear un nuevo producto',
-    description: 'Crea un nuevo producto en el sistema',
-  })
-  @ApiResponse({ status: 201, description: 'Producto creado con éxito.' })
-  @ApiResponse({ status: 400, description: 'Datos inválidos.' })
-  @ApiBody({ type: CreateProductoDto })
-  async createProducto(
-    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-    createProductoDto: CreateProductoDto,
-    @Res() res: Response,
-  ) {
-    this.logger.log(
-      `Iniciando creación de producto: ${JSON.stringify(createProductoDto)}`,
-    );
-    try {
-      const producto =
-        await this.productosService.createProducto(createProductoDto);
-      this.logger.log(`Producto creado exitosamente con ID: ${producto.id}`);
-      res.status(HttpStatus.CREATED).json(producto);
-    } catch (error) {
-      this.logger.error(`Error al crear producto: ${error.message}`);
-      throw new HttpException(
-        { status: HttpStatus.BAD_REQUEST, error: 'Datos inválidos.' },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-  }
+  /* @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) */
+  /* @Post('/create') */
+  /* @ApiTags('Gestion-Productos') */
+  /* @ApiOperation({ */
+  /*   summary: 'Crear un nuevo producto', */
+  /*   description: 'Crea un nuevo producto en el sistema', */
+  /* }) */
+  /* @ApiResponse({ status: 201, description: 'Producto creado con éxito.' }) */
+  /* @ApiResponse({ status: 400, description: 'Datos inválidos.' }) */
+  /* @ApiBody({ type: CreateProductoDto }) */
+  /* async createProducto( */
+  /*   @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) */
+  /*   createProductoDto: CreateProductoDto, */
+  /*   @Res() res: Response, */
+  /* ) { */
+  /*   this.logger.log( */
+  /*     `Iniciando creación de producto: ${JSON.stringify(createProductoDto)}`, */
+  /*   ); */
+  /*   try { */
+  /*     const producto = */
+  /*       await this.productosService.createProducto(createProductoDto); */
+  /*     this.logger.log(`Producto creado exitosamente con ID: ${producto.id}`); */
+  /*     res.status(HttpStatus.CREATED).json(producto); */
+  /*   } catch (error) { */
+  /*     this.logger.error(`Error al crear producto: ${error.message}`); */
+  /*     throw new HttpException( */
+  /*       { status: HttpStatus.BAD_REQUEST, error: 'Datos inválidos.' }, */
+  /*       HttpStatus.BAD_REQUEST, */
+  /*     ); */
+  /*   } */
+  /* } */
 
   //@ApiBearerAuth()
   //@UseGuards(JwtGuard)
@@ -1529,7 +1530,16 @@ export class ProductosController {
   @ApiTags('Gestion-Productos')
   @Post('/newcreate')
   @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Crear un producto con listado de imagenes' })
+  @ApiOperation({
+    summary: 'Crear un producto con listado de imagenes',
+    description:
+      'Crea un nuevo producto con sus imágenes asociadas. Las categorías disponibles son:\n\n' +
+      '- 1: PLANTAS\n' +
+      '- 2: CONTROL DE PLAGAS\n' +
+      '- 3: MACETEROS\n' +
+      '- 4: SUSTRATOS\n' +
+      '- 5: FERTILIZANTES',
+  })
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: 'Producto creado con éxito',
@@ -1763,6 +1773,54 @@ export class ProductosController {
           message: error.message,
         },
         HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @Get('imagen/:archivo')
+  @ApiTags('Gestion-Productos')
+  @ApiOperation({
+    summary: 'Obtener imagen de producto',
+    description: 'Retorna la imagen del producto según el nombre del archivo',
+  })
+  @ApiParam({
+    name: 'archivo',
+    description: 'Nombre del archivo de la imagen',
+    type: 'string',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Imagen encontrada y retornada exitosamente',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Imagen no encontrada',
+  })
+  async getImage(@Param('archivo') archivo: string, @Res() res: Response) {
+    try {
+      const imagePath = path.join(process.cwd(), 'uploads/productos', archivo);
+
+      return res.sendFile(imagePath, (err) => {
+        if (err) {
+          this.logger.error(
+            `Error al enviar imagen ${archivo}: ${err.message}`,
+          );
+          res.status(HttpStatus.NOT_FOUND).json({
+            statusCode: HttpStatus.NOT_FOUND,
+            message: 'Imagen no encontrada',
+          });
+        }
+      });
+    } catch (error) {
+      this.logger.error(
+        `Error al procesar la solicitud de imagen ${archivo}: ${error.message}`,
+      );
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Error al procesar la solicitud de imagen',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
