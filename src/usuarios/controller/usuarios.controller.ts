@@ -51,6 +51,20 @@ export class UsuariosController {
   constructor(private readonly usuariosService: UsuariosService) {}
 
   @ApiTags('Gestion - Customer')
+  @ApiOperation({
+    summary: 'Iniciar sesión',
+    description: 'Permite a un usuario registrado iniciar sesión en el sistema',
+  })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'Inicio de sesión exitoso',
+    type: JwtDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Credenciales inválidas',
+  })
+  @ApiBody({ type: CredencialesDto })
   @Post('login')
   @ApiOperation({
     summary: 'Autenticación de usuario',

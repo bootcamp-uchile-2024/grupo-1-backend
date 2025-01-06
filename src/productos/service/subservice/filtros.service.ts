@@ -131,4 +131,47 @@ export class FiltrosService {
       });
     }
   }
+  async filtrarPorCategoria(
+    categoria: string,
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<{ plantas: Planta[]; total: number; pages: number }> {
+    this.logger.log(
+      `Iniciando búsqueda de plantas por categoría: ${categoria}, página: ${page}, límite: ${limit}`,
+    );
+
+    try {
+      const skip = (page - 1) * limit;
+
+      const [plantas, total] = await this.plantaRepository
+        .createQueryBuilder('planta')
+        .innerJoinAndSelect('planta.producto', 'producto')
+        .innerJoinAndSelect('producto.categoria', 'categoria')
+        .leftJoinAndSelect('producto.imagenes', 'imagenes')
+        .where('categoria.nombreCategoria = :categoria', { categoria })
+        .andWhere('producto.activo = :activo', { activo: 1 })
+        .skip(skip)
+        .take(limit)
+        .getManyAndCount();
+
+      const totalPages = Math.ceil(total / limit);
+
+      this.logger.log(
+        `Se encontraron ${total} plantas en la categoría ${categoria}. Página ${page} de ${totalPages}`,
+      );
+
+      return {
+        plantas,
+        total,
+        pages: totalPages,
+      };
+    } catch (error) {
+      this.logger.error(`Error en filtrarPorCategoria: ${error.message}`);
+      throw new BadRequestException({
+        status: HttpStatus.BAD_REQUEST,
+        error: 'Error al filtrar plantas por categoría',
+        data: error,
+      });
+    }
+  }
 }
